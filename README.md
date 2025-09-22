@@ -1,4 +1,10 @@
 # **잠탱이**
+
+**Contact info**  
+
+> YouTube: [Slumber](https://www.youtube.com/@Slumber957)  
+> Battle Tag: Slumber#31209
+
 ## About Me
 아즈샤라 서버에서 게임하는 잠탱이 입니다.
 
