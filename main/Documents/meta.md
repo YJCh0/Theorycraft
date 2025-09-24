@@ -42,7 +42,7 @@
  <img src="./Images/Demonhunter.png" 
       alt= "demonhunter"
       width= 400px
-      height= 400px />
+      height= 600px />
 
 &nbsp;  8넴 디멘시우스의 경우 넴드의 평타가 다른 사람들을 밀치는 효과가 있기에 구조적으로 온탱 주위에 아군이 없는 모습이다 (왼쪽 사진)
 
@@ -58,6 +58,7 @@
       alt= "book"
       width= 400px
       height= 400px />
+
  <img src="./Images/Trincket_nucleus.png" 
       alt= "nucleus"
       width= 400px
