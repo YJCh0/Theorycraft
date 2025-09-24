@@ -16,7 +16,7 @@
 특히 시너지가 있는 딜러들의 경우에는 직업의 성능이 나쁜 경우에 더욱 탱커나 힐러에서 최대한 시너지를 챙기고자 한다.
 
 
- <img src="./Images/Tank_DPS.png" 
+ <img src="./Images/Intro/Tank_DPS.png" 
       alt= "tank dps"
       width= 1000px
       height= 400px />
@@ -35,14 +35,14 @@
 
 &nbsp;  구체적으로 1넴, 4넴, 8넴과 같이 힐러의 시야에 탱이 없는 경우 와 3넴, 5넴, 7넴의 경우와 같이 탱이 본진에 위치하지만 탱커 버스터 스킬과 공대 피해가 같이 와서 케어를 할 수 없는 경우로 나뉘어진다.
 
- <img src="./Images/Dimensius.png" 
+ <img src="./Images/Intro/Dimensius.png" 
       alt= "dimensius"
       width= 400px
       height= 400px />
- <img src="./Images/Demonhunter.png" 
+ <img src="./Images/Intro/Demonhunter.png" 
       alt= "demonhunter"
       width= 400px
-      height= 600px />
+      height= 400px />
 
 &nbsp;  8넴 디멘시우스의 경우 넴드의 평타가 다른 사람들을 밀치는 효과가 있기에 구조적으로 온탱 주위에 아군이 없는 모습이다 (왼쪽 사진)
 
@@ -50,16 +50,16 @@
 
 &nbsp;  탱커들의 장신구의 경우, 모든 탱커들이 같은 장신구를 사용한다.
 
- <img src="./Images/Trincket_ire.png" 
+ <img src="./Images/Intro/Trincket_ire.png" 
       alt= "ire"
       width= 400px
       height= 400px />
- <img src="./Images/Trincket_book.png" 
+ <img src="./Images/Intro/Trincket_book.png" 
       alt= "book"
       width= 400px
       height= 400px />
 
- <img src="./Images/Trincket_nucleus.png" 
+ <img src="./Images/Intro/Trincket_nucleus.png" 
       alt= "nucleus"
       width= 400px
       height= 400px />
@@ -70,11 +70,11 @@
 &nbsp;  이 장신구들 이외에도 임시방편 시포리움 조율기 또는 은하수의 더듬이, 굴하지 않는 황천분광경 등 다양한 장신구들이 선택될 수 있지만, 딜적인 차원에서만 봤을 때 그 차이가 크다.
 현재로썬, 6종류의 탱커 모두 낙인 + 고서 조합의 장신구를 사용한다고 봐도 무방하다.
 생존에 문제가 되는 경우, 특히 복수 악마사냥꾼이나 보호 기사와 같이 유연성을 올리지 않으면서 마땅한 뎀감기가 부족하여 쉽게 급사가 나는 경우에는 8넴 디멘시우스가 드랍하는 세포핵 장신구를 사용하는 경우도 존재한다.
-Bloodmallet에서 보여주는 시뮬레이션(Simulationcraft, 심크) 결과에 따르면 직업에 따라 황천분광경이나 저주받은 돌 우상과 같은 장신구의 성능이 더 좋다고 나올 수 있다.
+[Bloodmallet](https://bloodmallet.com)에서 보여주는 시뮬레이션([Simulationcraft](https://www.simulationcraft.org), 심크) 결과에 따르면 직업에 따라 황천분광경이나 저주받은 돌 우상과 같은 장신구의 성능이 더 좋다고 나올 수 있다.
 딜을 해야 할 타겟 숫자가 늘어나면 자연스럽게 낙인 + 고서 조합의 힘이 떨어지지만, 이번 레이드의 경우에는 황천분광경 + 돌 우상을 써야 할 정도로 극단적인 AoE 상황은 존재하지 않는다.
 
 
- <img src="./Images/Bloodmallet.png" 
+ <img src="./Images/Intro/Bloodmallet.png" 
       alt= "bloodmallet"
       width= 1000px
       height= 400px />
@@ -93,16 +93,3 @@ Bloodmallet에서 보여주는 시뮬레이션(Simulationcraft, 심크) 결과�
 만약 복수 악마사냥꾼으로 최정예를 하고 싶다 하면 그대로 하면 된다.
 상위 공대의 택틱을 그대로 복사해서 쓰는 우리와 같은 후발주자들에게는 무슨 직업을 해도 네임드는 잡을 수 있기 때문이다.
 
-&nbsp;  이제 탱커별로 자세하게 메타의 유불리함을 알아보도록 하자.
-
-### 1.1. 방어 전사
- <img src="./Images/Warrior_talent.png" 
-      alt= "warrior talent"
-      width= 1000px
-      height= 400px />
-
-## 2. Healer
-
-
-
-## 3. DPS
