@@ -8,9 +8,16 @@
 ## About Me
 아즈샤라 서버에서 게임하는 잠탱이 입니다.
 
-탱커 6캐릭을 다 다루고 있고, 공대에 필요한 포지션이라면 스왑도 언제든 가능합니다 (수사, 증강)
+ <img src="./Character.png" 
+      alt= "character"
+      width= 300px
+      height= 600px />
 
-와우 이론가로써 Warcraftlogs api를 통해 Javascript를 통한 로그 분석을 진행하고 있습니다
+제가 플레이 가능한 직업 및 전문화 입니다.
+
+해당 직업들은 공대에 필요한 포지션이라면 스왑도 언제든 가능합니다.
+
+와우 이론가로써 메타 분석과 Warcraftlogs api를 이용한 전문가 수준의 로그 분석을 진행하고 있습니다.
 
 ## Characters
 
@@ -125,6 +132,8 @@ Every other characters which is not written is "**hidden**" in this page.
 ### **Midnight (12.0)**
 
 ## Filmography
-- 가족공격대 - 한 여름밤의 캠프 (2024.7), 멘티 (팀 RenieHouR)
-  - [Youtube](https://www.youtube.com/watch?v=f0DiVhOOV9c)
+- 가족공격대 시즌3: 한 여름밤의 캠프 (2024.7), 멘티 (팀 [RenieHouR](https://www.youtube.com/@RenieHouR))
+  - [Episode 1](https://www.youtube.com/watch?v=OFYB9EQ4m1o)
+  - [Episode 2](https://www.youtube.com/watch?v=HCI_8XR2lDY)
+  - [Episode 3](https://www.youtube.com/watch?v=f0DiVhOOV9c)
 
