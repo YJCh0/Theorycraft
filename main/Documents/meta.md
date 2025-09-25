@@ -21,6 +21,11 @@
       width= 1000px
       height= 400px />
 
+ <img src="./Images/Intro/Tank_dps_specific.png" 
+      alt= "tank specific"
+      width= 1000px
+      height= 400px />
+
 &nbsp;  탱커의 딜 지표를 보면 전탱과 양조를 쓰는것이 아주 합당해 보인다.
 무전, 그리고 풍운과 운무 모두 이번 티어에서 통계상 성적표가 아주 좋지 않다.
 분전의 경우에는 그 성능이 준수하지만 이번 레이드 성격상 근딜이 많을수록 공략하기에 힘든 구조이기에 제외된 부분이 있다.
