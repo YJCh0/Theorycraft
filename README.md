@@ -19,6 +19,34 @@
 
 와우 이론가로써 메타 분석과 Warcraftlogs api를 이용한 전문가 수준의 로그 분석을 진행하고 있습니다.
 
+## Guild
+### **두부킴의 유기견들**
+
+ <img src="./Guild.png" 
+      alt= "guild"
+      width= 500px
+      height= 200px />
+
+- / [wcl](https://www.warcraftlogs.com/guild/id/779093) / [ProgStats](https://progstats.io/details/kr/azshara/779093-/all/44-manaforge-omega)
+- Guild Progression Video Links
+   - 잠탱이(RL): [잠탱이, Tanker](https://www.youtube.com/@Slumber957)
+   - 두부킴: [두무킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
+   - Keez: [만보먹고, RDps](https://www.youtube.com/@keez3625)
+   - 후제: [후제, Rdps](https://www.youtube.com/@rouget.)
+   - 보솜이: [보소밍, Rdps](https://www.youtube.com/@보솜이-c7c)
+   - 특임: [특임, Rdps](https://www.youtube.com/@ShiyeolLee)
+
+### Guild History
+용군단 2시즌 아베루스: 공격대장 두부킴을 필두로 공격대 창설, 주 1일 4탐 파티로 진행  
+용군단 3시즌 아미드랏실: 주 1일 4탐 파티로 진행  
+용군단 4시즌 각성: 주 1일 4탐 파티로 진행  
+
+내부전쟁 1시즌 네룹아르 궁전: 주 2일 8탐 파티로 진행  
+내부전쟁 2시즌 언더마인 해방전선: 공격대장 잠탱이로 변경, 주 2일 8탐 파티로 진행  
+내부전쟁 3시즌 마나괴철로 종극점: 두부킴의 유기견들 길드 창설, 주 1일 4탐 파티로 진행
+
+한밤 1시즌: **TBD**
+
 ## Characters
 
 - 수도잠탱이 (Brewmaster Monk) / [wcl](https://www.warcraftlogs.com/character/id/71983202) / [raider](https://raider.io/characters/kr/azshara/%EC%88%98%EB%8F%84%EC%9E%A0%ED%83%B1%EC%9D%B4)
@@ -126,10 +154,12 @@ Every other characters which is not written is "**hidden**" in this page.
   * **Co Raid Leader**
     
 #### Manaforge Omega (11.2)
-* 수도잠탱이 (?/8M)
-  * TBD
+* 전사잠탱이 (7/8M)
+  * Progression in 두부킴의 유기견들
+  * **Raid Leader**
 
 ### **Midnight (12.0)**
+* **TBD**
 
 ## Filmography
 - 가족공격대 시즌3: 한 여름밤의 캠프 (2024.7), 멘티 (팀 [RenieHouR](https://www.youtube.com/@RenieHouR))
