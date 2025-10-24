@@ -1,5 +1,6 @@
 WarcraftLogs Summary for
-치앤
+  치앤
+  Fire Mage
 
 Best Performance Average: 77.98876666666668
 
@@ -14,19 +15,19 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition1 | Spec: Fire | Points: 480.066/960 | Rank %: 93.58134660728321
-  Partition2 | Spec: Fire | Points: 454.509/840 | Rank %: 93.16303531179564
+  Partition 1 | Spec: Fire | Points: 480.066/960 | Rank %: 93.58134660728321
+  Partition 2 | Spec: Fire | Points: 449.189/840 | Rank %: 92.34675371780921
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 89.3686%, Best DPS 5265909.9795534
-  Loom'ithar: Rank 75.8463%, Best DPS 6163581.6287374
-  Soulbinder Naazindhri: Rank 80.823%, Best DPS 7794971.1810427
-  Forgeweaver Araz: Rank 86.0735%, Best DPS 7175820.8069581
-  The Soul Hunters: Rank 62.1897%, Best DPS 8452537.9221007
-  Fractillus: Rank 73.6315%, Best DPS 5452138.0560671
-  Nexus-King Salhadaar: Rank None%, Best DPS 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+  Plexus Sentinel: Rank 89.3686%, Best DPS 5265909.9795534, out of 0
+  Loom'ithar: Rank 75.8463%, Best DPS 6163581.6287374, out of 0
+  Soulbinder Naazindhri: Rank 80.823%, Best DPS 7794971.1810427, out of 0
+  Forgeweaver Araz: Rank 86.0735%, Best DPS 7175820.8069581, out of 0
+  The Soul Hunters: Rank 62.1897%, Best DPS 8452537.9221007, out of 0
+  Fractillus: Rank 73.6315%, Best DPS 5452138.0560671, out of 0
+  Nexus-King Salhadaar: Rank None%, Best DPS 0, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0, out of 0
 
 Rankings:
-  Partition1 |  Rank 246 | Region 25 | Server 22
-  Partition2 |  Rank 183 | Region 26 | Server 23
+  Partition 1 | Spec: Fire |  Rank: 246 | Region: 25 | Server: 22
+  Partition 2 | Spec: Fire |  Rank: 212 | Region: 28 | Server: 25

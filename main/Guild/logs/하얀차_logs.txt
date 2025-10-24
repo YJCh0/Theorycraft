@@ -1,5 +1,6 @@
 WarcraftLogs Summary for
-하얀차
+  하얀차
+  Holy Priest
 
 Best Performance Average: 93.07724999999999
 
@@ -14,19 +15,19 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition2 | Spec: Holy | Points: 655.719/960 | Rank %: 97.80912150068018
-  Partition1 | Spec: Holy | Points: 557.981/960 | Rank %: 95.22208638956805
+  Partition 2 | Spec: Holy | Points: 655.719/960 | Rank %: 97.80912150068018
+  Partition 1 | Spec: Holy | Points: 557.981/960 | Rank %: 95.22208638956805
 
-Boss DPS Percentage:
-  Plexus Sentinel: Rank 99.6662%, Best DPS 6584565.4011157
-  Loom'ithar: Rank 88.2779%, Best DPS 5924802.6648491
-  Soulbinder Naazindhri: Rank 99.5936%, Best DPS 7481751.4383496
-  Forgeweaver Araz: Rank 95.4482%, Best DPS 5674110.8682263
-  The Soul Hunters: Rank 86.8255%, Best DPS 6115312.1308429
-  Fractillus: Rank 88.6521%, Best DPS 5603017.772781
-  Nexus-King Salhadaar: Rank None%, Best DPS 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+Boss HPS Percentage:
+  Plexus Sentinel: Rank 99.6662%, Best HPS 6584565.4011157, out of 0
+  Loom'ithar: Rank 88.2779%, Best HPS 5924802.6648491, out of 0
+  Soulbinder Naazindhri: Rank 99.5936%, Best HPS 7481751.4383496, out of 0
+  Forgeweaver Araz: Rank 95.4482%, Best HPS 5674110.8682263, out of 0
+  The Soul Hunters: Rank 86.8255%, Best HPS 6115312.1308429, out of 0
+  Fractillus: Rank 88.6521%, Best HPS 5603017.772781, out of 0
+  Nexus-King Salhadaar: Rank None%, Best HPS 0, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best HPS 0, out of 0
 
 Rankings:
-  Partition2 |  Rank 307 | Region 68 | Server 68
-  Partition1 |  Rank 939 | Region 153 | Server 149
+  Partition 2 | Spec: Holy |  Rank: 307 | Region: 68 | Server: 68
+  Partition 1 | Spec: Holy |  Rank: 939 | Region: 153 | Server: 149

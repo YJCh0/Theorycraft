@@ -87,41 +87,49 @@ def get_warcraftlogs_data(server, character):
 
 
 # ────────────────────────────────────────────────
-# 메인 실행
+# Main Routine
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     results = []
 
-    print("=== WoW 캐릭터 데이터 수집 시작 ===")
+    print("=== Crawling Data ===")
 
+    queue = 1
     with open(INPUT_FILE, newline="", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             server = row["Server"].strip()
             character = row["ID"].strip()
+            role = row["Role"].strip()
+            character_class = row["Class"].strip()
 
-            print(f"\n▶ {character} ({server}) 처리 중...")
+            roster_num = 20
+            print(f"\n▶ Pending {character} ({server}) ...({queue}/{roster_num})")
+            queue += 1
 
+            print(f"  - Class: {character_class}")
+            print(f"  - Role: {role}")
             ilvl = get_ilvl(server, character)
-            print(f"  - 아이템 레벨: {ilvl}")
+            print(f"  - ilvl: {ilvl}")
 
             mplus_score = get_raiderio_score(server, character)
-            print(f"  - Mythic+ 점수: {mplus_score}")
+            print(f"  - Mythic+: {mplus_score}")
 
             logs_data = get_warcraftlogs_data(server, character)
             if logs_data:
-                print(f"  - Logs 데이터 확인됨")
+                print(f"  - Found Logs Data")
             else:
-                print(f"  - Logs 데이터 없음")
+                print(f"  - No Logs Data")
 
             # Call API
             url = "https://www.warcraftlogs.com/api/v2/client"
+            metric_type = "hps" if role.lower() == "healer" else "dps"
             query = f"""
             {{
               characterData {{
                 character(name: "{character}", serverSlug: "{server}", serverRegion: "kr") {{
                   name
-                  zoneRankings(metric: default)
+                  zoneRankings(metric: {metric_type})
                 }}
               }}
             }}
@@ -134,8 +142,6 @@ def main():
             response = requests.post(url, json={'query': query}, headers=headers)
             res_json = response.json()
 
-            # 캐릭터 결과 저장
-            results.append([character, ilvl, mplus_score])
 
             character_info = res_json['data']['characterData']['character']
             zone_rankings = character_info.get('zoneRankings')
@@ -145,6 +151,15 @@ def main():
             output_lines.append("WarcraftLogs Summary for")
             output_lines.append(f"  {character}")
             
+            all_stars = zone_rankings.get('allStars')
+            if all_stars and isinstance(all_stars, list) and len(all_stars) > 0:
+                wcl_spec = all_stars[0].get('spec', 'unknown')
+            else:
+                wcl_spec = "unknown"
+
+            output_lines.append(f"  {wcl_spec} {character_class}")
+
+            healer_list = ["Restoration", "Holy", "Discipline", "Preservation", "Mistweaver"]
             # Overall Score
             if zone_rankings:
                 output_lines.append(f"\nBest Performance Average: {zone_rankings.get('bestPerformanceAverage')}")
@@ -153,9 +168,10 @@ def main():
                     output_lines.append(f"  {encounter['encounter']['name']}, Score: {encounter.get('rankPercent')}")
             else:
                 output_lines.append("\nCannot find Logs Data")
+
+            results.append([character, ilvl, mplus_score, round(zone_rankings.get('bestPerformanceAverage', 'N/A'),2)])
             
             # AllStars Points
-            all_stars = zone_rankings.get('allStars')
             if all_stars:
                 output_lines.append("\nAll Stars Points:")
                 for star in all_stars:
@@ -164,21 +180,29 @@ def main():
                     points = star.get('points', 0)
                     possible_points = star.get('possiblePoints', 0)
                     rank_percent = star.get('rankPercent', 'N/A')
-                    output_lines.append(f"  Partition{division} | Spec: {spec} | Points: {points}/{possible_points} | Rank %: {rank_percent}")
+                    output_lines.append(f"  Partition {division} | Spec: {spec} | Points: {points}/{possible_points} | Rank %: {rank_percent}")
             else:
                 output_lines.append("\nCannot find All Star Points")
             
             # Ranking(%)
             ranking_percent = zone_rankings.get('rankings', [])
             if ranking_percent:
-                output_lines.append("\nBoss DPS Percentage:")
+                if wcl_spec in healer_list:
+                    output_lines.append("\nBoss HPS Percentage:")
+                else:
+                    output_lines.append("\nBoss DPS Percentage:")
                 for encounter in ranking_percent:
                     boss = encounter.get('encounter', {}).get('name', 'Unknown')
                     percent = encounter.get('rankPercent', 0)
                     best = encounter.get('bestAmount', 0)
-                    output_lines.append(f"  {boss}: Rank {percent}%, Best DPS {best}")
+                    number = encounter.get('outOf', 0)
+                    if wcl_spec in healer_list:
+                        output_lines.append(f"  {boss}: Rank {percent}%, Best HPS {best}, out of {number}")
+                    else:
+                        output_lines.append(f"  {boss}: Rank {percent}%, Best DPS {best}, out of {number}")
+
             else:
-                output_lines.append("\nCannot find Boss Data")
+                output_lines.append("\nCannot find Boss Ranking Data")
             
             # Ranking
             ranking = zone_rankings.get('allStars', [])
@@ -186,10 +210,11 @@ def main():
                 output_lines.append("\nRankings:")
                 for partition in ranking:
                     division = partition.get('partition', {})
+                    spec = partition.get('spec', 'Unknown')
                     ranks = partition.get('rank', 0)
                     region_ranks = partition.get('regionRank', 0)
                     server_ranks = partition.get('serverRank', 0)
-                    output_lines.append(f"  Partition{division} |  Rank {ranks} | Region {region_ranks} | Server {server_ranks}")
+                    output_lines.append(f"  Partition {division} | Spec: {spec} |  Rank: {ranks} | Region: {region_ranks} | Server: {server_ranks}")
             else:
                 output_lines.append("\nCannot find Boss Data")
 
@@ -201,10 +226,11 @@ def main():
     # 전체 요약 CSV 저장
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["캐릭터명", "아이템 레벨", "M+ 점수"])
+        writer.writerow(["캐릭터명", "ilvl", "M+ Score", "Logs"])
         writer.writerows(results)
 
-    print("\n=== 크롤링 완료 ===")
+
+    print("\n=== DONE ===")
     print(f"결과가 '{OUTPUT_FILE}'에 저장되었습니다.")
 
 

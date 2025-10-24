@@ -1,5 +1,6 @@
 WarcraftLogs Summary for
-업보맹
+  업보맹
+  Brewmaster Monk
 
 Best Performance Average: 74.89049999999999
 
@@ -14,19 +15,19 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition2 | Spec: Brewmaster | Points: 457.496/840 | Rank %: 87.97923991294157
-  Partition1 | Spec: Brewmaster | Points: 386.82/960 | Rank %: 76.86793828210423
+  Partition 2 | Spec: Brewmaster | Points: 454.337/840 | Rank %: 87.18032252809904
+  Partition 1 | Spec: Brewmaster | Points: 386.82/960 | Rank %: 76.86793828210423
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 81.7719%, Best DPS 2799383.4172149
-  Loom'ithar: Rank 86.2712%, Best DPS 3781865.0992396
-  Soulbinder Naazindhri: Rank 73.2924%, Best DPS 4298397.2851384
-  Forgeweaver Araz: Rank 47.3461%, Best DPS 3269306.3951581
-  The Soul Hunters: Rank 81.9855%, Best DPS 4554615.7182469
-  Fractillus: Rank 78.6759%, Best DPS 3523985.9672633
-  Nexus-King Salhadaar: Rank None%, Best DPS 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+  Plexus Sentinel: Rank 81.7719%, Best DPS 2799383.4172149, out of 0
+  Loom'ithar: Rank 86.2712%, Best DPS 3781865.0992396, out of 0
+  Soulbinder Naazindhri: Rank 73.2924%, Best DPS 4298397.2851384, out of 0
+  Forgeweaver Araz: Rank 47.3461%, Best DPS 3269306.3951581, out of 0
+  The Soul Hunters: Rank 81.9855%, Best DPS 4554615.7182469, out of 0
+  Fractillus: Rank 78.6759%, Best DPS 3523985.9672633, out of 0
+  Nexus-King Salhadaar: Rank None%, Best DPS 0, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0, out of 0
 
 Rankings:
-  Partition2 |  Rank 719 | Region 118 | Server 115
-  Partition1 |  Rank 1905 | Region 200 | Server 190
+  Partition 2 | Spec: Brewmaster |  Rank: 788 | Region: 126 | Server: 123
+  Partition 1 | Spec: Brewmaster |  Rank: 1905 | Region: 200 | Server: 190

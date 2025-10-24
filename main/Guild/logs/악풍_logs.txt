@@ -1,5 +1,6 @@
 WarcraftLogs Summary for
-악풍
+  악풍
+  Havoc Demonhunter
 
 Best Performance Average: 48.83384999999999
 
@@ -14,19 +15,19 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition2 | Spec: Havoc | Points: 428.09/840 | Rank %: 87.11028891669841
-  Partition1 | Spec: Havoc | Points: 229.761/960 | Rank %: 69.13566537109014
+  Partition 2 | Spec: Havoc | Points: 421.448/840 | Rank %: 85.60975609756098
+  Partition 1 | Spec: Havoc | Points: 229.761/960 | Rank %: 69.13566537109014
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 80.9404%, Best DPS 4756941.6896583
-  Loom'ithar: Rank 81.8579%, Best DPS 5811050.223795
-  Soulbinder Naazindhri: Rank 51.6954%, Best DPS 7037579.0739627
-  Forgeweaver Araz: Rank 23.3499%, Best DPS 5430678.6793591
-  The Soul Hunters: Rank 22.1771%, Best DPS 6828065.4189671
-  Fractillus: Rank 32.9824%, Best DPS 4748122.072118
-  Nexus-King Salhadaar: Rank None%, Best DPS 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+  Plexus Sentinel: Rank 80.9404%, Best DPS 4756941.6896583, out of 0
+  Loom'ithar: Rank 81.8579%, Best DPS 5811050.223795, out of 0
+  Soulbinder Naazindhri: Rank 51.6954%, Best DPS 7037579.0739627, out of 0
+  Forgeweaver Araz: Rank 23.3499%, Best DPS 5430678.6793591, out of 0
+  The Soul Hunters: Rank 22.1771%, Best DPS 6828065.4189671, out of 0
+  Fractillus: Rank 32.9824%, Best DPS 4748122.072118, out of 0
+  Nexus-King Salhadaar: Rank None%, Best DPS 0, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0, out of 0
 
 Rankings:
-  Partition2 |  Rank 2370 | Region 382 | Server 369
-  Partition1 |  Rank 8339 | Region 780 | Server 737
+  Partition 2 | Spec: Havoc |  Rank: 2715 | Region: 400 | Server: 385
+  Partition 1 | Spec: Havoc |  Rank: 8339 | Region: 780 | Server: 737

@@ -1,30 +1,33 @@
 WarcraftLogs Summary for
-수입신고필증
+  수입신고필증
+  Shadow Priest
 
-Best Performance Average: 39.886558512008015
+Best Performance Average: 61.562366666666684
 
 Best Performances:
-  Plexus Sentinel, Score: 32.6084
-  Loom'ithar, Score: 13.5767
-  Soulbinder Naazindhri, Score: 28.062
-  Forgeweaver Araz, Score: 42.107475481785016
-  The Soul Hunters, Score: 43.22744015125208
-  Fractillus, Score: 79.73733543901099
+  Plexus Sentinel, Score: 79.0308
+  Loom'ithar, Score: 74.7416
+  Soulbinder Naazindhri, Score: 59.1931
+  Forgeweaver Araz, Score: 43.9057
+  The Soul Hunters, Score: 38.4003
+  Fractillus, Score: 74.1027
   Nexus-King Salhadaar, Score: None
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition1 | Spec: Holy | Points: 206.533/960 | Rank %: 61.990627546862264
+  Partition 2 | Spec: Shadow | Points: 438.207/840 | Rank %: 86.7451967063129
+  Partition 1 | Spec: Shadow | Points: 161.453/960 | Rank %: 46.930834590645595
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 32.6084%, Best DPS 3998046.1718707
-  Loom'ithar: Rank 13.5767%, Best DPS 4181998.8596631
-  Soulbinder Naazindhri: Rank 28.062%, Best DPS 4505846.7671299
-  Forgeweaver Araz: Rank 42.107475481785016%, Best DPS 942282.84768783
-  The Soul Hunters: Rank 43.22744015125208%, Best DPS 1184334.7090486
-  Fractillus: Rank 79.73733543901099%, Best DPS 986885.35221929
-  Nexus-King Salhadaar: Rank None%, Best DPS 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+  Plexus Sentinel: Rank 79.0308%, Best DPS 4731018.6080708, out of 0
+  Loom'ithar: Rank 74.7416%, Best DPS 5990389.9722805, out of 0
+  Soulbinder Naazindhri: Rank 59.1931%, Best DPS 6343448.2689458, out of 0
+  Forgeweaver Araz: Rank 43.9057%, Best DPS 6564731.2714965, out of 0
+  The Soul Hunters: Rank 38.4003%, Best DPS 7469330.0956703, out of 0
+  Fractillus: Rank 74.1027%, Best DPS 5235119.3142243, out of 0
+  Nexus-King Salhadaar: Rank None%, Best DPS 0, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0, out of 0
 
 Rankings:
-  Partition1 |  Rank 7463 | Region 819 | Server 751
+  Partition 2 | Spec: Shadow |  Rank: 1160 | Region: 201 | Server: 193
+  Partition 1 | Spec: Shadow |  Rank: 6684 | Region: 639 | Server: 593

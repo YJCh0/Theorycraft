@@ -1,5 +1,6 @@
 WarcraftLogs Summary for
-탑골공원체스왕
+  탑골공원체스왕
+  Balance Druid
 
 Best Performance Average: 76.61153
 
@@ -14,19 +15,19 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition2 | Spec: Balance | Points: 475.24/840 | Rank %: 92.37839512547764
-  Partition1 | Spec: Balance | Points: 388.912/960 | Rank %: 79.17687021091713
+  Partition 2 | Spec: Balance | Points: 466.656/840 | Rank %: 91.49700598802396
+  Partition 1 | Spec: Balance | Points: 388.912/960 | Rank %: 79.17687021091713
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 96.1182%, Best DPS 5818577.5513143
-  Loom'ithar: Rank 96.4479%, Best DPS 6921579.9469951
-  Soulbinder Naazindhri: Rank 91.2022%, Best DPS 7191795.5279392
-  Forgeweaver Araz: Rank 88.3335%, Best DPS 6763190.0528821
-  The Soul Hunters: Rank 8.52838%, Best DPS 4993140.6887144
-  Fractillus: Rank 79.039%, Best DPS 5697615.3610994
-  Nexus-King Salhadaar: Rank None%, Best DPS 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+  Plexus Sentinel: Rank 96.1182%, Best DPS 5818577.5513143, out of 0
+  Loom'ithar: Rank 96.4479%, Best DPS 6921579.9469951, out of 0
+  Soulbinder Naazindhri: Rank 91.2022%, Best DPS 7191795.5279392, out of 0
+  Forgeweaver Araz: Rank 88.3335%, Best DPS 6763190.0528821, out of 0
+  The Soul Hunters: Rank 8.52838%, Best DPS 4993140.6887144, out of 0
+  Fractillus: Rank 79.039%, Best DPS 5697615.3610994, out of 0
+  Nexus-King Salhadaar: Rank None%, Best DPS 0, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0, out of 0
 
 Rankings:
-  Partition2 |  Rank 739 | Region 189 | Server 184
-  Partition1 |  Rank 2637 | Region 371 | Server 354
+  Partition 2 | Spec: Balance |  Rank: 853 | Region: 197 | Server: 192
+  Partition 1 | Spec: Balance |  Rank: 2637 | Region: 371 | Server: 354

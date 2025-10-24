@@ -1,5 +1,6 @@
 WarcraftLogs Summary for
-만보먹고
+  만보먹고
+  Fire Mage
 
 Best Performance Average: 90.70574285714285
 
@@ -14,21 +15,21 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition1 | Spec: Fire | Points: 651.07/960 | Rank %: 98.97825517422059
-  Partition2 | Spec: Fire | Points: 642.398/840 | Rank %: 98.72276483846731
-  Partition1 | Spec: Arcane | Points: 626.765/960 | Rank %: 96.92861095738793
+  Partition 1 | Spec: Fire | Points: 651.07/960 | Rank %: 98.97825517422059
+  Partition 2 | Spec: Fire | Points: 636.077/840 | Rank %: 98.4766050054407
+  Partition 1 | Spec: Arcane | Points: 626.765/960 | Rank %: 96.92861095738793
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 98.4846%, Best DPS 5296882.5711005
-  Loom'ithar: Rank 98.4483%, Best DPS 6472791.2126924
-  Soulbinder Naazindhri: Rank 97.9969%, Best DPS 8250321.809697
-  Forgeweaver Araz: Rank 94.4897%, Best DPS 7679209.7760028
-  The Soul Hunters: Rank 97.0139%, Best DPS 10365924.381946
-  Fractillus: Rank 97.5656%, Best DPS 5796794.1196611
-  Nexus-King Salhadaar: Rank 50.9412%, Best DPS 6698100.5965864
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+  Plexus Sentinel: Rank 98.4846%, Best DPS 5296882.5711005, out of 0
+  Loom'ithar: Rank 98.4483%, Best DPS 6472791.2126924, out of 0
+  Soulbinder Naazindhri: Rank 97.9969%, Best DPS 8250321.809697, out of 0
+  Forgeweaver Araz: Rank 94.4897%, Best DPS 7679209.7760028, out of 0
+  The Soul Hunters: Rank 97.0139%, Best DPS 10365924.381946, out of 0
+  Fractillus: Rank 97.5656%, Best DPS 5796794.1196611, out of 0
+  Nexus-King Salhadaar: Rank 50.9412%, Best DPS 6698100.5965864, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0, out of 0
 
 Rankings:
-  Partition1 |  Rank 40 | Region 5 | Server 5
-  Partition2 |  Rank 35 | Region 5 | Server 5
-  Partition1 |  Rank 889 | Region 142 | Server 138
+  Partition 1 | Spec: Fire |  Rank: 40 | Region: 5 | Server: 5
+  Partition 2 | Spec: Fire |  Rank: 43 | Region: 5 | Server: 5
+  Partition 1 | Spec: Arcane |  Rank: 889 | Region: 142 | Server: 138

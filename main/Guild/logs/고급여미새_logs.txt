@@ -1,28 +1,33 @@
 WarcraftLogs Summary for
-고급여미새
+  고급여미새
+  Restoration Shaman
 
-Best Performance Average: 54.057114869651
+Best Performance Average: 93.95433333333331
 
 Best Performances:
-  Plexus Sentinel, Score: 63.06325257361178
-  Loom'ithar, Score: 65.74209282765915
-  Soulbinder Naazindhri, Score: 76.52333058573937
-  Forgeweaver Araz, Score: 32.74735310985365
-  The Soul Hunters, Score: 42.69610089065485
-  Fractillus, Score: 43.57055923038721
+  Plexus Sentinel, Score: 92.1058
+  Loom'ithar, Score: 97.3359
+  Soulbinder Naazindhri, Score: 91.4579
+  Forgeweaver Araz, Score: 97.8262
+  The Soul Hunters, Score: 86.2004
+  Fractillus, Score: 98.7998
   Nexus-King Salhadaar, Score: None
   Dimensius, the All-Devouring, Score: None
 
-Cannot find All Star Points
+All Stars Points:
+  Partition 2 | Spec: Restoration | Points: 649.974/960 | Rank %: 98.87820512820512
+  Partition 1 | Spec: Restoration | Points: 550.582/960 | Rank %: 97.40156225091663
 
-Boss DPS Percentage:
-  Plexus Sentinel: Rank 63.06325257361178%, Best DPS 71589.060700616
-  Loom'ithar: Rank 65.74209282765915%, Best DPS 111681.4931106
-  Soulbinder Naazindhri: Rank 76.52333058573937%, Best DPS 127433.12084403
-  Forgeweaver Araz: Rank 32.74735310985365%, Best DPS 166276.29670113
-  The Soul Hunters: Rank 42.69610089065485%, Best DPS 9065.6331480447
-  Fractillus: Rank 43.57055923038721%, Best DPS 10777.539196134
-  Nexus-King Salhadaar: Rank None%, Best DPS 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+Boss HPS Percentage:
+  Plexus Sentinel: Rank 92.1058%, Best HPS 5096816.3713125, out of 0
+  Loom'ithar: Rank 97.3359%, Best HPS 6460997.5079796, out of 0
+  Soulbinder Naazindhri: Rank 91.4579%, Best HPS 6442898.892378, out of 0
+  Forgeweaver Araz: Rank 97.8262%, Best HPS 5792860.7589281, out of 0
+  The Soul Hunters: Rank 86.2004%, Best HPS 6314277.4825894, out of 0
+  Fractillus: Rank 98.7998%, Best HPS 6379835.2942067, out of 0
+  Nexus-King Salhadaar: Rank None%, Best HPS 0, out of 0
+  Dimensius, the All-Devouring: Rank None%, Best HPS 0, out of 0
 
-Cannot find Boss Data
+Rankings:
+  Partition 2 | Spec: Restoration |  Rank: 239 | Region: 44 | Server: 44
+  Partition 1 | Spec: Restoration |  Rank: 816 | Region: 106 | Server: 104
