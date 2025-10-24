@@ -1,0 +1,32 @@
+WarcraftLogs Summary for
+헌터륑
+
+Best Performance Average: 61.48310000000001
+
+Best Performances:
+  Plexus Sentinel, Score: 95.2028
+  Loom'ithar, Score: 76.043
+  Soulbinder Naazindhri, Score: 84.5517
+  Forgeweaver Araz, Score: 53.7631
+  The Soul Hunters, Score: 19.9492
+  Fractillus, Score: 39.3888
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition2 | Spec: Marksmanship | Points: 415.921/840 | Rank %: 91.45220588235294
+  Partition1 | Spec: Marksmanship | Points: 289.013/960 | Rank %: 78.72242947836901
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 95.2028%, Best DPS 5735186.7012424
+  Loom'ithar: Rank 76.043%, Best DPS 5948095.4179079
+  Soulbinder Naazindhri: Rank 84.5517%, Best DPS 7589849.0291549
+  Forgeweaver Araz: Rank 53.7631%, Best DPS 6067906.8556275
+  The Soul Hunters: Rank 19.9492%, Best DPS 7012644.7689046
+  Fractillus: Rank 39.3888%, Best DPS 5024791.8445837
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition2 |  Rank 466 | Region 91 | Server 89
+  Partition1 |  Rank 3252 | Region 274 | Server 260

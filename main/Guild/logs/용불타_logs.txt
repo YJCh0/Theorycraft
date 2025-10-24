@@ -1,0 +1,28 @@
+WarcraftLogs Summary for
+용불타
+
+Best Performance Average: 7.148846225916003
+
+Best Performances:
+  Plexus Sentinel, Score: 13.17581680481782
+  Loom'ithar, Score: 5.336372319965533
+  Soulbinder Naazindhri, Score: 10.593210169895078
+  Forgeweaver Araz, Score: 3.3989951637981517
+  The Soul Hunters, Score: 5.211645039649431
+  Fractillus, Score: 5.177037857369992
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+Cannot find All Star Points
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 13.17581680481782%, Best DPS 22820.860097109
+  Loom'ithar: Rank 5.336372319965533%, Best DPS 915.52689951894
+  Soulbinder Naazindhri: Rank 10.593210169895078%, Best DPS 14824.16333902
+  Forgeweaver Araz: Rank 3.3989951637981517%, Best DPS 23198.772669396
+  The Soul Hunters: Rank 5.211645039649431%, Best DPS 266.19348652376
+  Fractillus: Rank 5.177037857369992%, Best DPS 262.70871850116
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Cannot find Boss Data

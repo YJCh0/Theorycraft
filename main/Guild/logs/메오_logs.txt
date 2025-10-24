@@ -1,0 +1,32 @@
+WarcraftLogs Summary for
+메오
+
+Best Performance Average: 95.79363333333333
+
+Best Performances:
+  Plexus Sentinel, Score: 97.1213
+  Loom'ithar, Score: 96.779
+  Soulbinder Naazindhri, Score: 96.7566
+  Forgeweaver Araz, Score: 99.2998
+  The Soul Hunters, Score: 95.1109
+  Fractillus, Score: 89.6942
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition1 | Spec: Destruction | Points: 643.89/960 | Rank %: 96.46876812995552
+  Partition2 | Spec: Destruction | Points: 536.425/840 | Rank %: 94.62123486440508
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 97.1213%, Best DPS 5748078.7393515
+  Loom'ithar: Rank 96.779%, Best DPS 6565229.0883795
+  Soulbinder Naazindhri: Rank 96.7566%, Best DPS 8711230.5457587
+  Forgeweaver Araz: Rank 99.2998%, Best DPS 8781508.1732113
+  The Soul Hunters: Rank 95.1109%, Best DPS 10459558.167822
+  Fractillus: Rank 89.6942%, Best DPS 5907274.9727446
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition1 |  Rank 914 | Region 142 | Server 141
+  Partition2 |  Rank 1076 | Region 243 | Server 241

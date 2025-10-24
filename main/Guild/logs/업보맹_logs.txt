@@ -1,0 +1,32 @@
+WarcraftLogs Summary for
+업보맹
+
+Best Performance Average: 74.89049999999999
+
+Best Performances:
+  Plexus Sentinel, Score: 81.7719
+  Loom'ithar, Score: 86.2712
+  Soulbinder Naazindhri, Score: 73.2924
+  Forgeweaver Araz, Score: 47.3461
+  The Soul Hunters, Score: 81.9855
+  Fractillus, Score: 78.6759
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition2 | Spec: Brewmaster | Points: 457.496/840 | Rank %: 87.97923991294157
+  Partition1 | Spec: Brewmaster | Points: 386.82/960 | Rank %: 76.86793828210423
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 81.7719%, Best DPS 2799383.4172149
+  Loom'ithar: Rank 86.2712%, Best DPS 3781865.0992396
+  Soulbinder Naazindhri: Rank 73.2924%, Best DPS 4298397.2851384
+  Forgeweaver Araz: Rank 47.3461%, Best DPS 3269306.3951581
+  The Soul Hunters: Rank 81.9855%, Best DPS 4554615.7182469
+  Fractillus: Rank 78.6759%, Best DPS 3523985.9672633
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition2 |  Rank 719 | Region 118 | Server 115
+  Partition1 |  Rank 1905 | Region 200 | Server 190

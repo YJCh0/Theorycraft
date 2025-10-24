@@ -1,0 +1,32 @@
+:WarcraftLogs Summary for
+Yoahjung
+
+Best Performance Average: 73.58525000000002
+
+Best Performances:
+  Plexus Sentinel, Score: 83.1885
+  Loom'ithar, Score: 93.1326
+  Soulbinder Naazindhri, Score: 65.6449
+  Forgeweaver Araz, Score: 80.6865
+  The Soul Hunters, Score: 68.5398
+  Fractillus, Score: 50.3192
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition2 | Spec: Frost | Points: 484.867/840 | Rank %: 94.41365934750986
+  Partition1 | Spec: Frost | Points: 472.485/960 | Rank %: 90.55936587796948
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 83.1885%, Best DPS 5069265.5383076
+  Loom'ithar: Rank 93.1326%, Best DPS 6536622.1774598
+  Soulbinder Naazindhri: Rank 65.6449%, Best DPS 7156618.336378
+  Forgeweaver Araz: Rank 80.6865%, Best DPS 7331491.0822273
+  The Soul Hunters: Rank 68.5398%, Best DPS 8862467.5018164
+  Fractillus: Rank 50.3192%, Best DPS 5272018.2346083
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition2 |  Rank 1614 | Region 336 | Server 328
+  Partition1 |  Rank 3979 | Region 473 | Server 463

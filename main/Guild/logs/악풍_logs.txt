@@ -1,0 +1,32 @@
+WarcraftLogs Summary for
+악풍
+
+Best Performance Average: 48.83384999999999
+
+Best Performances:
+  Plexus Sentinel, Score: 80.9404
+  Loom'ithar, Score: 81.8579
+  Soulbinder Naazindhri, Score: 51.6954
+  Forgeweaver Araz, Score: 23.3499
+  The Soul Hunters, Score: 22.1771
+  Fractillus, Score: 32.9824
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition2 | Spec: Havoc | Points: 428.09/840 | Rank %: 87.11028891669841
+  Partition1 | Spec: Havoc | Points: 229.761/960 | Rank %: 69.13566537109014
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 80.9404%, Best DPS 4756941.6896583
+  Loom'ithar: Rank 81.8579%, Best DPS 5811050.223795
+  Soulbinder Naazindhri: Rank 51.6954%, Best DPS 7037579.0739627
+  Forgeweaver Araz: Rank 23.3499%, Best DPS 5430678.6793591
+  The Soul Hunters: Rank 22.1771%, Best DPS 6828065.4189671
+  Fractillus: Rank 32.9824%, Best DPS 4748122.072118
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition2 |  Rank 2370 | Region 382 | Server 369
+  Partition1 |  Rank 8339 | Region 780 | Server 737

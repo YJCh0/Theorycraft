@@ -1,0 +1,30 @@
+WarcraftLogs Summary for
+수입신고필증
+
+Best Performance Average: 39.886558512008015
+
+Best Performances:
+  Plexus Sentinel, Score: 32.6084
+  Loom'ithar, Score: 13.5767
+  Soulbinder Naazindhri, Score: 28.062
+  Forgeweaver Araz, Score: 42.107475481785016
+  The Soul Hunters, Score: 43.22744015125208
+  Fractillus, Score: 79.73733543901099
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition1 | Spec: Holy | Points: 206.533/960 | Rank %: 61.990627546862264
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 32.6084%, Best DPS 3998046.1718707
+  Loom'ithar: Rank 13.5767%, Best DPS 4181998.8596631
+  Soulbinder Naazindhri: Rank 28.062%, Best DPS 4505846.7671299
+  Forgeweaver Araz: Rank 42.107475481785016%, Best DPS 942282.84768783
+  The Soul Hunters: Rank 43.22744015125208%, Best DPS 1184334.7090486
+  Fractillus: Rank 79.73733543901099%, Best DPS 986885.35221929
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition1 |  Rank 7463 | Region 819 | Server 751
