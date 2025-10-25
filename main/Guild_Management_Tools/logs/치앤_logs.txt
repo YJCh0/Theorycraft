@@ -16,7 +16,7 @@ Best Performances:
 
 All Stars Points:
   Partition 1 | Spec: Fire | Points: 480.066/960 | Rank %: 93.58134660728321
-  Partition 2 | Spec: Fire | Points: 449.189/840 | Rank %: 92.34675371780921
+  Partition 2 | Spec: Fire | Points: 448.622/840 | Rank %: 92.11840228245364
 
 Boss DPS Percentage:
   Plexus Sentinel: Rank 89.3686%, Best DPS 5265909.9795534
@@ -30,4 +30,4 @@ Boss DPS Percentage:
 
 Rankings:
   Partition 1 | Spec: Fire |  Rank: 246 | Region: 25 | Server: 22
-  Partition 2 | Spec: Fire |  Rank: 212 | Region: 28 | Server: 25
+  Partition 2 | Spec: Fire |  Rank: 222 | Region: 30 | Server: 27

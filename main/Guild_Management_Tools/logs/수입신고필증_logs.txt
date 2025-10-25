@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Shadow | Points: 438.207/840 | Rank %: 86.7451967063129
+  Partition 2 | Spec: Shadow | Points: 434.652/840 | Rank %: 86.1949474625531
   Partition 1 | Spec: Shadow | Points: 161.453/960 | Rank %: 46.930834590645595
 
 Boss DPS Percentage:
@@ -29,5 +29,5 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 2 | Spec: Shadow |  Rank: 1160 | Region: 201 | Server: 193
+  Partition 2 | Spec: Shadow |  Rank: 1236 | Region: 213 | Server: 205
   Partition 1 | Spec: Shadow |  Rank: 6684 | Region: 639 | Server: 593

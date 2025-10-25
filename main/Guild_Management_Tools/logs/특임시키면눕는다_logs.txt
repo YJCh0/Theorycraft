@@ -16,7 +16,7 @@ Best Performances:
 
 All Stars Points:
   Partition 1 | Spec: BeastMastery | Points: 615.25/960 | Rank %: 98.22695035460993
-  Partition 2 | Spec: BeastMastery | Points: 546.391/840 | Rank %: 97.32653763171884
+  Partition 2 | Spec: BeastMastery | Points: 544.755/840 | Rank %: 97.1803018268467
 
 Boss DPS Percentage:
   Plexus Sentinel: Rank 98.4341%, Best DPS 6116623.4613286
@@ -30,4 +30,4 @@ Boss DPS Percentage:
 
 Rankings:
   Partition 1 | Spec: BeastMastery |  Rank: 656 | Region: 160 | Server: 159
-  Partition 2 | Spec: BeastMastery |  Rank: 856 | Region: 208 | Server: 206
+  Partition 2 | Spec: BeastMastery |  Rank: 924 | Region: 229 | Server: 227

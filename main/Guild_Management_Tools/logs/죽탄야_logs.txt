@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Frost | Points: 452.569/840 | Rank %: 91.44072660971739
+  Partition 2 | Spec: Frost | Points: 450.899/840 | Rank %: 90.91149448079847
   Partition 1 | Spec: Frost | Points: 447.208/960 | Rank %: 89.00016612478345
 
 Boss DPS Percentage:
@@ -29,5 +29,5 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 2 | Spec: Frost |  Rank: 2536 | Region: 439 | Server: 429
+  Partition 2 | Spec: Frost |  Rank: 2751 | Region: 484 | Server: 474
   Partition 1 | Spec: Frost |  Rank: 4636 | Region: 535 | Server: 521

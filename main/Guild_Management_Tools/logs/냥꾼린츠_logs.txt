@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: BeastMastery | Points: 463.361/840 | Rank %: 93.58056345955411
+  Partition 2 | Spec: BeastMastery | Points: 462.425/840 | Rank %: 93.19056638357671
   Partition 1 | Spec: BeastMastery | Points: 458.411/960 | Rank %: 90.79096962806561
 
 Boss DPS Percentage:
@@ -29,5 +29,5 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 2 | Spec: BeastMastery |  Rank: 2054 | Region: 466 | Server: 457
+  Partition 2 | Spec: BeastMastery |  Rank: 2230 | Region: 515 | Server: 501
   Partition 1 | Spec: BeastMastery |  Rank: 3403 | Region: 539 | Server: 515

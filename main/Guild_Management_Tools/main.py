@@ -224,14 +224,13 @@ def main():
                 f.write('\n'.join(output_lines))
 
     # 전체 요약 CSV 저장
-    with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
+    with open("Player_data.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["캐릭터명", "ilvl", "M+ Score", "Logs"])
+        writer.writerow(["캐릭터명", "ilvl", "M+", "WCL"])
         writer.writerows(results)
 
 
     print("\n=== DONE ===")
-    print(f"결과가 '{OUTPUT_FILE}'에 저장되었습니다.")
 
 
 if __name__ == "__main__":

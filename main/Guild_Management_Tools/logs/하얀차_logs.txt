@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Holy | Points: 649.76/960 | Rank %: 97.52319821391195
+  Partition 2 | Spec: Holy | Points: 647.952/960 | Rank %: 97.40393177614905
   Partition 1 | Spec: Holy | Points: 557.981/960 | Rank %: 95.22208638956805
 
 Boss HPS Percentage:
@@ -29,5 +29,5 @@ Boss HPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best HPS 0
 
 Rankings:
-  Partition 2 | Spec: Holy |  Rank: 356 | Region: 69 | Server: 69
+  Partition 2 | Spec: Holy |  Rank: 380 | Region: 78 | Server: 78
   Partition 1 | Spec: Holy |  Rank: 939 | Region: 153 | Server: 149

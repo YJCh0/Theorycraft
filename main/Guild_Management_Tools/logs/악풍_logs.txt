@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Havoc | Points: 421.448/840 | Rank %: 85.60975609756098
+  Partition 2 | Spec: Havoc | Points: 419.511/840 | Rank %: 85.05328827657915
   Partition 1 | Spec: Havoc | Points: 229.761/960 | Rank %: 69.13566537109014
 
 Boss DPS Percentage:
@@ -29,5 +29,5 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 2 | Spec: Havoc |  Rank: 2715 | Region: 400 | Server: 385
+  Partition 2 | Spec: Havoc |  Rank: 2876 | Region: 424 | Server: 409
   Partition 1 | Spec: Havoc |  Rank: 8339 | Region: 780 | Server: 737

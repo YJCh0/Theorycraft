@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Brewmaster | Points: 454.337/840 | Rank %: 87.18032252809904
+  Partition 2 | Spec: Brewmaster | Points: 453.59/840 | Rank %: 86.96553924696873
   Partition 1 | Spec: Brewmaster | Points: 386.82/960 | Rank %: 76.86793828210423
 
 Boss DPS Percentage:
@@ -29,5 +29,5 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 2 | Spec: Brewmaster |  Rank: 788 | Region: 126 | Server: 123
+  Partition 2 | Spec: Brewmaster |  Rank: 818 | Region: 131 | Server: 128
   Partition 1 | Spec: Brewmaster |  Rank: 1905 | Region: 200 | Server: 190
