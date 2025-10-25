@@ -19,14 +19,14 @@ All Stars Points:
   Partition 2 | Spec: Destruction | Points: 530.85/840 | Rank %: 93.81066185436278
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 97.1213%, Best DPS 5748078.7393515, out of 0
-  Loom'ithar: Rank 96.779%, Best DPS 6565229.0883795, out of 0
-  Soulbinder Naazindhri: Rank 96.7566%, Best DPS 8711230.5457587, out of 0
-  Forgeweaver Araz: Rank 99.2998%, Best DPS 8781508.1732113, out of 0
-  The Soul Hunters: Rank 95.1109%, Best DPS 10459558.167822, out of 0
-  Fractillus: Rank 89.6942%, Best DPS 5907274.9727446, out of 0
-  Nexus-King Salhadaar: Rank None%, Best DPS 0, out of 0
-  Dimensius, the All-Devouring: Rank None%, Best DPS 0, out of 0
+  Plexus Sentinel: Rank 97.1213%, Best DPS 5748078.7393515
+  Loom'ithar: Rank 96.779%, Best DPS 6565229.0883795
+  Soulbinder Naazindhri: Rank 96.7566%, Best DPS 8711230.5457587
+  Forgeweaver Araz: Rank 99.2998%, Best DPS 8781508.1732113
+  The Soul Hunters: Rank 95.1109%, Best DPS 10459558.167822
+  Fractillus: Rank 89.6942%, Best DPS 5907274.9727446
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
   Partition 1 | Spec: Destruction |  Rank: 914 | Region: 142 | Server: 141

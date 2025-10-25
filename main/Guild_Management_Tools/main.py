@@ -129,11 +129,12 @@ def main():
               characterData {{
                 character(name: "{character}", serverSlug: "{server}", serverRegion: "kr") {{
                   name
-                  zoneRankings(metric: {metric_type})
+                  zoneRankings(metric: {metric_type}) 
                 }}
               }}
             }}
             """
+
         
             headers = {
                 "Authorization": f"Bearer {ACCESS_TOKEN}",
@@ -195,11 +196,10 @@ def main():
                     boss = encounter.get('encounter', {}).get('name', 'Unknown')
                     percent = encounter.get('rankPercent', 0)
                     best = encounter.get('bestAmount', 0)
-                    number = encounter.get('outOf', 0)
                     if wcl_spec in healer_list:
-                        output_lines.append(f"  {boss}: Rank {percent}%, Best HPS {best}, out of {number}")
+                        output_lines.append(f"  {boss}: Rank {percent}%, Best HPS {best}")
                     else:
-                        output_lines.append(f"  {boss}: Rank {percent}%, Best DPS {best}, out of {number}")
+                        output_lines.append(f"  {boss}: Rank {percent}%, Best DPS {best}")
 
             else:
                 output_lines.append("\nCannot find Boss Ranking Data")
