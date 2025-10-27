@@ -1,0 +1,33 @@
+WarcraftLogs Summary for
+  특임시키면눕는다
+  BeastMastery Hunter
+
+Best Performance Average: 94.8
+
+Best Performances:
+  Plexus Sentinel, Score: 98.4
+  Loom'ithar, Score: 98.5
+  Soulbinder Naazindhri, Score: 99.0
+  Forgeweaver Araz, Score: 99.3
+  The Soul Hunters, Score: 87.8
+  Fractillus, Score: 85.9
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition 1 | Spec: BeastMastery | Points: 615.2/960.0 | Rank %: 98.2
+  Partition 2 | Spec: BeastMastery | Points: 542.2/840.0 | Rank %: 96.9
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 98.4%, Best DPS 6,116,623
+  Loom'ithar: Rank 98.5%, Best DPS 7,583,140
+  Soulbinder Naazindhri: Rank 99.0%, Best DPS 9,223,518
+  Forgeweaver Araz: Rank 99.3%, Best DPS 7,718,102
+  The Soul Hunters: Rank 87.8%, Best DPS 8,421,774
+  Fractillus: Rank 85.9%, Best DPS 6,242,413
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition 1 | Spec: BeastMastery | Rank: 656 / 36,942 | Region: 160 | Server: 159
+  Partition 2 | Spec: BeastMastery | Rank: 1,066 / 34,278 | Region: 285 | Server: 281

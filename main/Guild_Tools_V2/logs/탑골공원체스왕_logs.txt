@@ -1,0 +1,33 @@
+WarcraftLogs Summary for
+  탑골공원체스왕
+  Balance Druid
+
+Best Performance Average: 76.6
+
+Best Performances:
+  Plexus Sentinel, Score: 96.1
+  Loom'ithar, Score: 96.4
+  Soulbinder Naazindhri, Score: 91.2
+  Forgeweaver Araz, Score: 88.3
+  The Soul Hunters, Score: 8.5
+  Fractillus, Score: 79.0
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition 2 | Spec: Balance | Points: 462.7/840.0 | Rank %: 90.8
+  Partition 1 | Spec: Balance | Points: 388.9/960.0 | Rank %: 79.2
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 96.1%, Best DPS 5,818,578
+  Loom'ithar: Rank 96.4%, Best DPS 6,921,580
+  Soulbinder Naazindhri: Rank 91.2%, Best DPS 7,191,796
+  Forgeweaver Araz: Rank 88.3%, Best DPS 6,763,190
+  The Soul Hunters: Rank 8.5%, Best DPS 4,993,141
+  Fractillus: Rank 79.0%, Best DPS 5,697,615
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition 2 | Spec: Balance | Rank: 1,005 / 10,860 | Region: 256 | Server: 249
+  Partition 1 | Spec: Balance | Rank: 2,637 / 12,659 | Region: 371 | Server: 354

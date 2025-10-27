@@ -1,0 +1,33 @@
+WarcraftLogs Summary for
+  Yoahjung
+  Frost Deathknight
+
+Best Performance Average: 73.6
+
+Best Performances:
+  Plexus Sentinel, Score: 83.2
+  Loom'ithar, Score: 93.1
+  Soulbinder Naazindhri, Score: 65.6
+  Forgeweaver Araz, Score: 80.7
+  The Soul Hunters, Score: 68.5
+  Fractillus, Score: 50.3
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition 2 | Spec: Frost | Points: 470.2/840.0 | Rank %: 92.1
+  Partition 1 | Spec: Frost | Points: 472.5/960.0 | Rank %: 90.6
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 83.2%, Best DPS 5,069,266
+  Loom'ithar: Rank 93.1%, Best DPS 6,536,622
+  Soulbinder Naazindhri: Rank 65.6%, Best DPS 7,156,618
+  Forgeweaver Araz: Rank 80.7%, Best DPS 7,331,491
+  The Soul Hunters: Rank 68.5%, Best DPS 8,862,468
+  Fractillus: Rank 50.3%, Best DPS 5,272,018
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition 2 | Spec: Frost | Rank: 2,486 / 31,559 | Region: 474 | Server: 460
+  Partition 1 | Spec: Frost | Rank: 3,979 / 42,137 | Region: 473 | Server: 463

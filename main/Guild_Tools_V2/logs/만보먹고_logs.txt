@@ -1,0 +1,35 @@
+WarcraftLogs Summary for
+  만보먹고
+  Fire Mage
+
+Best Performance Average: 90.7
+
+Best Performances:
+  Plexus Sentinel, Score: 98.5
+  Loom'ithar, Score: 98.4
+  Soulbinder Naazindhri, Score: 98.0
+  Forgeweaver Araz, Score: 94.5
+  The Soul Hunters, Score: 97.0
+  Fractillus, Score: 97.6
+  Nexus-King Salhadaar, Score: 50.9
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition 1 | Spec: Fire | Points: 651.1/960.0 | Rank %: 99.0
+  Partition 2 | Spec: Fire | Points: 628.4/840.0 | Rank %: 98.2
+  Partition 1 | Spec: Arcane | Points: 626.8/960.0 | Rank %: 96.9
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 98.5%, Best DPS 5,296,883
+  Loom'ithar: Rank 98.4%, Best DPS 6,472,791
+  Soulbinder Naazindhri: Rank 98.0%, Best DPS 8,250,322
+  Forgeweaver Araz: Rank 94.5%, Best DPS 7,679,210
+  The Soul Hunters: Rank 97.0%, Best DPS 10,365,924
+  Fractillus: Rank 97.6%, Best DPS 5,796,794
+  Nexus-King Salhadaar: Rank 50.9%, Best DPS 6,698,101
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition 1 | Spec: Fire | Rank: 40 / 3,817 | Region: 5 | Server: 5
+  Partition 2 | Spec: Fire | Rank: 53 / 2,911 | Region: 10 | Server: 10
+  Partition 1 | Spec: Arcane | Rank: 889 / 28,912 | Region: 142 | Server: 138

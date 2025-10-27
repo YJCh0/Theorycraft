@@ -2,12 +2,12 @@ WarcraftLogs Summary for
   킹스
   Retribution Paladin
 
-Best Performance Average: 57.6645
+Best Performance Average: 57.7
 
 Best Performances:
-  Plexus Sentinel, Score: 89.9759
+  Plexus Sentinel, Score: 90.0
   Loom'ithar, Score: None
-  Soulbinder Naazindhri, Score: 25.3531
+  Soulbinder Naazindhri, Score: 25.4
   Forgeweaver Araz, Score: None
   The Soul Hunters, Score: None
   Fractillus, Score: None
@@ -15,12 +15,12 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 1 | Spec: Retribution | Points: 159.255/960 | Rank %: 43.413216108905274
+  Partition 1 | Spec: Retribution | Points: 159.3/960.0 | Rank %: 43.4
 
 Boss DPS Percentage:
-  Plexus Sentinel: Rank 89.9759%, Best DPS 4313281.5760508
+  Plexus Sentinel: Rank 90.0%, Best DPS 4,313,282
   Loom'ithar: Rank None%, Best DPS 0
-  Soulbinder Naazindhri: Rank 25.3531%, Best DPS 5966501.4611085
+  Soulbinder Naazindhri: Rank 25.4%, Best DPS 5,966,501
   Forgeweaver Araz: Rank None%, Best DPS 0
   The Soul Hunters: Rank None%, Best DPS 0
   Fractillus: Rank None%, Best DPS 0
@@ -28,4 +28,4 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 1 | Spec: Retribution |  Rank: 15963 | Region: 1122 | Server: 973
+  Partition 1 | Spec: Retribution | Rank: 15,963 / 28,208 | Region: 1,122 | Server: 973

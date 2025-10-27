@@ -1,0 +1,33 @@
+WarcraftLogs Summary for
+  냥꾼린츠
+  BeastMastery Hunter
+
+Best Performance Average: 87.2
+
+Best Performances:
+  Plexus Sentinel, Score: 99.8
+  Loom'ithar, Score: 88.4
+  Soulbinder Naazindhri, Score: 97.3
+  Forgeweaver Araz, Score: 89.4
+  The Soul Hunters, Score: 78.6
+  Fractillus, Score: 69.6
+  Nexus-King Salhadaar, Score: None
+  Dimensius, the All-Devouring, Score: None
+
+All Stars Points:
+  Partition 2 | Spec: BeastMastery | Points: 461.0/840.0 | Rank %: 92.6
+  Partition 1 | Spec: BeastMastery | Points: 458.4/960.0 | Rank %: 90.8
+
+Boss DPS Percentage:
+  Plexus Sentinel: Rank 99.8%, Best DPS 6,099,628
+  Loom'ithar: Rank 88.4%, Best DPS 5,603,279
+  Soulbinder Naazindhri: Rank 97.3%, Best DPS 8,685,123
+  Forgeweaver Araz: Rank 89.4%, Best DPS 6,581,576
+  The Soul Hunters: Rank 78.6%, Best DPS 8,109,813
+  Fractillus: Rank 69.6%, Best DPS 5,764,470
+  Nexus-King Salhadaar: Rank None%, Best DPS 0
+  Dimensius, the All-Devouring: Rank None%, Best DPS 0
+
+Rankings:
+  Partition 2 | Spec: BeastMastery | Rank: 2,543 / 34,278 | Region: 608 | Server: 589
+  Partition 1 | Spec: BeastMastery | Rank: 3,403 / 36,942 | Region: 539 | Server: 515
