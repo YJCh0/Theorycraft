@@ -17,6 +17,7 @@ Best Performances:
 All Stars Points:
   Partition 1 | Spec: Retribution | Points: 159.3/960.0 | Rank %: 43.4
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 90.0%, Best DPS 4,313,282
   Loom'ithar: Rank None%, Best DPS 0

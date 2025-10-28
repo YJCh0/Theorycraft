@@ -18,6 +18,7 @@ All Stars Points:
   Partition 1 | Spec: Fire | Points: 480.1/960.0 | Rank %: 93.6
   Partition 2 | Spec: Fire | Points: 446.6/840.0 | Rank %: 91.5
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 89.4%, Best DPS 5,265,910
   Loom'ithar: Rank 75.8%, Best DPS 6,163,582

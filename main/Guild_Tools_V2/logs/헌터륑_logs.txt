@@ -18,6 +18,7 @@ All Stars Points:
   Partition 2 | Spec: Marksmanship | Points: 410.1/840.0 | Rank %: 90.1
   Partition 1 | Spec: Marksmanship | Points: 289.0/960.0 | Rank %: 78.7
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 95.2%, Best DPS 5,735,187
   Loom'ithar: Rank 76.0%, Best DPS 5,948,095

@@ -18,6 +18,7 @@ All Stars Points:
   Partition 2 | Spec: BeastMastery | Points: 461.0/840.0 | Rank %: 92.6
   Partition 1 | Spec: BeastMastery | Points: 458.4/960.0 | Rank %: 90.8
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 99.8%, Best DPS 6,099,628
   Loom'ithar: Rank 88.4%, Best DPS 5,603,279

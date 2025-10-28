@@ -18,6 +18,7 @@ All Stars Points:
   Partition 2 | Spec: Holy | Points: 645.5/960.0 | Rank %: 97.2
   Partition 1 | Spec: Holy | Points: 558.0/960.0 | Rank %: 95.2
 
+
 Boss HPS Percentage:
   Plexus Sentinel: Rank 99.7%, Best HPS 6,584,565
   Loom'ithar: Rank 88.3%, Best HPS 5,924,803

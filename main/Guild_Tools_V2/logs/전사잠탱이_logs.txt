@@ -18,6 +18,7 @@ All Stars Points:
   Partition 1 | Spec: Protection | Points: 338.4/960.0 | Rank %: 82.9
   Partition 2 | Spec: Protection | Points: 355.8/840.0 | Rank %: 82.9
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 58.2%, Best DPS 2,275,571
   Loom'ithar: Rank 70.1%, Best DPS 3,465,605

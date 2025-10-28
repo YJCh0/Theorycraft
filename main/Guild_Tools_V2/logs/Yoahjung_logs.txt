@@ -18,6 +18,7 @@ All Stars Points:
   Partition 2 | Spec: Frost | Points: 470.2/840.0 | Rank %: 92.1
   Partition 1 | Spec: Frost | Points: 472.5/960.0 | Rank %: 90.6
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 83.2%, Best DPS 5,069,266
   Loom'ithar: Rank 93.1%, Best DPS 6,536,622

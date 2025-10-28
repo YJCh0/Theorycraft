@@ -18,6 +18,7 @@ All Stars Points:
   Partition 1 | Spec: Devastation | Points: 556.0/960.0 | Rank %: 92.0
   Partition 2 | Spec: Devastation | Points: 497.5/840.0 | Rank %: 91.6
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 99.6%, Best DPS 5,301,890
   Loom'ithar: Rank 97.8%, Best DPS 6,551,765

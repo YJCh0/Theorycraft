@@ -18,6 +18,7 @@ All Stars Points:
   Partition 2 | Spec: Restoration | Points: 641.3/960.0 | Rank %: 98.6
   Partition 1 | Spec: Restoration | Points: 550.6/960.0 | Rank %: 97.4
 
+
 Boss HPS Percentage:
   Plexus Sentinel: Rank 92.1%, Best HPS 5,096,816
   Loom'ithar: Rank 97.3%, Best HPS 6,460,998

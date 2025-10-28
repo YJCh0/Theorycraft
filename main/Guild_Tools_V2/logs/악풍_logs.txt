@@ -18,6 +18,7 @@ All Stars Points:
   Partition 2 | Spec: Havoc | Points: 415.8/840.0 | Rank %: 83.8
   Partition 1 | Spec: Havoc | Points: 229.8/960.0 | Rank %: 69.1
 
+
 Boss DPS Percentage:
   Plexus Sentinel: Rank 80.9%, Best DPS 4,756,942
   Loom'ithar: Rank 81.9%, Best DPS 5,811,050
