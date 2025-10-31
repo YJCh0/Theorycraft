@@ -16,7 +16,7 @@ Best Performances:
 
 All Stars Points:
   Partition 1 | Spec: Destruction | Points: 643.9/960.0 | Rank %: 96.5
-  Partition 2 | Spec: Destruction | Points: 522.1/840.0 | Rank %: 92.9
+  Partition 2 | Spec: Destruction | Points: 520.6/840.0 | Rank %: 92.5
 
 
 Boss DPS Percentage:
@@ -31,4 +31,4 @@ Boss DPS Percentage:
 
 Rankings:
   Partition 1 | Spec: Destruction | Rank: 914 / 25,855 | Region: 142 | Server: 141
-  Partition 2 | Spec: Destruction | Rank: 1,535 / 21,743 | Region: 331 | Server: 328
+  Partition 2 | Spec: Destruction | Rank: 1,656 / 22,145 | Region: 360 | Server: 354

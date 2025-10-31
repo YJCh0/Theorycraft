@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Marksmanship | Points: 410.1/840.0 | Rank %: 90.1
+  Partition 2 | Spec: Marksmanship | Points: 409.6/840.0 | Rank %: 89.6
   Partition 1 | Spec: Marksmanship | Points: 289.0/960.0 | Rank %: 78.7
 
 
@@ -30,5 +30,5 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 2 | Spec: Marksmanship | Rank: 587 / 5,904 | Region: 109 | Server: 104
+  Partition 2 | Spec: Marksmanship | Rank: 624 / 5,991 | Region: 109 | Server: 104
   Partition 1 | Spec: Marksmanship | Rank: 3,252 / 15,279 | Region: 274 | Server: 260

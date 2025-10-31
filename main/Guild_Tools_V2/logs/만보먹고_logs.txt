@@ -16,7 +16,7 @@ Best Performances:
 
 All Stars Points:
   Partition 1 | Spec: Fire | Points: 651.1/960.0 | Rank %: 99.0
-  Partition 2 | Spec: Fire | Points: 628.4/840.0 | Rank %: 98.2
+  Partition 2 | Spec: Fire | Points: 626.6/840.0 | Rank %: 98.2
   Partition 1 | Spec: Arcane | Points: 626.8/960.0 | Rank %: 96.9
 
 
@@ -32,5 +32,5 @@ Boss DPS Percentage:
 
 Rankings:
   Partition 1 | Spec: Fire | Rank: 40 / 3,817 | Region: 5 | Server: 5
-  Partition 2 | Spec: Fire | Rank: 53 / 2,911 | Region: 10 | Server: 10
+  Partition 2 | Spec: Fire | Rank: 54 / 2,973 | Region: 11 | Server: 11
   Partition 1 | Spec: Arcane | Rank: 889 / 28,912 | Region: 142 | Server: 138

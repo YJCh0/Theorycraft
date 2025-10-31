@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Destruction | Points: 363.5/840.0 | Rank %: 72.0
+  Partition 2 | Spec: Destruction | Points: 363.5/840.0 | Rank %: 71.4
   Partition 1 | Spec: Destruction | Points: 206.7/960.0 | Rank %: 55.0
 
 
@@ -30,5 +30,5 @@ Boss DPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best DPS 0
 
 Rankings:
-  Partition 2 | Spec: Destruction | Rank: 6,098 / 21,743 | Region: 859 | Server: 820
+  Partition 2 | Spec: Destruction | Rank: 6,339 / 22,145 | Region: 875 | Server: 836
   Partition 1 | Spec: Destruction | Rank: 11,630 / 25,855 | Region: 1,168 | Server: 1,103

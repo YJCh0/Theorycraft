@@ -15,8 +15,9 @@ INPUT_FILE = "characters.csv"
 OUTPUT_DIR = "logs"
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "Player_data.csv")
 FAILED_LOG = os.path.join(OUTPUT_DIR, "failed_characters.log")
+PREVIOUS_FILE = os.path.join(OUTPUT_DIR, "previous_Player_data.csv")
+WEEKLY_FILE = os.path.join(OUTPUT_DIR, "weekly_comparison.csv")
 ACCESS_TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJhMDJlMTcxZC1iY2IzLTQyNDQtOWEwMy1lZDQ1ZDZkNTRmZTgiLCJqdGkiOiI3MjY2ZDU1YmU3NzYyZDk2MWE5ZWY2M2ZiMjEzY2NkM2NkZmI3MTllMDg0NGE2ZDMyODllMWJlMmFhMDhlNmJkMmIzZGNiY2FiMzliYzUzMCIsImlhdCI6MTc2MTE5ODM0OS4zMDkyMzQsIm5iZiI6MTc2MTE5ODM0OS4zMDkyMzcsImV4cCI6MTc5MjMwMjM0OS4zMDEzMzksInN1YiI6IiIsInNjb3BlcyI6WyJ2aWV3LXVzZXItcHJvZmlsZSIsInZpZXctcHJpdmF0ZS1yZXBvcnRzIl19.WQIHgbfjPaWSWp-1EhSyZeL9HYGgYAXtDB3EUIBR5FVlluN193QLDmIfl3V_qIZbwRzHUqoRCrJKQc_FBL5r5crp01X_k05kDuKG-HeZFJgcObZI7kKf5aii4Qn-Hm3I4hdSQ_uiNjvzLg88jMYRFgb2xQ0t8kH-ZfU01tKodV3_tnAxSE-zXoInbIdW_3-RqvFY1tLzvE_eZOPmFD-kVA6WqhyXOGfTnmGhcV-EKwqW2pl0fVUCpyMjsNeVSRh6olnSmuFL5DgLmqbX46VVW6MqFpIN-MxFvft7F6EK-VrTj6vCALFrizxhAaid5vzvRxmUlo-9rn8pFnRjOxzSAWliOknS31nquKXVdvnG4Gdi6AEXRvYWg__Y-couc8qXS1_1GyziWtXJLEGNg8LD-0NDQHDhSczALEoVmt6fQR0jS6KKrZvnt-oE_DDfIlvdsFJp7XP1GlbjlJUvjDRcRaTEPNdJJR7Rp4f6V_I460gU7kJyqwSZ1j7PGiHKFhvfZwgaGhCJ4P7QopLRvo2bRWlu8bjHeabHgzvL1bggKmEQdqQM6GlUleW5xEHkALFbfHVgXUPuhGvRTniPRTIVfE5xP4JLdjcMT_ssExzD6mimR8MV2ZZhdboo--IYmv1TssSZMrbdwJ-CX2fYhi9qqvbKgDyXRr2QwuMgUsXuv5s'
-WEEKLY_FILE = os.path.join(OUTPUT_DIR, "Previous_data.csv")
 
 # Console Style
 theme = Theme({
@@ -112,6 +113,7 @@ def get_wcl_score(server, character, role):
     response = safe_request("POST", url, json={'query': query}, headers=headers)
     if not response:
         return None
+
     try:
         data = response.json()
         character_info = data['data']['characterData']['character']
@@ -125,14 +127,17 @@ def write_failed_log(character, reason="데이터 수집 실패"):
         f.write(f"{character}: {reason}\n")
 
 def format_wcl_log(character, character_class, wcl_spec, wcl_data, role):
-    lines = [f"WarcraftLogs Summary for"]
+    lines = []
+    lines.append("WarcraftLogs Summary for")
     lines.append(f"  {character}")
-    lines.append(f"  {wcl_spec} {character_class}")
+    lines.append(f"  {wcl_spec} {character_class}\n")
+
     best_perf_avg = wcl_data.get('bestPerformanceAverage', None)
     lines.append(f"Best Performance Average: {format_amount(best_perf_avg)}\n")
 
-    rankings = wcl_data.get('rankings', [])
+    # Best Performances
     lines.append("Best Performances:")
+    rankings = wcl_data.get('rankings', [])
     if rankings:
         for encounter in rankings:
             boss_name = encounter.get('encounter', {}).get('name', 'Unknown')
@@ -142,8 +147,9 @@ def format_wcl_log(character, character_class, wcl_spec, wcl_data, role):
         lines.append("  Cannot find Best Performances")
     lines.append("")
 
-    all_stars = wcl_data.get('allStars', [])
+    # All Stars
     lines.append("All Stars Points:")
+    all_stars = wcl_data.get('allStars', [])
     if all_stars:
         for star in all_stars:
             division = star.get('partition', 'N/A')
@@ -158,6 +164,7 @@ def format_wcl_log(character, character_class, wcl_spec, wcl_data, role):
         lines.append("  Cannot find All Stars Points")
     lines.append("")
 
+    # Boss DPS/HPS
     lines.append("\nBoss HPS Percentage:" if role.lower() == "healer" else "\nBoss DPS Percentage:")
     if rankings:
         for encounter in rankings:
@@ -170,6 +177,7 @@ def format_wcl_log(character, character_class, wcl_spec, wcl_data, role):
     else:
         lines.append("  Cannot find Boss Rankings")
 
+    # Rankings
     lines.append("\nRankings:")
     if all_stars:
         for partition in all_stars:
@@ -184,9 +192,10 @@ def format_wcl_log(character, character_class, wcl_spec, wcl_data, role):
             )
     else:
         lines.append("  Cannot find Rankings")
+
     return "\n".join(lines)
 
-def crawl_character(row, roster_num, attempt=1):
+def crawl_character(row, queue, roster_num, attempt=1):
     server = row["Server"].strip()
     character = row["ID"].strip()
     role = row["Role"].strip()
@@ -201,7 +210,7 @@ def crawl_character(row, roster_num, attempt=1):
     if not wcl_data or (ilvl == 0 and mplus_score == "N/A"):
         if attempt < 3:
             time.sleep(2)
-            return crawl_character(row, roster_num, attempt + 1)
+            return crawl_character(row, queue, roster_num, attempt + 1)
         console.print(f"[error]❌ {character} Failed Crawling — Reported in [/error]")
         write_failed_log(character)
         return [character, character_class, "N/A", 0, "N/A", "N/A"]
@@ -218,86 +227,158 @@ def crawl_character(row, roster_num, attempt=1):
     console.print(f"[success]✔ {character} Complete! ({wcl_spec} {character_class}, ilvl {ilvl})[/success]")
 
     best_perf_avg = wcl_data.get('bestPerformanceAverage')
-    return [character, character_class, wcl_spec, ilvl, format_amount(mplus_score), format_amount(best_perf_avg) if best_perf_avg else "None"]
+    best_perf_avg_formatted = f"{best_perf_avg:.2f}" if best_perf_avg else "None"
 
-def compare_weekly(current_results):
-    weekly_data = {}
-    if os.path.exists(WEEKLY_FILE):
-        with open(WEEKLY_FILE, newline="", encoding="utf-8") as f:
+    return [character, character_class, wcl_spec, ilvl, format_amount(mplus_score), best_perf_avg_formatted]
+
+def generate_weekly_comparison(current_file, previous_file, output_file):
+    if not os.path.exists(current_file):
+        if os.path.exists(previous_file):
+            import shutil
+            console.print(f"[warning]⚠ {current_file} not found. Using previous data instead.[/warning]")
+            shutil.copy(previous_file, current_file)
+        else:
+            console.print(f"[error]❌ No data available to generate weekly comparison.[/error]")
+            return  # 함수 종료
+
+    current_data = {}
+    with open(current_file, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            current_data[row["ID"]] = row
+
+    previous_data = {}
+    if os.path.exists(previous_file):
+        with open(previous_file, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                weekly_data[row["ID"]] = row
-    changes = []
-    for row in current_results:
-        char_id = row[0]
-        prev_ilvl = int(weekly_data[char_id]["ilvl"]) if char_id in weekly_data and weekly_data[char_id]["ilvl"].isdigit() else 0
-        ilvl_diff = row[3] - prev_ilvl
-        changes.append((char_id, ilvl_diff))
-    return changes
+                previous_data[row["ID"]] = row
+
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    with open(output_file, "w", newline="", encoding="utf-8") as f:
+        fieldnames = ["ID", "Class", "Spec", "ilvl", "ilvl_change", "M+", "M+_change", "WCL", "WCL_change"]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for char_id, curr in current_data.items():
+            prev = previous_data.get(char_id, {})
+            ilvl_change = (int(curr["ilvl"]) - int(prev.get("ilvl", curr["ilvl"]))) if prev else 0
+            mplus_change = (float(curr["M+"].replace(",", "")) - float(prev.get("M+", curr["M+"]).replace(",", ""))) if prev else 0
+            wcl_change = (float(curr["WCL"]) - float(prev.get("WCL", curr.get("WCL")))) if prev else 0
+
+            writer.writerow({
+                "ID": char_id,
+                "Class": curr["Class"],
+                "Spec": curr["Spec"],
+                "ilvl": curr["ilvl"],
+                "ilvl_change": ilvl_change,
+                "M+": curr["M+"],
+                "M+_change": mplus_change,
+                "WCL": curr["WCL"],
+                "WCL_change": wcl_change
+            })
+
+    console.print(f"[success]✅ Weekly comparison saved to {output_file}[/success]")
+    os.replace(current_file, previous_file)
+    console.print(f"[info]📦 Previous week data updated: {previous_file}[/info]")
+
+def print_console_summary(results):
+    table = Table(title="WoW Character Summary", show_lines=True)
+    table.add_column("ID", justify="left", style="cyan")
+    table.add_column("Class", justify="left", style="magenta")
+    table.add_column("Spec", justify="left", style="yellow")
+    table.add_column("ilvl", justify="right", style="green")
+    table.add_column("M+", justify="right", style="blue")
+    table.add_column("WCL", justify="right", style="red")
+
+    total_ilvl = 0
+    total_mplus = 0
+    total_wcl = 0
+    count = 0
+
+    for row in results:
+        char_id, char_class, spec, ilvl, mplus, wcl = row
+        table.add_row(char_id, char_class, spec, str(ilvl), str(mplus), str(wcl))
+        count += 1
+        try:
+            total_ilvl += int(ilvl)
+        except: pass
+        try:
+            total_mplus += float(str(mplus).replace(",", ""))
+        except: pass
+        try:
+            total_wcl += float(str(wcl).replace(",", ""))
+        except: pass
+
+    console.print(table)
+
+    if count > 0:
+        avg_ilvl = total_ilvl / count
+        avg_mplus = total_mplus / count
+        avg_wcl = total_wcl / count
+        console.print(f"[info]Average ilvl: {avg_ilvl:.1f} | Average M+: {avg_mplus:.1f} | Average WCL: {avg_wcl:.1f}[/info]")
 
 # ────────────────────────────────────────────────
+# Main
 def main():
-    results = []
-    with open(INPUT_FILE, newline="", encoding="utf-8") as csvfile:
-        reader = list(csv.DictReader(csvfile))
-        roster_num = len(reader)
+    characters = []
+    with open(INPUT_FILE, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        characters = list(reader)
+        roster_num = len(characters)
 
         console.print(f"\n[bold cyan]Fetching {roster_num} Players...[/bold cyan]\n")
 
-        with Progress(
-            SpinnerColumn(),
-            BarColumn(),
-            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-            TextColumn("• {task.description}"),
-            console=console
-        ) as progress:
-            task = progress.add_task("Processing...", total=roster_num)
+    results = []
 
-            with ThreadPoolExecutor(max_workers=5) as executor:
-                futures = [executor.submit(crawl_character, row, roster_num) for row in reader]
-                for future in futures:
-                    result = future.result()
-                    results.append(result)
-                    progress.advance(task, 1)
-                    progress.update(task, description=f"{len(results)}/{roster_num} Complete")
+    with Progress(
+        SpinnerColumn(),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TextColumn("• {task.description}"),
+        console=console
+    ) as progress:
+        task = progress.add_task("Processing...", total=roster_num)
+        
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = []
+            for idx, char in enumerate(characters):
+                futures.append(executor.submit(crawl_character, char, results, idx+1))
+    
+            for idx, future in enumerate(futures):
+                res = future.result()
+                if res:
+                    results.append(res)
+                progress.update(task, advance=1, char_name=characters[idx]["ID"])
 
-    # ────────────────────────────────────────────────
+
+    # Save CSV
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["ID", "Class", "Spec", "ilvl", "M+", "WCL"])
-        for row in results:
-            writer.writerow(row)
+        writer.writerows(results)
 
-        ilvls = [r[3] for r in results if isinstance(r[3], (int, float)) and r[3] > 0]
-        avg_ilvl = sum(ilvls) / len(ilvls) if ilvls else 0
-        writer.writerow(["AVERAGE", "", "", f"{avg_ilvl:.1f}", "", ""])
+    console.print(f"[success]✅ Character data saved to {OUTPUT_FILE}[/success]")
 
-    # ────────────────────────────────────────────────
+    # Player_data.csv 없으면 이전 파일로 대체
+    if not os.path.exists(OUTPUT_FILE):
+        if os.path.exists(PREVIOUS_FILE):
+            console.print(f"[warning]⚠ {OUTPUT_FILE} not found. Using previous data instead.[/warning]")
+            import shutil
+            shutil.copy(PREVIOUS_FILE, OUTPUT_FILE)
+        else:
+            console.print(f"[error]❌ No data available to generate weekly comparison.[/error]")
+
+
     # Weekly Comparison
-    weekly_changes = compare_weekly(results)
+    generate_weekly_comparison(OUTPUT_FILE, PREVIOUS_FILE, WEEKLY_FILE)
 
-    console.print(f"\n[bold yellow]📊 Average item level: {avg_ilvl:.1f}[/bold yellow]\n")
-
-    table = Table(title="Summary", show_lines=True)
-    for col in ["ID", "Class", "Spec", "ilvl", "M+", "WCL", "Week Δ"]:
-        table.add_column(col, style="cyan" if col == "Spec" else "green" if col == "Class" else "white")
-
-    changes_dict = dict(weekly_changes)
-    for row in results:
-        delta = f"{changes_dict.get(row[0], 0):+}"  # +, - 표시
-        table.add_row(*[str(x) for x in row] + [delta])
-
-    console.print("\n[bold green]=== Data Crawling Finished ===[/bold green]")
-    console.print(table)
-
-    # ────────────────────────────────────────────────
-    # Save current week as last week
-    with open(WEEKLY_FILE, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(["ID", "Class", "Spec", "ilvl", "M+", "WCL"])
-        for row in results:
-            writer.writerow(row)
+    # ✅ 콘솔 요약표 추가
+    print_console_summary(results)
+    
+    # Weekly Comparison
+    generate_weekly_comparison(OUTPUT_FILE, PREVIOUS_FILE, WEEKLY_FILE)
 
 if __name__ == "__main__":
     main()

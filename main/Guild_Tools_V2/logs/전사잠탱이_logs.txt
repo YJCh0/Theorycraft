@@ -16,7 +16,7 @@ Best Performances:
 
 All Stars Points:
   Partition 1 | Spec: Protection | Points: 338.4/960.0 | Rank %: 82.9
-  Partition 2 | Spec: Protection | Points: 355.8/840.0 | Rank %: 82.9
+  Partition 2 | Spec: Protection | Points: 355.8/840.0 | Rank %: 82.5
 
 
 Boss DPS Percentage:
@@ -31,4 +31,4 @@ Boss DPS Percentage:
 
 Rankings:
   Partition 1 | Spec: Protection | Rank: 2,300 / 13,461 | Region: 247 | Server: 238
-  Partition 2 | Spec: Protection | Rank: 1,801 / 10,507 | Region: 269 | Server: 258
+  Partition 2 | Spec: Protection | Rank: 1,875 / 10,719 | Region: 277 | Server: 266

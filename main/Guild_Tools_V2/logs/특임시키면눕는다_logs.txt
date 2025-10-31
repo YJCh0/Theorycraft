@@ -16,7 +16,7 @@ Best Performances:
 
 All Stars Points:
   Partition 1 | Spec: BeastMastery | Points: 615.2/960.0 | Rank %: 98.2
-  Partition 2 | Spec: BeastMastery | Points: 542.2/840.0 | Rank %: 96.9
+  Partition 2 | Spec: BeastMastery | Points: 541.1/840.0 | Rank %: 96.7
 
 
 Boss DPS Percentage:
@@ -31,4 +31,4 @@ Boss DPS Percentage:
 
 Rankings:
   Partition 1 | Spec: BeastMastery | Rank: 656 / 36,942 | Region: 160 | Server: 159
-  Partition 2 | Spec: BeastMastery | Rank: 1,066 / 34,278 | Region: 285 | Server: 281
+  Partition 2 | Spec: BeastMastery | Rank: 1,151 / 35,050 | Region: 310 | Server: 305

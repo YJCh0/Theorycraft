@@ -15,7 +15,7 @@ Best Performances:
   Dimensius, the All-Devouring, Score: None
 
 All Stars Points:
-  Partition 2 | Spec: Restoration | Points: 641.3/960.0 | Rank %: 98.6
+  Partition 2 | Spec: Restoration | Points: 641.1/960.0 | Rank %: 98.5
   Partition 1 | Spec: Restoration | Points: 550.6/960.0 | Rank %: 97.4
 
 
@@ -30,5 +30,5 @@ Boss HPS Percentage:
   Dimensius, the All-Devouring: Rank None%, Best HPS 0
 
 Rankings:
-  Partition 2 | Spec: Restoration | Rank: 331 / 23,288 | Region: 58 | Server: 56
+  Partition 2 | Spec: Restoration | Rank: 351 / 23,764 | Region: 61 | Server: 59
   Partition 1 | Spec: Restoration | Rank: 816 / 31,365 | Region: 106 | Server: 104
