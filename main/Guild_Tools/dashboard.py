@@ -82,32 +82,33 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         'Warrior': '#C69B6D'
     }
     
-    # Create color arrays based on character classes
+    # Raider.IO M+ score colors
+    def get_mplus_color(score):
+        if score >= 3000: return '#FFA500'  # Orange (high)
+        elif score >= 2750: return '#FF8000'  # Orange-red
+        elif score >= 2500: return '#FF6060'  # Red
+        elif score >= 2250: return '#C41E3A'  # Dark red
+        elif score >= 2000: return '#E268A8'  # Pink-purple
+        elif score >= 1750: return '#A335EE'  # Epic purple
+        elif score >= 1500: return '#8788EE'  # Light purple
+        elif score >= 1250: return '#0070DD'  # Rare blue
+        elif score >= 1000: return '#1EFF00'  # Uncommon green
+        elif score >= 750: return '#71D5FF'   # Light blue
+        else: return '#808080'  # Grey
+    
+    # Create color arrays
     char_colors_ilvl = [class_colors.get(cls, '#667eea') for cls in char_classes]
     
     char_mplus = []
+    char_colors_mplus = []
     for c in characters:
         try:
-            char_mplus.append(float(str(c['M+']).replace(',', '')))
+            score = float(str(c['M+']).replace(',', ''))
+            char_mplus.append(score)
+            char_colors_mplus.append(get_mplus_color(score))
         except:
             char_mplus.append(0)
-    
-    char_colors_mplus = [class_colors.get(cls, '#667eea') for cls in char_classes]
-    
-    char_wcl = []
-    for c in characters:
-        try:
-            char_wcl.append(float(str(c['WCL']).replace(',', '')))
-        except:
-            char_wcl.append(0)
-    
-    char_colors_wcl = [class_colors.get(cls, '#667eea') for cls in char_classes]
-    
-    # Count by class
-    class_counts = {}
-    for char in characters:
-        cls = char['Class']
-        class_counts[cls] = class_counts.get(cls, 0) + 1
+            char_colors_mplus.append('#808080')
     
     # Generate HTML
     html = f"""
@@ -215,11 +216,6 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
             font-size: 1.3em;
         }}
         
-        .chart-container {{
-            position: relative;
-            height: 400px;
-        }}
-        
         .chart-container-large {{
             position: relative;
             height: 600px;
@@ -263,21 +259,6 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
             border-radius: 12px;
             font-size: 0.85em;
             font-weight: 600;
-        }}
-        
-        .performance-high {{
-            background: #10b981;
-            color: white;
-        }}
-        
-        .performance-medium {{
-            background: #f59e0b;
-            color: white;
-        }}
-        
-        .performance-low {{
-            background: #ef4444;
-            color: white;
         }}
         
         .clickable {{
@@ -335,6 +316,47 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         
         .modal-body {{
             padding: 30px;
+            line-height: 1.8;
+        }}
+        
+        .modal-body h2, .modal-body h3, .modal-body h4 {{
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }}
+        
+        .modal-body h2 {{
+            font-size: 1.8em;
+            color: #667eea;
+        }}
+        
+        .modal-body h3 {{
+            font-size: 1.4em;
+            color: #764ba2;
+        }}
+        
+        .modal-body h4 {{
+            font-size: 1.2em;
+            color: #333;
+        }}
+        
+        .modal-body p {{
+            margin-bottom: 10px;
+        }}
+        
+        .modal-body ul, .modal-body ol {{
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }}
+        
+        .modal-body table {{
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }}
+        
+        .modal-body hr {{
+            margin: 30px 0;
+            border: none;
+            border-top: 2px solid #eee;
         }}
         
         .close {{
@@ -349,43 +371,6 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         
         .close:hover {{
             transform: scale(1.2);
-        }}
-        
-        .detail-section {{
-            margin-bottom: 25px;
-        }}
-        
-        .detail-section h3 {{
-            color: #667eea;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-        }}
-        
-        .detail-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }}
-        
-        .detail-item {{
-            background: #f8f9ff;
-            padding: 15px;
-            border-radius: 8px;
-        }}
-        
-        .detail-item strong {{
-            display: block;
-            color: #666;
-            font-size: 0.85em;
-            margin-bottom: 5px;
-        }}
-        
-        .detail-item span {{
-            font-size: 1.3em;
-            color: #333;
-            font-weight: 600;
         }}
         
         footer {{
@@ -440,13 +425,6 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                     <canvas id="mplusChart"></canvas>
                 </div>
             </div>
-            
-            <div class="chart-card" style="grid-column: 1 / -1;">
-                <h2>🏆 WCL Performance Distribution</h2>
-                <div class="chart-container-large">
-                    <canvas id="wclChart"></canvas>
-                </div>
-            </div>
         </div>
         
         <div class="table-card">
@@ -458,9 +436,8 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                         <th>Class</th>
                         <th>Spec</th>
                         <th>ilvl</th>
-                        <th>M+ Score</th>
+                        <th>M+ Tier</th>
                         <th>WCL</th>
-                        <th>Performance</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -471,16 +448,33 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         char_name = char['ID']
         has_details = char_name in character_details
         
+        # Get M+ score for badge
+        try:
+            mplus_val = float(str(char['M+']).replace(',', ''))
+            mplus_color = get_mplus_color(mplus_val)
+            mplus_badge = f'<span class="performance-badge" style="background: {mplus_color}; color: white;">{mplus_val:.0f}</span>'
+        except:
+            mplus_badge = '<span class="performance-badge" style="background: #808080; color: white;">N/A</span>'
+        
+        # Get WCL score for badge with original colors
         try:
             wcl_val = float(str(char['WCL']).replace(',', ''))
-            if wcl_val >= 75:
-                badge = '<span class="performance-badge performance-high">High</span>'
+            if wcl_val == 100:
+                wcl_badge = f'<span class="performance-badge" style="background: #e6cc80; color: white;">{wcl_val:.1f}</span>'
+            elif wcl_val >= 99:
+                wcl_badge = f'<span class="performance-badge" style="background: #e367a5; color: white;">{wcl_val:.1f}</span>'
+            elif wcl_val >= 95:
+                wcl_badge = f'<span class="performance-badge" style="background: #ff8000; color: white;">{wcl_val:.1f}</span>'
+            elif wcl_val >= 75:
+                wcl_badge = f'<span class="performance-badge" style="background: #a335ee; color: white;">{wcl_val:.1f}</span>'
             elif wcl_val >= 50:
-                badge = '<span class="performance-badge performance-medium">Medium</span>'
+                wcl_badge = f'<span class="performance-badge" style="background: #0070dd; color: white;">{wcl_val:.1f}</span>'
+            elif wcl_val >= 25:
+                wcl_badge = f'<span class="performance-badge" style="background: #1eff00; color: white;">{wcl_val:.1f}</span>'
             else:
-                badge = '<span class="performance-badge performance-low">Low</span>'
+                wcl_badge = f'<span class="performance-badge" style="background: #808080; color: white;">{wcl_val:.1f}</span>'
         except:
-            badge = '<span class="performance-badge performance-low">N/A</span>'
+            wcl_badge = '<span class="performance-badge" style="background: #808080; color: white;">N/A</span>'
         
         # Make name clickable if details exist
         name_display = f'<a href="#" class="clickable" onclick="showCharacterDetails(\'{char_name}\'); return false;">{char_name}</a>' if has_details else f'<strong>{char_name}</strong>'
@@ -491,9 +485,8 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                         <td>{char['Class']}</td>
                         <td>{char['Spec']}</td>
                         <td>{char['ilvl']}</td>
-                        <td>{char['M+']}</td>
-                        <td>{char['WCL']}</td>
-                        <td>{badge}</td>
+                        <td>{mplus_badge}</td>
+                        <td>{wcl_badge}</td>
                     </tr>
         """
     
@@ -516,7 +509,7 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         </div>
         
         <footer>
-            <p>Made with ❤️ for your guild</p>
+            <p>두부킴의 유기견들</p>
         </footer>
     </div>
     
@@ -533,89 +526,97 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
             if (characterDetails[charName]) {{
                 modalTitle.textContent = charName;
                 
-                // Convert markdown to HTML (basic conversion)
-                let content = characterDetails[charName];
-                content = content.replace(/^# (.+)$/gm, '<h2>$1</h2>');
-                content = content.replace(/^## (.+)$/gm, '<h3>$1</h3>');
-                content = content.replace(/^### (.+)$/gm, '<h4>$1</h4>');
-                content = content.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-                content = content.replace(/\*(.+?)\*/g, '<em>$1</em>');
-                content = content.replace(/^---$/gm, '<hr>');
-                content = content.replace(/\\n/g, '<br>');
-                
-                // Convert tables
+                // Convert markdown to HTML (improved parsing)
+                const content = characterDetails[charName];
                 const lines = content.split('\\n');
+                let html = '';
                 let inTable = false;
-                let newContent = '';
+                let tableRows = [];
                 
                 for (let i = 0; i < lines.length; i++) {{
-                    const line = lines[i].trim();
+                    let line = lines[i];
                     
-                    if (line.startsWith('|')) {{
+                    // Handle tables
+                    if (line.trim().startsWith('|')) {{
                         if (!inTable) {{
-                            newContent += '<table style="width:100%; border-collapse: collapse; margin: 15px 0;">';
                             inTable = true;
+                            tableRows = [];
                         }}
-                        
-                        const cells = line.split('|').filter(cell => cell.trim());
-                        
-                        // Check if it's a separator line
-                        if (cells[0].includes('---')) {{
-                            continue;
-                        }}
-                        
-                        // First row is header
-                        if (inTable && i > 0 && !lines[i-1].includes('---')) {{
-                            newContent += '<thead><tr>';
-                            cells.forEach(cell => {{
-                                newContent += `<th style="background: #667eea; color: white; padding: 10px; text-align: left;">${{cell.trim()}}</th>`;
-                            }});
-                            newContent += '</tr></thead><tbody>';
-                        }} else if (inTable) {{
-                            newContent += '<tr>';
-                            cells.forEach(cell => {{
-                                newContent += `<td style="padding: 10px; border-bottom: 1px solid #eee;">${{cell.trim()}}</td>`;
-                            }});
-                            newContent += '</tr>';
-                        }}
+                        tableRows.push(line);
+                        continue;
+                    }} else if (inTable) {{
+                        html += processTable(tableRows);
+                        inTable = false;
+                        tableRows = [];
+                    }}
+                    
+                    // Headers
+                    if (line.startsWith('# ')) {{
+                        html += `<h2>${{line.substring(2)}}</h2>`;
+                    }} else if (line.startsWith('## ')) {{
+                        html += `<h3>${{line.substring(3)}}</h3>`;
+                    }} else if (line.startsWith('### ')) {{
+                        html += `<h4>${{line.substring(4)}}</h4>`;
+                    }} else if (line.trim() === '---') {{
+                        html += '<hr>';
+                    }} else if (line.trim() === '') {{
+                        html += '<br>';
                     }} else {{
-                        if (inTable) {{
-                            newContent += '</tbody></table>';
-                            inTable = false;
-                        }}
-                        newContent += line + '\\n';
+                        // Process inline formatting
+                        line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        line = line.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                        html += `<p>${{line}}</p>`;
                     }}
                 }}
                 
                 if (inTable) {{
-                    newContent += '</tbody></table>';
+                    html += processTable(tableRows);
                 }}
                 
-                modalBody.innerHTML = newContent;
+                modalBody.innerHTML = html;
                 modal.style.display = 'block';
             }}
+        }}
+        
+        function processTable(rows) {{
+            if (rows.length === 0) return '';
+            
+            let html = '<table style="width:100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">';
+            
+            for (let i = 0; i < rows.length; i++) {{
+                const cells = rows[i].split('|').filter(cell => cell.trim());
+                
+                if (cells[0] && cells[0].includes('---')) continue;
+                
+                if (i === 0) {{
+                    html += '<thead><tr>';
+                    cells.forEach(cell => {{
+                        html += `<th style="background: #667eea; color: white; padding: 12px; text-align: left; font-weight: 600;">${{cell.trim()}}</th>`;
+                    }});
+                    html += '</tr></thead><tbody>';
+                }} else {{
+                    html += '<tr style="border-bottom: 1px solid #eee;">';
+                    cells.forEach(cell => {{
+                        html += `<td style="padding: 12px;">${{cell.trim()}}</td>`;
+                    }});
+                    html += '</tr>';
+                }}
+            }}
+            
+            html += '</tbody></table>';
+            return html;
         }}
         
         function closeModal() {{
             document.getElementById('characterModal').style.display = 'none';
         }}
         
-        // Close modal when clicking outside
         window.onclick = function(event) {{
             const modal = document.getElementById('characterModal');
             if (event.target == modal) {{
                 modal.style.display = 'none';
             }}
         }}
-        
-        // Chart.js configuration
-        const chartColors = {{
-            primary: '#667eea',
-            secondary: '#764ba2',
-            success: '#10b981',
-            warning: '#f59e0b',
-            danger: '#ef4444'
-        }};
         
         // Item Level Chart
         new Chart(document.getElementById('ilvlChart'), {{
@@ -645,6 +646,9 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                             font: {{
                                 size: 11
                             }}
+                        }},
+                        grid: {{
+                            color: '#e0e0e0'
                         }}
                     }},
                     y: {{
@@ -652,10 +656,25 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                         max: 730,
                         ticks: {{
                             stepSize: 10
+                        }},
+                        grid: {{
+                            color: '#e0e0e0'
                         }}
                     }}
+                }},
+                layout: {{
+                    padding: 10
                 }}
-            }}
+            }},
+            plugins: [{{
+                beforeDraw: (chart) => {{
+                    const ctx = chart.ctx;
+                    ctx.save();
+                    ctx.fillStyle = '#f5f5f5';
+                    ctx.fillRect(0, 0, chart.width, chart.height);
+                    ctx.restore();
+                }}
+            }}]
         }});
         
         // M+ Score Chart
@@ -686,51 +705,31 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                             font: {{
                                 size: 11
                             }}
-                        }}
-                    }},
-                    y: {{
-                        beginAtZero: true
-                    }}
-                }}
-            }}
-        }});
-        
-        // WCL Chart
-        new Chart(document.getElementById('wclChart'), {{
-            type: 'bar',
-            data: {{
-                labels: {json.dumps(char_names)},
-                datasets: [{{
-                    label: 'WCL Performance',
-                    data: {json.dumps(char_wcl)},
-                    backgroundColor: {json.dumps(char_colors_wcl)},
-                    borderRadius: 5
-                }}]
-            }},
-            options: {{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {{
-                    legend: {{
-                        display: false
-                    }}
-                }},
-                scales: {{
-                    x: {{
-                        ticks: {{
-                            maxRotation: 45,
-                            minRotation: 45,
-                            font: {{
-                                size: 11
-                            }}
+                        }},
+                        grid: {{
+                            color: '#e0e0e0'
                         }}
                     }},
                     y: {{
                         beginAtZero: true,
-                        max: 100
+                        grid: {{
+                            color: '#e0e0e0'
+                        }}
                     }}
+                }},
+                layout: {{
+                    padding: 10
                 }}
-            }}
+            }},
+            plugins: [{{
+                beforeDraw: (chart) => {{
+                    const ctx = chart.ctx;
+                    ctx.save();
+                    ctx.fillStyle = '#f5f5f5';
+                    ctx.fillRect(0, 0, chart.width, chart.height);
+                    ctx.restore();
+                }}
+            }}]
         }});
     </script>
 </body>
