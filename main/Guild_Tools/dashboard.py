@@ -652,7 +652,7 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                         }}
                     }},
                     y: {{
-                        min: 600,
+                        min: 700,
                         max: 730,
                         ticks: {{
                             stepSize: 10
