@@ -148,8 +148,100 @@ def process_character_name(name):
 # ────────────────────────────────────────────────
 # API Functions
 
+def get_spec_icon(spec_id, token):
+    """Get specialization icon URL from Blizzard media API"""
+    if not spec_id or not token:
+        return ""
+    
+    url = f"https://{REGION}.api.blizzard.com/data/wow/media/playable-specialization/{spec_id}"
+    headers = {"Authorization": f"Bearer {token}"}
+    params = {"namespace": "static-kr", "locale": "ko_KR"}
+    
+    resp = safe_request("GET", url, headers=headers, params=params)
+    if not resp:
+        return ""
+    
+    try:
+        data = resp.json()
+        assets = data.get("assets", [])
+        for asset in assets:
+            if asset.get("key") == "icon":
+                return asset.get("value", "")
+    except:
+        pass
+    
+    return ""
+
+def get_character_spec(server, character):
+    """Get character's active specialization with icon"""
+    token = token_manager.get_token()
+    if not token:
+        return "Unknown", ""
+    
+    character_processed = process_character_name(character)
+    url = f"https://{REGION}.api.blizzard.com/profile/wow/character/{server.lower()}/{quote(character_processed)}/specializations"
+    headers = {"Authorization": f"Bearer {token}"}
+    params = {"namespace": NAMESPACE, "locale": "ko_KR"}
+    
+    resp = safe_request("GET", url, headers=headers, params=params)
+    if not resp:
+        return "Unknown", ""
+    
+    try:
+        data = resp.json()
+        specializations = data.get("specializations", [])
+        
+        # Find active spec
+        for spec_group in specializations:
+            if spec_group.get("is_active", False):
+                spec_info = spec_group.get("specialization", {})
+                spec_name = spec_info.get("name", "Unknown")
+                spec_id = spec_info.get("id", 0)
+                
+                # Get spec icon
+                spec_icon = get_spec_icon(spec_id, token)
+                
+                return spec_name, spec_icon
+        
+        # Fallback to first spec if no active found
+        if specializations and len(specializations) > 0:
+            spec_info = specializations[0].get("specialization", {})
+            spec_name = spec_info.get("name", "Unknown")
+            spec_id = spec_info.get("id", 0)
+            spec_icon = get_spec_icon(spec_id, token)
+            return spec_name, spec_icon
+        
+        return "Unknown", ""
+    except (KeyError, ValueError, TypeError) as e:
+        console.print(f"[warning]⚠ Failed to parse spec: {e}[/warning]")
+        return "Unknown", ""
+
+def get_item_icon(item_id, token):
+    """Get item icon URL from Blizzard media API"""
+    if not item_id or not token:
+        return ""
+    
+    url = f"https://{REGION}.api.blizzard.com/data/wow/media/item/{item_id}"
+    headers = {"Authorization": f"Bearer {token}"}
+    params = {"namespace": "static-kr", "locale": "ko_KR"}
+    
+    resp = safe_request("GET", url, headers=headers, params=params)
+    if not resp:
+        return ""
+    
+    try:
+        data = resp.json()
+        assets = data.get("assets", [])
+        for asset in assets:
+            if asset.get("key") == "icon":
+                return asset.get("value", "")
+    except:
+        pass
+    
+    return ""
+
 def get_character_equipment(server, character):
-    """Get detailed equipment list from Blizzard API"""
+    """Get detailed equipment list from Blizzard API with item icons"""
     token = token_manager.get_token()
     if not token:
         return []
@@ -172,11 +264,17 @@ def get_character_equipment(server, character):
             slot_name = item.get("slot", {}).get("name", "Unknown")
             item_name = item.get("name", "Unknown")
             item_level = item.get("level", {}).get("value", 0)
+            item_id = item.get("item", {}).get("id", 0)
+            
+            # Get icon URL from Blizzard media API
+            icon_url = get_item_icon(item_id, token)
             
             equipment_list.append({
                 "slot": slot_name,
                 "name": item_name,
-                "ilvl": item_level
+                "ilvl": item_level,
+                "item_id": item_id,
+                "icon": icon_url
             })
         
         return equipment_list
@@ -306,12 +404,13 @@ def get_wcl_data(server, character, role):
 # ────────────────────────────────────────────────
 # Formatting Functions
 
-def format_comprehensive_report(character, character_class, role, server, wcl_spec, 
+def format_comprehensive_report(character, character_class, role, server, wcl_spec, wcl_spec_icon,
                                equipment_data, ilvl, mplus_score, wcl_data):
-    """Format comprehensive character report with all data"""
+    """Format comprehensive character report with all data including item IDs"""
     lines = []
     lines.append(f"# {character}")
     lines.append(f"**{wcl_spec} {character_class}** | **{role}** | **{server}**")
+    lines.append(f"**SPEC_ICON:{wcl_spec_icon}**")
     lines.append(f"\n*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n")
     lines.append("---\n")
     
@@ -326,20 +425,22 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
     lines.append(f"- **WarcraftLogs Average:** {format_amount(best_perf_avg)}\n")
     
     # ═══════════════════════════════════════
-    # EQUIPMENT SECTION
+    # EQUIPMENT SECTION (with item IDs)
     # ═══════════════════════════════════════
     lines.append("---\n")
     lines.append("## ⚔️ Equipment\n")
     
     if equipment_data:
-        lines.append("| Slot | Item Name | Item Level |")
-        lines.append("|------|-----------|------------|")
+        lines.append("| Slot | Item Name | Item Level | Icon |")
+        lines.append("|------|-----------|------------|------|")
         
         for item in equipment_data:
             slot = item.get('slot', 'Unknown')
             name = item.get('name', 'Unknown')
             item_ilvl = item.get('ilvl', 0)
-            lines.append(f"| {slot} | {name} | {item_ilvl} |")
+            icon_url = item.get('icon', '')
+            # Store icon URL but display as hidden marker
+            lines.append(f"| {slot} | {name} | {item_ilvl} | ICON:{icon_url} |")
     else:
         lines.append("*Equipment data not available*")
     
@@ -450,6 +551,9 @@ def crawl_character(row, attempt=1):
         mplus_score = get_mplus_score(server, character)
         wcl_data = get_wcl_data(server, character, role)
         
+        # Get spec with icon from Blizzard API
+        blizzard_spec, blizzard_spec_icon = get_character_spec(server, character)
+        
         # Retry logic for failures
         if (wcl_data is None or ilvl == 0) and attempt < 3:
             console.print(f"[warning]⚠ Retrying {character}...[/warning]")
@@ -464,15 +568,16 @@ def crawl_character(row, attempt=1):
             console.print(f"[error]❌ {character} - WCL API failed[/error]")
             wcl_data = {}  # Use empty dict for report generation
         
-        # Extract spec and performance
+        # Extract spec from WCL or use Blizzard spec
         all_stars = wcl_data.get('allStars', [])
-        wcl_spec = all_stars[0].get('spec', 'Unknown') if all_stars else "Unknown"
+        wcl_spec = all_stars[0].get('spec', blizzard_spec) if all_stars else blizzard_spec
+        wcl_spec_icon = blizzard_spec_icon  # Use Blizzard icon
         best_perf_avg = wcl_data.get('bestPerformanceAverage', "N/A")
         
         # Save comprehensive report
         os.makedirs(DETAIL_DIR, exist_ok=True)
         report_content = format_comprehensive_report(
-            character, character_class, role, server, wcl_spec,
+            character, character_class, role, server, wcl_spec, wcl_spec_icon,
             equipment_data, ilvl, mplus_score, wcl_data
         )
         with open(os.path.join(DETAIL_DIR, f"{character}.md"), "w", encoding="utf-8") as f:

@@ -12,19 +12,28 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
     
     # Read data
     characters = []
+    character_specs = {}  # Store spec icons
     with open(csv_file, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             characters.append(row)
     
-    # Load detailed character data
+    # Load detailed character data and extract spec icons
     character_details = {}
     if os.path.exists(detailed_dir):
         for filename in os.listdir(detailed_dir):
             if filename.endswith('.md'):
                 char_name = filename[:-3]  # Remove .md extension
                 with open(os.path.join(detailed_dir, filename), 'r', encoding='utf-8') as f:
-                    character_details[char_name] = f.read()
+                    content = f.read()
+                    character_details[char_name] = content
+                    
+                    # Extract spec icon
+                    for line in content.split('\n'):
+                        if line.startswith('**SPEC_ICON:'):
+                            spec_icon = line.replace('**SPEC_ICON:', '').replace('**', '').strip()
+                            character_specs[char_name] = spec_icon
+                            break
     
     # Calculate statistics
     total_chars = len(characters)
@@ -79,36 +88,41 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         'Rogue': '#FFF468',
         'Shaman': '#0070DD',
         'Warlock': '#8788EE',
-        'Warrior': '#C69B6D'
+        'Warrior': '#C69B6D',
+        'Demonhunter': '#A330C9'  # Alternative spelling
     }
     
-    # Raider.IO M+ score colors
-    def get_mplus_color(score):
-        if score >= 3000: return '#FFA500'  # Orange (high)
-        elif score >= 2750: return '#FF8000'  # Orange-red
-        elif score >= 2500: return '#FF6060'  # Red
-        elif score >= 2250: return '#C41E3A'  # Dark red
-        elif score >= 2000: return '#E268A8'  # Pink-purple
-        elif score >= 1750: return '#A335EE'  # Epic purple
-        elif score >= 1500: return '#8788EE'  # Light purple
-        elif score >= 1250: return '#0070DD'  # Rare blue
-        elif score >= 1000: return '#1EFF00'  # Uncommon green
-        elif score >= 750: return '#71D5FF'   # Light blue
+    # WCL score colors
+    def get_wcl_color(score):
+        if score == 100: return '#e6cc80'  # Gold
+        elif score >= 99: return '#e367a5'  # Pink
+        elif score >= 95: return '#ff8000'  # Orange
+        elif score >= 75: return '#a335ee'  # Epic purple
+        elif score >= 50: return '#0070dd'  # Rare blue
+        elif score >= 25: return '#1eff00'  # Uncommon green
         else: return '#808080'  # Grey
     
     # Create color arrays
-    char_colors_ilvl = [class_colors.get(cls, '#667eea') for cls in char_classes]
+    char_colors_class = [class_colors.get(cls, '#667eea') for cls in char_classes]
     
     char_mplus = []
-    char_colors_mplus = []
     for c in characters:
         try:
             score = float(str(c['M+']).replace(',', ''))
             char_mplus.append(score)
-            char_colors_mplus.append(get_mplus_color(score))
         except:
             char_mplus.append(0)
-            char_colors_mplus.append('#808080')
+    
+    char_wcl = []
+    char_colors_wcl = []
+    for c in characters:
+        try:
+            score = float(str(c['WCL']).replace(',', ''))
+            char_wcl.append(score)
+            char_colors_wcl.append(get_wcl_color(score))
+        except:
+            char_wcl.append(0)
+            char_colors_wcl.append('#808080')
     
     # Generate HTML
     html = f"""
@@ -425,6 +439,13 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                     <canvas id="mplusChart"></canvas>
                 </div>
             </div>
+            
+            <div class="chart-card" style="grid-column: 1 / -1;">
+                <h2>📈 Warcraft Logs Performance</h2>
+                <div class="chart-container-large">
+                    <canvas id="wclChart"></canvas>
+                </div>
+            </div>
         </div>
         
         <div class="table-card">
@@ -443,47 +464,51 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                 <tbody>
     """
     
-    # Add table rows with clickable character names
+    # Add table rows with clickable character names and spec icons
     for char in characters:
         char_name = char['ID']
         has_details = char_name in character_details
+        spec_icon = character_specs.get(char_name, '')
         
-        # Get M+ score for badge
+        # Get M+ score for badge (using Raider.IO colors)
         try:
             mplus_val = float(str(char['M+']).replace(',', ''))
-            mplus_color = get_mplus_color(mplus_val)
+            if mplus_val >= 3000: mplus_color = '#FFA500'
+            elif mplus_val >= 2750: mplus_color = '#FF8000'
+            elif mplus_val >= 2500: mplus_color = '#FF6060'
+            elif mplus_val >= 2250: mplus_color = '#C41E3A'
+            elif mplus_val >= 2000: mplus_color = '#E268A8'
+            elif mplus_val >= 1750: mplus_color = '#A335EE'
+            elif mplus_val >= 1500: mplus_color = '#8788EE'
+            elif mplus_val >= 1250: mplus_color = '#0070DD'
+            elif mplus_val >= 1000: mplus_color = '#1EFF00'
+            elif mplus_val >= 750: mplus_color = '#71D5FF'
+            else: mplus_color = '#808080'
             mplus_badge = f'<span class="performance-badge" style="background: {mplus_color}; color: white;">{mplus_val:.0f}</span>'
         except:
             mplus_badge = '<span class="performance-badge" style="background: #808080; color: white;">N/A</span>'
         
-        # Get WCL score for badge with original colors
+        # Get WCL score for badge
         try:
             wcl_val = float(str(char['WCL']).replace(',', ''))
-            if wcl_val == 100:
-                wcl_badge = f'<span class="performance-badge" style="background: #e6cc80; color: white;">{wcl_val:.1f}</span>'
-            elif wcl_val >= 99:
-                wcl_badge = f'<span class="performance-badge" style="background: #e367a5; color: white;">{wcl_val:.1f}</span>'
-            elif wcl_val >= 95:
-                wcl_badge = f'<span class="performance-badge" style="background: #ff8000; color: white;">{wcl_val:.1f}</span>'
-            elif wcl_val >= 75:
-                wcl_badge = f'<span class="performance-badge" style="background: #a335ee; color: white;">{wcl_val:.1f}</span>'
-            elif wcl_val >= 50:
-                wcl_badge = f'<span class="performance-badge" style="background: #0070dd; color: white;">{wcl_val:.1f}</span>'
-            elif wcl_val >= 25:
-                wcl_badge = f'<span class="performance-badge" style="background: #1eff00; color: white;">{wcl_val:.1f}</span>'
-            else:
-                wcl_badge = f'<span class="performance-badge" style="background: #808080; color: white;">{wcl_val:.1f}</span>'
+            wcl_color = get_wcl_color(wcl_val)
+            wcl_badge = f'<span class="performance-badge" style="background: {wcl_color}; color: white;">{wcl_val:.1f}</span>'
         except:
             wcl_badge = '<span class="performance-badge" style="background: #808080; color: white;">N/A</span>'
         
         # Make name clickable if details exist
         name_display = f'<a href="#" class="clickable" onclick="showCharacterDetails(\'{char_name}\'); return false;">{char_name}</a>' if has_details else f'<strong>{char_name}</strong>'
         
+        # Add spec icon to spec column
+        spec_display = char['Spec']
+        if spec_icon:
+            spec_display = f'<img src="{spec_icon}" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display=\'none\'"> {char["Spec"]}'
+        
         html += f"""
                     <tr>
                         <td>{name_display}</td>
                         <td>{char['Class']}</td>
-                        <td>{char['Spec']}</td>
+                        <td>{spec_display}</td>
                         <td>{char['ilvl']}</td>
                         <td>{mplus_badge}</td>
                         <td>{wcl_badge}</td>
@@ -526,17 +551,32 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
             if (characterDetails[charName]) {{
                 modalTitle.textContent = charName;
                 
-                // Convert markdown to HTML (improved parsing)
+                // Convert markdown to HTML
                 const content = characterDetails[charName];
                 const lines = content.split('\\n');
                 let html = '';
                 let inTable = false;
                 let tableRows = [];
                 
+                let isEquipmentSection = false;
+                let specIcon = '';
+                
                 for (let i = 0; i < lines.length; i++) {{
                     let line = lines[i];
                     
-                    // Handle tables
+                    // Extract and SKIP the SPEC_ICON line completely
+                    if (line.startsWith('**SPEC_ICON:')) {{
+                        specIcon = line.replace('**SPEC_ICON:', '').replace('**', '').trim();
+                        continue; // Don't process this line at all
+                    }}
+                    
+                    // Check if we're in equipment section
+                    if (line.includes('## ⚔️ Equipment')) {{
+                        isEquipmentSection = true;
+                    }} else if (line.startsWith('##')) {{
+                        isEquipmentSection = false;
+                    }}
+                    
                     if (line.trim().startsWith('|')) {{
                         if (!inTable) {{
                             inTable = true;
@@ -545,12 +585,11 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                         tableRows.push(line);
                         continue;
                     }} else if (inTable) {{
-                        html += processTable(tableRows);
+                        html += processTable(tableRows, isEquipmentSection);
                         inTable = false;
                         tableRows = [];
                     }}
                     
-                    // Headers
                     if (line.startsWith('# ')) {{
                         html += `<h2>${{line.substring(2)}}</h2>`;
                     }} else if (line.startsWith('## ')) {{
@@ -562,15 +601,20 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                     }} else if (line.trim() === '') {{
                         html += '<br>';
                     }} else {{
-                        // Process inline formatting
                         line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
                         line = line.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                        
+                        // Add spec icon if this is the class/role line and we have an icon
+                        if (specIcon && line.includes('|') && (line.includes('Tank') || line.includes('Healer') || line.includes('Melee') || line.includes('Ranged'))) {{
+                            line = `<img src="${{specIcon}}" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> ` + line;
+                        }}
+                        
                         html += `<p>${{line}}</p>`;
                     }}
                 }}
                 
                 if (inTable) {{
-                    html += processTable(tableRows);
+                    html += processTable(tableRows, isEquipmentSection);
                 }}
                 
                 modalBody.innerHTML = html;
@@ -578,7 +622,7 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
             }}
         }}
         
-        function processTable(rows) {{
+        function processTable(rows, isEquipmentTable = false) {{
             if (rows.length === 0) return '';
             
             let html = '<table style="width:100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">';
@@ -590,14 +634,38 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                 
                 if (i === 0) {{
                     html += '<thead><tr>';
-                    cells.forEach(cell => {{
-                        html += `<th style="background: #667eea; color: white; padding: 12px; text-align: left; font-weight: 600;">${{cell.trim()}}</th>`;
+                    cells.forEach((cell, idx) => {{
+                        // Skip the Icon column header in equipment tables
+                        if (!(isEquipmentTable && idx === 3 && cell.trim() === 'Icon')) {{
+                            html += `<th style="background: #667eea; color: white; padding: 12px; text-align: left; font-weight: 600;">${{cell.trim()}}</th>`;
+                        }}
                     }});
                     html += '</tr></thead><tbody>';
                 }} else {{
                     html += '<tr style="border-bottom: 1px solid #eee;">';
-                    cells.forEach(cell => {{
-                        html += `<td style="padding: 12px;">${{cell.trim()}}</td>`;
+                    cells.forEach((cell, index) => {{
+                        // For equipment tables
+                        if (isEquipmentTable) {{
+                            if (index === 1 && cells.length >= 4) {{
+                                // This is the item name column, add icon
+                                const iconCell = cells[3].trim();
+                                if (iconCell.startsWith('ICON:')) {{
+                                    const iconUrl = iconCell.substring(5); // Remove 'ICON:' prefix
+                                    if (iconUrl && iconUrl.startsWith('http')) {{
+                                        html += `<td style="padding: 12px;"><img src="${{iconUrl}}" alt="icon" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> ${{cell.trim()}}</td>`;
+                                    }} else {{
+                                        html += `<td style="padding: 12px;">${{cell.trim()}}</td>`;
+                                    }}
+                                }} else {{
+                                    html += `<td style="padding: 12px;">${{cell.trim()}}</td>`;
+                                }}
+                            }} else if (index !== 3) {{
+                                // Skip the Icon URL column (index 3)
+                                html += `<td style="padding: 12px;">${{cell.trim()}}</td>`;
+                            }}
+                        }} else {{
+                            html += `<td style="padding: 12px;">${{cell.trim()}}</td>`;
+                        }}
                     }});
                     html += '</tr>';
                 }}
@@ -618,6 +686,17 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
             }}
         }}
         
+        // Chart background plugin (lighter grey)
+        const lighterBgPlugin = {{
+            beforeDraw: (chart) => {{
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.fillStyle = '#F5F5F5';
+                ctx.fillRect(0, 0, chart.width, chart.height);
+                ctx.restore();
+            }}
+        }};
+        
         // Item Level Chart
         new Chart(document.getElementById('ilvlChart'), {{
             type: 'bar',
@@ -626,7 +705,7 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                 datasets: [{{
                     label: 'Item Level',
                     data: {json.dumps(char_ilvls)},
-                    backgroundColor: {json.dumps(char_colors_ilvl)},
+                    backgroundColor: {json.dumps(char_colors_class)},
                     borderRadius: 5
                 }}]
             }},
@@ -641,24 +720,27 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                 scales: {{
                     x: {{
                         ticks: {{
-                            maxRotation: 45,
-                            minRotation: 45,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: false,
                             font: {{
                                 size: 11
-                            }}
+                            }},
+                            color: '#000000'
                         }},
                         grid: {{
-                            color: '#e0e0e0'
+                            color: '#CCCCCC'
                         }}
                     }},
                     y: {{
                         min: 700,
                         max: 730,
                         ticks: {{
-                            stepSize: 10
+                            stepSize: 10,
+                            color: '#000000'
                         }},
                         grid: {{
-                            color: '#e0e0e0'
+                            color: '#CCCCCC'
                         }}
                     }}
                 }},
@@ -666,18 +748,10 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                     padding: 10
                 }}
             }},
-            plugins: [{{
-                beforeDraw: (chart) => {{
-                    const ctx = chart.ctx;
-                    ctx.save();
-                    ctx.fillStyle = '#f5f5f5';
-                    ctx.fillRect(0, 0, chart.width, chart.height);
-                    ctx.restore();
-                }}
-            }}]
+            plugins: [lighterBgPlugin]
         }});
         
-        // M+ Score Chart
+        // M+ Score Chart (with class colors)
         new Chart(document.getElementById('mplusChart'), {{
             type: 'bar',
             data: {{
@@ -685,7 +759,7 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                 datasets: [{{
                     label: 'M+ Score',
                     data: {json.dumps(char_mplus)},
-                    backgroundColor: {json.dumps(char_colors_mplus)},
+                    backgroundColor: {json.dumps(char_colors_class)},
                     borderRadius: 5
                 }}]
             }},
@@ -700,20 +774,25 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                 scales: {{
                     x: {{
                         ticks: {{
-                            maxRotation: 45,
-                            minRotation: 45,
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: false,
                             font: {{
                                 size: 11
-                            }}
+                            }},
+                            color: '#000000'
                         }},
                         grid: {{
-                            color: '#e0e0e0'
+                            color: '#CCCCCC'
                         }}
                     }},
                     y: {{
                         beginAtZero: true,
+                        ticks: {{
+                            color: '#000000'
+                        }},
                         grid: {{
-                            color: '#e0e0e0'
+                            color: '#CCCCCC'
                         }}
                     }}
                 }},
@@ -721,15 +800,61 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                     padding: 10
                 }}
             }},
-            plugins: [{{
-                beforeDraw: (chart) => {{
-                    const ctx = chart.ctx;
-                    ctx.save();
-                    ctx.fillStyle = '#f5f5f5';
-                    ctx.fillRect(0, 0, chart.width, chart.height);
-                    ctx.restore();
+            plugins: [lighterBgPlugin]
+        }});
+        
+        // WCL Score Chart (with class colors)
+        new Chart(document.getElementById('wclChart'), {{
+            type: 'bar',
+            data: {{
+                labels: {json.dumps(char_names)},
+                datasets: [{{
+                    label: 'WCL Score',
+                    data: {json.dumps(char_wcl)},
+                    backgroundColor: {json.dumps(char_colors_class)},
+                    borderRadius: 5
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{
+                        display: false
+                    }}
+                }},
+                scales: {{
+                    x: {{
+                        ticks: {{
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: false,
+                            font: {{
+                                size: 11
+                            }},
+                            color: '#000000'
+                        }},
+                        grid: {{
+                            color: '#CCCCCC'
+                        }}
+                    }},
+                    y: {{
+                        min: 0,
+                        max: 100,
+                        ticks: {{
+                            stepSize: 10,
+                            color: '#000000'
+                        }},
+                        grid: {{
+                            color: '#CCCCCC'
+                        }}
+                    }}
+                }},
+                layout: {{
+                    padding: 10
                 }}
-            }}]
+            }},
+            plugins: [lighterBgPlugin]
         }});
     </script>
 </body>
