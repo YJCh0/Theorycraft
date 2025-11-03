@@ -1,0 +1,1003 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WoW Guild Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+        
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-card .label {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .chart-card h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+        }
+        
+        .chart-container-large {
+            position: relative;
+            height: 600px;
+        }
+        
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f8f9ff;
+        }
+        
+        .performance-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .clickable {
+            cursor: pointer;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        
+        .clickable:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 50px auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 900px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px 15px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        
+        .modal-body {
+            padding: 30px;
+            line-height: 1.8;
+        }
+        
+        .modal-body h2, .modal-body h3, .modal-body h4 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .modal-body h2 {
+            font-size: 1.8em;
+            color: #667eea;
+        }
+        
+        .modal-body h3 {
+            font-size: 1.4em;
+            color: #764ba2;
+        }
+        
+        .modal-body h4 {
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        .modal-body p {
+            margin-bottom: 10px;
+        }
+        
+        .modal-body ul, .modal-body ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .modal-body table {
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .modal-body hr {
+            margin: 30px 0;
+            border: none;
+            border-top: 2px solid #eee;
+        }
+        
+        .close {
+            color: white;
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: transform 0.2s;
+        }
+        
+        .close:hover {
+            transform: scale(1.2);
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚔️ Guild Performance Dashboard</h1>
+            <p>Generated: 2025-11-03 10:12:37</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Members</h3>
+                <div class="value">20</div>
+                <div class="label">Active Characters</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average ilvl</h3>
+                <div class="value">727.7</div>
+                <div class="label">Guild Average</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average M+ Score</h3>
+                <div class="value">3076.5</div>
+                <div class="label">Mythic Plus Rating</div>
+            </div>
+            <div class="stat-card">
+                <h3>Average WCL</h3>
+                <div class="value">81.4</div>
+                <div class="label">Raid Performance</div>
+            </div>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-card" style="grid-column: 1 / -1;">
+                <h2>📊 Item Level Distribution</h2>
+                <div class="chart-container-large">
+                    <canvas id="ilvlChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card" style="grid-column: 1 / -1;">
+                <h2>🏔️ M+ Score Distribution</h2>
+                <div class="chart-container-large">
+                    <canvas id="mplusChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-card" style="grid-column: 1 / -1;">
+                <h2>📈 Warcraft Logs Performance</h2>
+                <div class="chart-container-large">
+                    <canvas id="wclChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-card">
+            <h2>📋 Detailed Character List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Character</th>
+                        <th>Class</th>
+                        <th>Spec</th>
+                        <th>ilvl</th>
+                        <th>M+ Tier</th>
+                        <th>WCL</th>
+                    </tr>
+                </thead>
+                <tbody>
+    
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('전사잠탱이'); return false;">전사잠탱이</a></td>
+                        <td>Warrior</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/ability_warrior_defensivestance.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Protection</td>
+                        <td>727.8</td>
+                        <td><span class="performance-badge" style="background: #FF8000; color: white;">2996</span></td>
+                        <td><span class="performance-badge" style="background: #0070dd; color: white;">68.6</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('업보맹'); return false;">업보맹</a></td>
+                        <td>Monk</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_monk_brewmaster_spec.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Brewmaster</td>
+                        <td>724.7</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3001</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">87.8</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('리쉽'); return false;">리쉽</a></td>
+                        <td>Druid</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_nature_healingtouch.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Restoration</td>
+                        <td>727.7</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3838</span></td>
+                        <td><span class="performance-badge" style="background: #ff8000; color: white;">95.2</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('참격황제'); return false;">참격황제</a></td>
+                        <td>Paladin</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_holy_holybolt.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Holy</td>
+                        <td>726.9</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3066</span></td>
+                        <td><span class="performance-badge" style="background: #0070dd; color: white;">65.1</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('하얀차'); return false;">하얀차</a></td>
+                        <td>Priest</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_shadow_shadowwordpain.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Holy</td>
+                        <td>729.4</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3058</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">93.1</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('용불타'); return false;">용불타</a></td>
+                        <td>Evoker</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/classicon_evoker_preservation.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Preservation</td>
+                        <td>729.0</td>
+                        <td><span class="performance-badge" style="background: #FF8000; color: white;">2988</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">75.4</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('탑골공원체스왕'); return false;">탑골공원체스왕</a></td>
+                        <td>Druid</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_nature_starfall.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Balance</td>
+                        <td>726.9</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3292</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">81.6</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('냥꾼린츠'); return false;">냥꾼린츠</a></td>
+                        <td>Hunter</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/ability_hunter_bestialdiscipline.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> BeastMastery</td>
+                        <td>729.4</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3054</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">89.3</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('특임시키면눕는다'); return false;">특임시키면눕는다</a></td>
+                        <td>Hunter</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/ability_hunter_bestialdiscipline.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> BeastMastery</td>
+                        <td>729.4</td>
+                        <td><span class="performance-badge" style="background: #FF8000; color: white;">2973</span></td>
+                        <td><span class="performance-badge" style="background: #ff8000; color: white;">95.3</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('헌터륑'); return false;">헌터륑</a></td>
+                        <td>Hunter</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/ability_hunter_focusedaim.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Marksmanship</td>
+                        <td>725.9</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3171</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">80.3</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('만보먹고'); return false;">만보먹고</a></td>
+                        <td>Mage</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_fire_firebolt02.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Fire</td>
+                        <td>729.4</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3424</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">91.4</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('치에니'); return false;">치에니</a></td>
+                        <td>Mage</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_fire_firebolt02.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Fire</td>
+                        <td>729.2</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3034</span></td>
+                        <td><span class="performance-badge" style="background: #0070dd; color: white;">74.2</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('보라발굽'); return false;">보라발굽</a></td>
+                        <td>Warlock</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_shadow_rainoffire.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Destruction</td>
+                        <td>728.1</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3030</span></td>
+                        <td><span class="performance-badge" style="background: #0070dd; color: white;">51.8</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('메오'); return false;">메오</a></td>
+                        <td>Warlock</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_shadow_rainoffire.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Destruction</td>
+                        <td>729.4</td>
+                        <td><span class="performance-badge" style="background: #E268A8; color: white;">2033</span></td>
+                        <td><span class="performance-badge" style="background: #ff8000; color: white;">98.6</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('보소밍'); return false;">보소밍</a></td>
+                        <td>Evoker</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/classicon_evoker_devastation.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Devastation</td>
+                        <td>729.2</td>
+                        <td><span class="performance-badge" style="background: #FF8000; color: white;">2961</span></td>
+                        <td><span class="performance-badge" style="background: #ff8000; color: white;">97.4</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('술사초이'); return false;">술사초이</a></td>
+                        <td>Shaman</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_nature_lightning.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Elemental</td>
+                        <td>723.8</td>
+                        <td><span class="performance-badge" style="background: #FF6060; color: white;">2672</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">75.2</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('로컬푸드산초'); return false;">로컬푸드산초</a></td>
+                        <td>Deathknight</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_deathknight_frostpresence.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Frost</td>
+                        <td>728.5</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3384</span></td>
+                        <td><span class="performance-badge" style="background: #0070dd; color: white;">63.1</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('Yoahjung'); return false;">Yoahjung</a></td>
+                        <td>Deathknight</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/spell_deathknight_frostpresence.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Frost</td>
+                        <td>729.2</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3083</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">88.5</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('쿠니'); return false;">쿠니</a></td>
+                        <td>Rogue</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/ability_stealth.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Subtlety</td>
+                        <td>721.4</td>
+                        <td><span class="performance-badge" style="background: #FF8000; color: white;">2980</span></td>
+                        <td><span class="performance-badge" style="background: #a335ee; color: white;">85.8</span></td>
+                    </tr>
+        
+                    <tr>
+                        <td><a href="#" class="clickable" onclick="showCharacterDetails('악풍'); return false;">악풍</a></td>
+                        <td>Demonhunter</td>
+                        <td><img src="https://render.worldofwarcraft.com/kr/icons/56/ability_demonhunter_specdps.jpg" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> Havoc</td>
+                        <td>729.4</td>
+                        <td><span class="performance-badge" style="background: #FFA500; color: white;">3492</span></td>
+                        <td><span class="performance-badge" style="background: #0070dd; color: white;">70.0</span></td>
+                    </tr>
+        
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Modal for character details -->
+        <div id="characterModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2 id="modalTitle">Character Details</h2>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Content will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>두부킴의 유기견들</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Store character details
+        const characterDetails = {"\ud558\uc580\ucc28": "# \ud558\uc580\ucc28\n**Holy Priest** | **Healer** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_shadow_shadowwordpain.jpg**\n\n*Generated: 2025-11-03 10:11:19*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.4\n- **Mythic+ Score:** 3,058.0\n- **WarcraftLogs Average:** 93.1\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc8fd\uc5b4\uac00\ub294 \ubcc4\uc758 \uba74\uc0ac\ud3ec | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_cloth_raidpriestethereal_d_01.jpg |\n| \ubaa9 | \ub354\uc2a4\ud06c\ube14\ub808\uc774\uc988\uc758 \uc808\ub9dd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_necklace03_etherealtechnomancerstyle_gold.jpg |\n| \uc5b4\uae68 | \uc8fd\uc5b4\uac00\ub294 \ubcc4\uc758 \uc7a5\uc791\ubd88\ube5b | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_cloth_raidpriestethereal_d_01.jpg |\n| \uac00\uc2b4 | \uc8fd\uc5b4\uac00\ub294 \ubcc4\uc758 \uc758\ubcf5 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_robe_cloth_raidpriestethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc8fd\uc5b4\uac00\ub294 \ubcc4\uc758 \ud5c8\ub9ac\ubd88\ube5b | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_cloth_raidpriestethereal_d_01.jpg |\n| \ub2e4\ub9ac | \uc8fd\uc5b4\uac00\ub294 \ubcc4\uc758 \ub2e4\ub9ac\ubcf4\ud638\uad6c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_cloth_raidpriestethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ube44\ub2e8 \uc131\ud07c\uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_cloth_raidpriestethereal_d_01.jpg |\n| \uc190\ubaa9 | \ucd95\uc131\ub41c \uc18c\ub9e4\uc7a5\uc2dd | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uc8fd\uc5b4\uac00\ub294 \ubcc4\uc758 \uc190\uae38 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_cloth_raidpriestethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \ubc18\uc9c0 2 | \ub17c\ub9ac \uad00\ubb38: \uc885\uadf9\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_terra.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uae08\uac15\uc11d \uacf5\ud5c8\ud575 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_intdps_ancientkareshirelic.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \ud06c\ub9ac\uc2a4 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_knife_1h_etherealraid_d_02.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ubc29\ub791\uc790\uc758 \ud683\ubd88 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_offhand_1h_arathoroutdoor_d_01.jpg |\n| \uac89\uc637 | \uafc8\uc758 \uac10\ub3c5\uad00 \ud718\uc7a5 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_tabard_denizens_b_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **93.1**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 99.7% | 6,584,565 | 10 |\n| Loom'ithar | 88.3% | 5,955,900 | 8 |\n| Soulbinder Naazindhri | 99.6% | 7,481,751 | 10 |\n| Forgeweaver Araz | 95.4% | 5,674,111 | 5 |\n| The Soul Hunters | 86.8% | 6,115,312 | 4 |\n| Fractillus | 88.7% | 5,603,018 | 5 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Holy | 633.4 | 960.0 | 96.1% |\n| 1 | Holy | 558.0 | 960.0 | 95.2% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Holy | 662 / 16,796 | 144 | 143 |\n| 1 | Holy | 939 / 19,632 | 153 | 149 |\n\n**Median Performance Average:** 73.1\n\n---", "\ucfe0\ub2c8": "# \ucfe0\ub2c8\n**Subtlety Rogue** | **Melee** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/ability_stealth.jpg**\n\n*Generated: 2025-11-03 10:11:54*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 721.4\n- **Mythic+ Score:** 2,980.3\n- **WarcraftLogs Average:** 85.8\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uac11\uc791\uc2a4\ub7ec\uc6b4 \uc77c\uc6d4\uc2dd\uc758 \ub450\uac74 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_leather_raidrogueethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 704 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \uc8fd\uc74c\uacb0\uc18d \uc5b4\uae68\ub367\ub300 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_leather_raidrogueethereal_d_01.jpg |\n| \uac00\uc2b4 | \uac11\uc791\uc2a4\ub7ec\uc6b4 \uc77c\uc6d4\uc2dd\uc758 \uc804\uc220 \uc870\ub07c | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_leather_raidrogueethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc6d0\uc790 \uc704\uc0c1 \ud5c8\ub9ac\ub760 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_leather_raidmonkethereal_d_01.jpg |\n| \ub2e4\ub9ac | \uac11\uc791\uc2a4\ub7ec\uc6b4 \uc77c\uc6d4\uc2dd\uc758 \ubc14\uc9c0 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_leather_raidrogueethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ubcf4\uac15\ub41c \ub367\uc2e0 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_leather_raidmonkethereal_d_01.jpg |\n| \uc190\ubaa9 | \ub8ec\ub099\uc778 \uc644\uc7a5 | 720 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uac11\uc791\uc2a4\ub7ec\uc6b4 \uc77c\uc6d4\uc2dd\uc758 \uc8fd\uc74c\uc7a5\uac11 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_leather_raidrogueethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ub17c\ub9ac \uad00\ubb38: \uc2dc\ucd08\uc810 | 707 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_gold.jpg |\n| \ubc18\uc9c0 2 | \uc870\ud654\uc758 \ubb34\uc9c8\uc11c | 714 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_dark.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc544\ub77c\uc988\uc758 \uc758\uc2dd\uc6a9 \uc81c\ub828\uc18c | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_trinkettechnomancer_ritualengine.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uad74\ud558\uc9c0 \uc54a\ub294 \ud669\ucc9c\ubd84\uad11\uacbd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_voidprism.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \ubcf5\uc218\uc2ec\uc5d0 \ubd88\ud0c0\ub294 \ud669\ucc9c\uc410\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_knife_1h_etherealraid_d_02.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ud2b9\ucd9c\ud55c \uc720\uc804\uc790 \uc811\ud569\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_knife_1h_etherealraid_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **85.8**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 96.8% | 5,104,675 | 9 |\n| Loom'ithar | 98.4% | 5,948,917 | 8 |\n| Soulbinder Naazindhri | 85.9% | 8,337,684 | 9 |\n| Forgeweaver Araz | 95.3% | 8,443,213 | 7 |\n| The Soul Hunters | 92.7% | 9,101,676 | 4 |\n| Fractillus | 95.1% | 5,224,712 | 7 |\n| Nexus-King Salhadaar | 36.7% | 6,457,503 | 2 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 1 | Subtlety | 739.7 | 960.0 | 98.3% |\n| 2 | Subtlety | 561.0 | 840.0 | 94.4% |\n| 1 | Assassination | 230.2 | 960.0 | 60.2% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 1 | Subtlety | 142 / 8,488 | 21 | 21 |\n| 2 | Subtlety | 341 / 6,039 | 77 | 77 |\n| 1 | Assassination | 3,797 / 9,540 | 319 | 299 |\n\n**Median Performance Average:** 63.4\n\n---", "\uc545\ud48d": "# \uc545\ud48d\n**Havoc Demonhunter** | **Melee** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/ability_demonhunter_specdps.jpg**\n\n*Generated: 2025-11-03 10:12:09*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.4\n- **Mythic+ Score:** 3,491.8\n- **WarcraftLogs Average:** 70.0\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc22f\uc0ac\ub0e5\uac1c\uc758 \ub9e4\uc11c\uc6b4 \uc0b4\uac00\uc8fd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_leather_raiddemonhunterethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \uc22f\uc0ac\ub0e5\uac1c\uc758 \ub9e4\uc11c\uc6b4 \ubfd4\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_leather_raiddemonhunterethereal_d_01.jpg |\n| \uac00\uc2b4 | \uc22f\uc0ac\ub0e5\uac1c\uc758 \ub9e4\uc11c\uc6b4 \uacb0\uc18d\ub048 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_leather_raiddemonhunterethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc22f\uc0ac\ub0e5\uac1c\uc758 \ub9e4\uc11c\uc6b4 \uc0ac\ub0e5 \ud5c8\ub9ac\ub760 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_leather_raiddemonhunterethereal_d_01.jpg |\n| \ub2e4\ub9ac | \uc22f\uc0ac\ub0e5\uac1c\uc758 \ub9e4\uc11c\uc6b4 \uac00\uc8fd\uc678\ud22c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_leather_raiddemonhunterethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ubcf4\uac15\ub41c \ub367\uc2e0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_leather_raidmonkethereal_d_01.jpg |\n| \uc190\ubaa9 | \ub8ec\ub099\uc778 \uc644\uc7a5 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ub8ec\ub099\uc778 \uc190\uc544\uadc0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_glove.jpg |\n| \ubc18\uc9c0 1 | \ubd88\uaf43\uc12c\uad11\uc758 \ubb34\uc9c8\uc11c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_dark.jpg |\n| \ubc18\uc9c0 2 | \ub17c\ub9ac \uad00\ubb38: \uc2dc\ucd08\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_gold.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uad74\ud558\uc9c0 \uc54a\ub294 \ud669\ucc9c\ubd84\uad11\uacbd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_voidprism.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \ubd95\uad34\ud558\ub294 \uc704\uc0c1\uce7c\ub0a0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glaive_1h_etherealraid_d_01.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \uc2ec\ubb38\uad00\uc758 \ud574\uccb4\uc6a9 \uce7c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_sword_1h_broker2boss_d_01_blue.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **70.0**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 80.9% | 4,756,942 | 5 |\n| Loom'ithar | 82.7% | 5,983,231 | 4 |\n| Soulbinder Naazindhri | 67.7% | 7,633,531 | 5 |\n| Forgeweaver Araz | 83.6% | 6,894,730 | 3 |\n| The Soul Hunters | 55.4% | 7,882,520 | 3 |\n| Fractillus | 49.7% | 5,102,851 | 3 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Havoc | 447.5 | 840.0 | 87.8% |\n| 1 | Havoc | 229.8 | 960.0 | 69.1% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Havoc | 2,761 / 22,558 | 442 | 424 |\n| 1 | Havoc | 8,339 / 27,015 | 780 | 737 |\n\n**Median Performance Average:** 44.1\n\n---", "\ub85c\uceec\ud478\ub4dc\uc0b0\ucd08": "# \ub85c\uceec\ud478\ub4dc\uc0b0\ucd08\n**Frost Deathknight** | **Melee** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_deathknight_frostpresence.jpg**\n\n*Generated: 2025-11-03 10:11:53*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 728.5\n- **Mythic+ Score:** 3,383.8\n- **WarcraftLogs Average:** 63.1\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \ubc14\uc704\uac00\uba74 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_plate_raiddeathknightethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \ud683\ub300 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_plate_raiddeathknightethereal_d_01.jpg |\n| \uac00\uc2b4 | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \uac00\uc2b4\ubcf4\ud638\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_plate_raiddeathknightethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc601\uc6d0\ubcbc\ub9bc \ucca0\uac11\ud5c8\ub9ac\ub760 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \ubc14\uc704\ud0ac\ud2b8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_plate_raiddeathknightethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ud310\uae08 \ubc1c\ub36e\uac1c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_boot.jpg |\n| \uc190\ubaa9 | \uc601\uc6d0\ubcbc\ub9bc \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \uac74\ud2c0\ub9bf | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_plate_raiddeathknightethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ub17c\ub9ac \uad00\ubb38: \uc885\uadf9\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_terra.jpg |\n| \ubc18\uc9c0 2 | \ub17c\ub9ac \uad00\ubb38: \uc2dc\ucd08\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_gold.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uad74\ud558\uc9c0 \uc54a\ub294 \ud669\ucc9c\ubd84\uad11\uacbd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_voidprism.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \ud558\ub298\uc57d\ud0c8\uc790 - \uc218\ud638\uc790\uc758 \uac70\ub300\ub3c4\ub07c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_axe_2h_broker_c_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **63.1**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 80.9% | 5,064,571 | 3 |\n| Loom'ithar | 76.3% | 6,101,975 | 3 |\n| Soulbinder Naazindhri | 53.5% | 7,234,063 | 3 |\n| Forgeweaver Araz | 27.1% | 6,123,620 | 1 |\n| The Soul Hunters | 71.7% | 9,061,980 | 1 |\n| Fractillus | 69.1% | 5,587,561 | 1 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Frost | 427.3 | 840.0 | 86.1% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Frost | 4,900 / 35,125 | 714 | 689 |\n\n**Median Performance Average:** 49.5\n\n---", "\ud5cc\ud130\ub951": "# \ud5cc\ud130\ub951\n**Marksmanship Hunter** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/ability_hunter_focusedaim.jpg**\n\n*Generated: 2025-11-03 10:11:41*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 725.9\n- **Mythic+ Score:** 3,170.8\n- **WarcraftLogs Average:** 80.3\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc218\ub3c4\ub450\uac74 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_mail_raidhunterethereal_d_01.jpg |\n| \ubaa9 | \uc5b4\uba38\ub2c8\uc758 \uac70\ub300 \uba54\ub2ec | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_necklace02_etherealribbonorrunestyle_dark.jpg |\n| \uc5b4\uae68 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc5b4\ub460\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_mail_raidhunterethereal_d_01.jpg |\n| \uac00\uc2b4 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uac11\uc637 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_mail_raidhunterethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ud560\uc778\ubc1b\uc740 \uc6b0\ud3b8 \uc8fc\ubb38 \ud5c8\ub9ac\ub760 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_mail_oribosdungeon_c_01.jpg |\n| \ub2e4\ub9ac | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc18d\uce58\ub9c8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_mail_raidhunterethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \uc0ac\uc2ac \uc7a5\ud654 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_mail_raidshamanethereal_d_01.jpg |\n| \uc190\ubaa9 | \ubb38\uc591\uc0c8\uae40 \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ubb38\uc591\uc0c8\uae40 \uac74\ud2c0\ub9bf | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_glove.jpg |\n| \ubc18\uc9c0 1 | \ud5cc\uc2e0\ud558\ub294 \uad11\uc2e0\ub3c4\uc758 \ubc18\uc9c0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_nerubian_ring_01_color4.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uad74\ud558\uc9c0 \uc54a\ub294 \ud669\ucc9c\ubd84\uad11\uacbd | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_voidprism.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uad00\ud1b5\uc758 \uac00\ub2e5\ud65c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_bow_1h_etherealraid_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **80.3**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 95.2% | 5,735,187 | 6 |\n| Loom'ithar | 80.1% | 6,298,628 | 6 |\n| Soulbinder Naazindhri | 84.6% | 8,175,588 | 6 |\n| Forgeweaver Araz | 85.1% | 7,035,277 | 3 |\n| The Soul Hunters | 50.3% | 8,210,378 | 3 |\n| Fractillus | 86.6% | 6,234,197 | 3 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Marksmanship | 467.5 | 840.0 | 94.4% |\n| 1 | Marksmanship | 289.0 | 960.0 | 78.7% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Marksmanship | 365 / 6,477 | 84 | 82 |\n| 1 | Marksmanship | 3,252 / 15,279 | 274 | 260 |\n\n**Median Performance Average:** 55.3\n\n---", "\uc6a9\ubd88\ud0c0": "# \uc6a9\ubd88\ud0c0\n**Preservation Evoker** | **Healer** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/classicon_evoker_preservation.jpg**\n\n*Generated: 2025-11-03 10:11:33*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.0\n- **Mythic+ Score:** 2,988.4\n- **WarcraftLogs Average:** 75.4\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ub9e4\uac1c\uccb4 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_mail_raidevokerethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \uc5b4\ub460\uc5ed\ubcd1 \uc5b4\uae68\ub367\uc637 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_mail_earthendungeon_c_01.jpg |\n| \uac00\uc2b4 | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ubb38\uc7a5\uc218\ud638\ubb3c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_mail_raidevokerethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ubb38\uc591\uc0c8\uae40 \uacb0\uc18d\ub760 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ub8ec\ubc14\uc9c0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_mail_raidevokerethereal_d_01.jpg |\n| \ubc1c | \uc8fd\uc74c\uc758 \ubb3c\ub808 \uac08\ud034\ubc1c\ud1b1 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_mail_raidevokerethereal_d_01.jpg |\n| \uc190\ubaa9 | \ubb38\uc591\uc0c8\uae40 \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ube44\ub298\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_mail_raidevokerethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uae08\uac15\uc11d \uacf5\ud5c8\ud575 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_intdps_ancientkareshirelic.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \ubfb0\uc871\uc9c0\ud321\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_staff_2h_etherealraid_d_02.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **75.4**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 86.0% | 5,584,595 | 5 |\n| Loom'ithar | 92.7% | 6,117,757 | 4 |\n| Soulbinder Naazindhri | 93.7% | 7,143,677 | 5 |\n| Forgeweaver Araz | 46.4% | 4,603,123 | 4 |\n| The Soul Hunters | 62.9% | 5,963,147 | 4 |\n| Fractillus | 70.8% | 5,028,019 | 4 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Preservation | 543.8 | 960.0 | 87.0% |\n| 1 | Preservation | 168.1 | 960.0 | 45.3% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Preservation | 904 / 6,967 | 157 | 153 |\n| 1 | Preservation | 4,201 / 7,680 | 461 | 438 |\n\n**Median Performance Average:** 60.8\n\n---", "\uc5c5\ubcf4\ub9f9": "# \uc5c5\ubcf4\ub9f9\n**Brewmaster Monk** | **Tank** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_monk_brewmaster_spec.jpg**\n\n*Generated: 2025-11-03 10:11:17*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 724.7\n- **Mythic+ Score:** 3,001.4\n- **WarcraftLogs Average:** 87.8\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ubab0\ub77d\ud55c \ud3ed\ud48d\uc758 \ubc18\uac00\uba74 | 704 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_leather_raidmonkethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \uc8fd\uc74c\uacb0\uc18d \uc5b4\uae68\ub367\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_leather_raidrogueethereal_d_01.jpg |\n| \uac00\uc2b4 | \ubab0\ub77d\ud55c \ud3ed\ud48d\uc758 \uc678\ud22c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_leather_raidmonkethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc19f\uad6c\uce58\ub294 \uc544\ub4dc\ub808\ub0a0\ub9b0 \uc8d4\uc1e0\ub760 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_leather_undergroundquest_b_01.jpg |\n| \ub2e4\ub9ac | \ubab0\ub77d\ud55c \ud3ed\ud48d\uc758 \ub2e4\ub9ac\uc2f8\uac1c | 704 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_leather_raidmonkethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ubcf4\uac15\ub41c \ub367\uc2e0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_leather_raidmonkethereal_d_01.jpg |\n| \uc190\ubaa9 | \ub8ec\ub099\uc778 \uc644\uc7a5 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ubab0\ub77d\ud55c \ud3ed\ud48d\uc758 \uc190\uc544\uadc0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_leather_raidmonkethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uc784\uc2dc\ubc29\ud3b8 \uc2dc\ud3ec\ub9ac\uc6c0 \uc870\uc728\uae30 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/ability_blackhand_attachedslagbombs.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uc18c\uba78 \uad11\uc120 \uc804\ud22c\uac80 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_polearm_2h_etherealraid_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **87.8**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 86.5% | 2,982,169 | 4 |\n| Loom'ithar | 88.5% | 3,915,412 | 4 |\n| Soulbinder Naazindhri | 90.8% | 4,917,038 | 4 |\n| Forgeweaver Araz | 87.7% | 4,208,092 | 4 |\n| The Soul Hunters | 93.4% | 5,059,908 | 3 |\n| Fractillus | 80.0% | 3,598,866 | 4 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Brewmaster | 505.0 | 840.0 | 89.7% |\n| 1 | Brewmaster | 386.8 | 960.0 | 76.9% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Brewmaster | 754 / 7,337 | 117 | 112 |\n| 1 | Brewmaster | 1,905 / 8,231 | 200 | 190 |\n\n**Median Performance Average:** 70.0\n\n---", "\uc804\uc0ac\uc7a0\ud0f1\uc774": "# \uc804\uc0ac\uc7a0\ud0f1\uc774\n**Protection Warrior** | **Tank** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/ability_warrior_defensivestance.jpg**\n\n*Generated: 2025-11-03 10:11:18*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 727.8\n- **Mythic+ Score:** 2,995.5\n- **WarcraftLogs Average:** 68.6\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc0dd\uccb4 \ubcd1\uae30\uc758 \uc548\uba74\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_plate_raidwarriorethereal_d_01.jpg |\n| \ubaa9 | \ubd84\ub9ac\ub41c \uc601\ud63c\uc758 \ubc88\ub370\uae30 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_necklace01_etherealnontechnologicalstyle_gold.jpg |\n| \uc5b4\uae68 | \uc0dd\uccb4 \ubcd1\uae30\uc758 \uc131\ub8e8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_plate_raidwarriorethereal_d_01.jpg |\n| \uac00\uc2b4 | \uc0dd\uccb4 \ubcd1\uae30\uc758 \ubcf4\ub8e8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_plate_raidwarriorethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc808\ub300\uc801\uc778 \ubbff\uc74c\uc758 \uc694\ub300 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_plate_outdoorethereal_c_01.jpg |\n| \ub2e4\ub9ac | \uc0dd\uccb4 \ubcd1\uae30\uc758 \ub2e4\ub9ac\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_plate_raidwarriorethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ud310\uae08 \ubc1c\ub36e\uac1c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_boot.jpg |\n| \uc190\ubaa9 | \uc601\uc6d0\ubcbc\ub9bc \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uc0dd\uccb4 \ubcd1\uae30\uc758 \ubd84\uc1c4\uc7a5\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_plate_raidwarriorethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud5cc\uc2e0\ud558\ub294 \uad11\uc2e0\ub3c4\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_nerubian_ring_01_color4.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 720 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \ube5b\uc758 \ud5cc\uc2e0\uc758 \uace0\uc11c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_7xp_inscription_talenttome01.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \ub05d\uc5c6\ub294 \ub178\uc5ec\uc6c0\uc758 \ub099\uc778 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_manaforgetanktrinket3.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uc601\uc6d0\ubcbc\ub9bc \uc7a5\uac80 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_sword_1h_arathor_c_01.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \uc5ee\uc5b4\ub0b4\ub294 \uc57c\uc218\uc758 \uc218\ud638\ubb3c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shield_1h_etherealraid_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **68.6**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 79.5% | 2,792,101 | 4 |\n| Loom'ithar | 70.1% | 3,513,341 | 4 |\n| Soulbinder Naazindhri | 62.6% | 4,184,511 | 4 |\n| Forgeweaver Araz | 61.6% | 3,830,070 | 4 |\n| The Soul Hunters | 69.6% | 4,962,119 | 3 |\n| Fractillus | 68.6% | 3,351,028 | 4 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Protection | 399.5 | 840.0 | 86.8% |\n| 1 | Protection | 338.4 | 960.0 | 82.9% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Protection | 1,559 / 11,836 | 249 | 241 |\n| 1 | Protection | 2,300 / 13,461 | 247 | 238 |\n\n**Median Performance Average:** 54.3\n\n---", "\ubcf4\ub77c\ubc1c\uad7d": "# \ubcf4\ub77c\ubc1c\uad7d\n**Destruction Warlock** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_shadow_rainoffire.jpg**\n\n*Generated: 2025-11-03 10:11:42*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 728.1\n- **Mythic+ Score:** 3,030.4\n- **WarcraftLogs Average:** 51.8\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \ucc28\uc6d0\ubb38 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_cloth_raidwarlockethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \ucd95\uc131\ub41c \uc5b4\uae68\ub367\uc637 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_shoulder.jpg |\n| \uac00\uc2b4 | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \ub85c\ube0c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_robe_cloth_raidwarlockethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ucd95\uc131\ub41c \uc7a5\uc2dd\ub048 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \ub2e4\ub9ac\ubcf4\ud638\uad6c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_cloth_raidwarlockethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ube44\ub2e8 \uc131\ud07c\uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_cloth_raidpriestethereal_d_01.jpg |\n| \uc190\ubaa9 | \ucd95\uc131\ub41c \uc18c\ub9e4\uc7a5\uc2dd | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \uc544\uadc0\uc190 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_cloth_raidwarlockethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ub17c\ub9ac \uad00\ubb38: \uc2dc\ucd08\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_gold.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc544\uc988\ud788\uce74\ub974\uc758 \ub3cc\ucd9c\ubd80 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_devourersmallmount_light.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \ud06c\ub9ac\uc2a4 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_knife_1h_etherealraid_d_02.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ubc29\ub791\uc790\uc758 \ud683\ubd88 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_offhand_1h_arathoroutdoor_d_01.jpg |\n| \uac89\uc637 | \ud638\ub4dc \ud718\uc7a5 | 2 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_tabard_hordewareffort.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **51.8**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 67.1% | 5,045,325 | 4 |\n| Loom'ithar | 68.0% | 6,373,806 | 4 |\n| Soulbinder Naazindhri | 53.7% | 7,424,246 | 4 |\n| Forgeweaver Araz | 38.1% | 6,733,398 | 3 |\n| The Soul Hunters | 12.9% | 7,074,717 | 3 |\n| Fractillus | 71.1% | 5,641,509 | 3 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Destruction | 390.4 | 840.0 | 75.2% |\n| 1 | Destruction | 206.7 | 960.0 | 55.0% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Destruction | 5,963 / 24,080 | 876 | 836 |\n| 1 | Destruction | 11,630 / 25,855 | 1,168 | 1,103 |\n\n**Median Performance Average:** 27.8\n\n---", "\ub9ac\uc27d": "# \ub9ac\uc27d\n**Restoration Druid** | **Healer** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_nature_healingtouch.jpg**\n\n*Generated: 2025-11-03 10:11:18*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 727.7\n- **Mythic+ Score:** 3,838.3\n- **WarcraftLogs Average:** 95.2\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \ud558\ub298\uac08\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_leather_raiddruidethereal_d_01.jpg |\n| \ubaa9 | \ubd84\ub9ac\ub41c \uc601\ud63c\uc758 \ubc88\ub370\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_necklace01_etherealnontechnologicalstyle_gold.jpg |\n| \uc5b4\uae68 | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \uc758\uc2dd\uc6a9 \uacac\uac11 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_leather_raiddruidethereal_d_01.jpg |\n| \uc18d\uc637 | \ud3c9\ubc94\ud55c \uac08\uc0c9 \uc154\uce20 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shirt_orange_01.jpg |\n| \uac00\uc2b4 | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \uc870\ub07c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_leather_raiddruidethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \uafc8\uc7a5\uc2dd\ub760 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_leather_raiddruidethereal_d_01.jpg |\n| \ub2e4\ub9ac | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \uc9e7\uc740\ubc14\uc9c0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_leather_raiddruidethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ubcf4\uac15\ub41c \ub367\uc2e0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_leather_raidmonkethereal_d_01.jpg |\n| \uc190\ubaa9 | \ub8ec\ub099\uc778 \uc644\uc7a5 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ub8ec\ub099\uc778 \uc190\uc544\uadc0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_glove.jpg |\n| \ubc18\uc9c0 1 | \ubd95\uad34\ud558\ub294 \ubcc4\uc758 \uc778\uc7a5 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_jewelcrafting_80_maxlvlring_blue.jpg |\n| \ubc18\uc9c0 2 | \uacb0\uc18d\uc758 \uace0\ub9ac | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_jewelcrafting_ring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uae08\uac15\uc11d \uacf5\ud5c8\ud575 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_intdps_ancientkareshirelic.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \ub8f8\uc774\ud0c0\ub974\uc758 \uc0b4\uc544\uc788\ub294 \ube44\ub2e8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_astralspinneret.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \ubfb0\uc871\uc9c0\ud321\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_staff_2h_etherealraid_d_02.jpg |\n| \uac89\uc637 | \uae38\ub4dc \ud718\uc7a5 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shirt_guildtabard_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **95.2**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 95.0% | 5,345,303 | 5 |\n| Loom'ithar | 98.7% | 6,980,854 | 5 |\n| Soulbinder Naazindhri | 93.4% | 6,464,494 | 5 |\n| Forgeweaver Araz | 97.5% | 5,631,869 | 4 |\n| The Soul Hunters | 98.3% | 7,092,364 | 4 |\n| Fractillus | 88.2% | 5,517,487 | 4 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Restoration | 649.1 | 960.0 | 97.9% |\n| 1 | Restoration | 313.9 | 960.0 | 85.6% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Restoration | 399 / 19,291 | 81 | 77 |\n| 1 | Restoration | 3,093 / 21,512 | 287 | 264 |\n\n**Median Performance Average:** 75.5\n\n---", "\uce58\uc5d0\ub2c8": "# \uce58\uc5d0\ub2c8\n**Fire Mage** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_fire_firebolt02.jpg**\n\n*Generated: 2025-11-03 10:11:42*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.2\n- **Mythic+ Score:** 3,033.8\n- **WarcraftLogs Average:** 74.2\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \ub113\uc740 \ucc59\ubaa8\uc790 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_cloth_raidmageethereal_d_01.jpg |\n| \ubaa9 | \ub354\uc2a4\ud06c\ube14\ub808\uc774\uc988\uc758 \uc808\ub9dd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_necklace03_etherealtechnomancerstyle_gold.jpg |\n| \uc5b4\uae68 | \uacac\ucc29\uc2dd \ub9c8\ub098\ud3ec | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_cloth_raidpriestethereal_d_01.jpg |\n| \uac00\uc2b4 | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \ubcf5\uc7a5 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_robe_cloth_raidmageethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ucd95\uc131\ub41c \uc7a5\uc2dd\ub048 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \uae34\ubc14\uc9c0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_cloth_raidmageethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ube44\ub2e8 \uc131\ud07c\uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_cloth_raidpriestethereal_d_01.jpg |\n| \uc190\ubaa9 | \ucd95\uc131\ub41c \uc18c\ub9e4\uc7a5\uc2dd | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \ubc18\uc7a5\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_cloth_raidmageethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \ubc18\uc9c0 2 | \ud06c\uc544\ub808\uc26c\uc758 \uc18d\uc0ad\uc784 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring01_etherealnontechnologicalstyle_gold.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc544\uc988\ud788\uce74\ub974\uc758 \ub3cc\ucd9c\ubd80 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_devourersmallmount_light.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uae08\uac15\uc11d \uacf5\ud5c8\ud575 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_intdps_ancientkareshirelic.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \uad70\uc8fc\uc758 \uce7c\ub0a0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_sword_1h_etherealraid_d_01.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ubc29\ub791\uc790\uc758 \ud683\ubd88 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_offhand_1h_arathoroutdoor_d_01.jpg |\n| \uac89\uc637 | \uc57c\uc0dd \uc0ac\ub0e5\ub2e8\uc758 \ud718\uc7a5 | 40 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_tabard_ardenweald_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **74.2**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 92.4% | 5,711,635 | 10 |\n| Loom'ithar | 89.0% | 6,256,575 | 7 |\n| Soulbinder Naazindhri | 97.0% | 7,994,859 | 10 |\n| Forgeweaver Araz | 71.8% | 6,804,104 | 5 |\n| The Soul Hunters | 76.2% | 9,065,254 | 4 |\n| Fractillus | 87.7% | 5,965,893 | 5 |\n| Nexus-King Salhadaar | 5.1% | 5,156,016 | 1 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 1 | Fire | 592.5 | 960.0 | 97.5% |\n| 2 | Fire | 537.1 | 840.0 | 95.9% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 1 | Fire | 98 / 3,817 | 13 | 11 |\n| 2 | Fire | 137 / 3,291 | 18 | 18 |\n\n**Median Performance Average:** 56.6\n\n---", "\ubcf4\uc18c\ubc0d": "# \ubcf4\uc18c\ubc0d\n**Devastation Evoker** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/classicon_evoker_devastation.jpg**\n\n*Generated: 2025-11-03 10:11:52*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.2\n- **Mythic+ Score:** 2,960.7\n- **WarcraftLogs Average:** 97.4\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ub9e4\uac1c\uccb4 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_mail_raidevokerethereal_d_01.jpg |\n| \ubaa9 | \ud654\ub824\ud55c \uac01\uc778\uc774 \uc0c8\uaca8\uc9c4 \uc99d\ud3ed\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_misc_silverjadenecklace.jpg |\n| \uc5b4\uae68 | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \uacac\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_mail_raidevokerethereal_d_01.jpg |\n| \uac00\uc2b4 | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ubb38\uc7a5\uc218\ud638\ubb3c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_mail_raidevokerethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uac70\ub300\ud55c \uc0dd\uba85\uc0ac\uc2ac | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_mail_raidhunterethereal_d_01.jpg |\n| \ub2e4\ub9ac | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ub8ec\ubc14\uc9c0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_mail_raidevokerethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \uc0ac\uc2ac \uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_mail_raidshamanethereal_d_01.jpg |\n| \uc190\ubaa9 | \ubb38\uc591\uc0c8\uae40 \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ub9c8\ubc95\uc758 \uc9c0\ubc30\uc790\uc758 \uc644\uc804\ubb34\uacb0\ud55c \ube44\ub298\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_mail_raidevokerethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc544\ub77c\uc988\uc758 \uc758\uc2dd\uc6a9 \uc81c\ub828\uc18c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_trinkettechnomancer_ritualengine.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uae08\uac15\uc11d \uacf5\ud5c8\ud575 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_intdps_ancientkareshirelic.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \ud06c\ub9ac\uc2a4 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_knife_1h_etherealraid_d_02.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ubc29\ub791\uc790\uc758 \ud683\ubd88 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_offhand_1h_arathoroutdoor_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **97.4**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 99.6% | 5,393,670 | 8 |\n| Loom'ithar | 97.8% | 6,754,777 | 6 |\n| Soulbinder Naazindhri | 98.2% | 9,137,841 | 9 |\n| Forgeweaver Araz | 99.1% | 8,114,234 | 5 |\n| The Soul Hunters | 96.1% | 10,210,319 | 3 |\n| Fractillus | 94.0% | 5,942,278 | 4 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Devastation | 559.1 | 840.0 | 93.9% |\n| 1 | Devastation | 556.0 | 960.0 | 92.0% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Devastation | 475 / 7,778 | 94 | 91 |\n| 1 | Devastation | 788 / 9,833 | 108 | 101 |\n\n**Median Performance Average:** 84.9\n\n---", "\ud2b9\uc784\uc2dc\ud0a4\uba74\ub215\ub294\ub2e4": "# \ud2b9\uc784\uc2dc\ud0a4\uba74\ub215\ub294\ub2e4\n**BeastMastery Hunter** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/ability_hunter_bestialdiscipline.jpg**\n\n*Generated: 2025-11-03 10:11:31*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.4\n- **Mythic+ Score:** 2,972.8\n- **WarcraftLogs Average:** 95.3\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc218\ub3c4\ub450\uac74 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_mail_raidhunterethereal_d_01.jpg |\n| \ubaa9 | \ud654\ub824\ud55c \uac01\uc778\uc774 \uc0c8\uaca8\uc9c4 \uc99d\ud3ed\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_misc_silverjadenecklace.jpg |\n| \uc5b4\uae68 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc5b4\ub460\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_mail_raidhunterethereal_d_01.jpg |\n| \uac00\uc2b4 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uac11\uc637 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_mail_raidhunterethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ubb38\uc591\uc0c8\uae40 \uacb0\uc18d\ub760 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc18d\uce58\ub9c8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_mail_raidhunterethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \uc0ac\uc2ac \uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_mail_raidshamanethereal_d_01.jpg |\n| \uc190\ubaa9 | \ubb38\uc591\uc0c8\uae40 \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc7a5\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_mail_raidhunterethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ubd95\uad34\ud558\ub294 \ubcc4\uc758 \uc778\uc7a5 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_jewelcrafting_80_maxlvlring_blue.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uad74\ud558\uc9c0 \uc54a\ub294 \ud669\ucc9c\ubd84\uad11\uacbd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_voidprism.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uc544\ub77c\uc988\uc758 \uc758\uc2dd\uc6a9 \uc81c\ub828\uc18c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_trinkettechnomancer_ritualengine.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uade0\uc5f4\ud30c\uad34\uad81 \uc57c\uc0bc | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_crossbow_2h_broker_c_01.jpg |\n| \uac89\uc637 | \uc5ec\ub984 \ud558\ub298 \ud718\uc7a5 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_misc_tabardsummer02.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **95.3**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 99.8% | 6,754,623 | 7 |\n| Loom'ithar | 99.7% | 8,326,614 | 7 |\n| Soulbinder Naazindhri | 99.0% | 9,223,518 | 7 |\n| Forgeweaver Araz | 99.3% | 7,718,102 | 6 |\n| The Soul Hunters | 87.8% | 8,421,774 | 4 |\n| Fractillus | 85.9% | 6,242,413 | 6 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 1 | BeastMastery | 615.2 | 960.0 | 98.2% |\n| 2 | BeastMastery | 534.9 | 840.0 | 96.0% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 1 | BeastMastery | 656 / 36,942 | 160 | 159 |\n| 2 | BeastMastery | 1,563 / 38,703 | 387 | 377 |\n\n**Median Performance Average:** 83.4\n\n---", "Yoahjung": "# Yoahjung\n**Frost Deathknight** | **Melee** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_deathknight_frostpresence.jpg**\n\n*Generated: 2025-11-03 10:11:55*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.2\n- **Mythic+ Score:** 3,082.7\n- **WarcraftLogs Average:** 88.5\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \ubc14\uc704\uac00\uba74 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_plate_raiddeathknightethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \ud683\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_plate_raiddeathknightethereal_d_01.jpg |\n| \uac00\uc2b4 | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \uac00\uc2b4\ubcf4\ud638\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_plate_raiddeathknightethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uae09\uc870 \uc694\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_oribosdungeon_c_01_buckle.jpg |\n| \ub2e4\ub9ac | \uc601\uc6d0\ubcbc\ub9bc \ub2e4\ub9ac\uac11\uc637 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_outdoorarathor_d_01_pant.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ud310\uae08 \ubc1c\ub36e\uac1c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_boot.jpg |\n| \uc190\ubaa9 | \uc601\uc6d0\ubcbc\ub9bc \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uacf5\ud5c8\ud55c \ud30c\uc218\uafbc\uc758 \uac74\ud2c0\ub9bf | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_plate_raiddeathknightethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \ubc18\uc9c0 2 | \uc870\ud654\uc758 \ubb34\uc9c8\uc11c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_dark.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uad74\ud558\uc9c0 \uc54a\ub294 \ud669\ucc9c\ubd84\uad11\uacbd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_voidprism.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \ud2b9\uae09 \uad11\uc790 \uc0ac\ube0c\ub974 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_sword_2h_etherealraid_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **88.5**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 85.6% | 5,275,098 | 3 |\n| Loom'ithar | 97.0% | 6,983,473 | 3 |\n| Soulbinder Naazindhri | 81.2% | 8,224,347 | 3 |\n| Forgeweaver Araz | 81.8% | 7,541,979 | 3 |\n| The Soul Hunters | 94.1% | 10,241,190 | 3 |\n| Fractillus | 91.1% | 6,121,298 | 3 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Frost | 520.4 | 840.0 | 94.5% |\n| 1 | Frost | 472.5 | 960.0 | 90.6% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Frost | 1,946 / 35,125 | 372 | 364 |\n| 1 | Frost | 3,979 / 42,137 | 473 | 463 |\n\n**Median Performance Average:** 73.6\n\n---", "\ud0d1\uace8\uacf5\uc6d0\uccb4\uc2a4\uc655": "# \ud0d1\uace8\uacf5\uc6d0\uccb4\uc2a4\uc655\n**Balance Druid** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_nature_starfall.jpg**\n\n*Generated: 2025-11-03 10:11:30*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 726.9\n- **Mythic+ Score:** 3,291.7\n- **WarcraftLogs Average:** 81.6\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \ud558\ub298\uac08\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_leather_raiddruidethereal_d_01.jpg |\n| \ubaa9 | \ubb34\ud55c\uc758 \uc6a9\uad70\ub2e8\uc758 \uafb8\ubbf8\uac1c | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_7_0raid_necklace_02c.jpg |\n| \uc5b4\uae68 | \uc2e0\ub4e4\ub9b0 \ubc15\uc790\uc758 \uc5b4\uae68\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_leather_oribosdungeon_c_01.jpg |\n| \uac00\uc2b4 | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \uc870\ub07c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_leather_raiddruidethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ub8ec\ub099\uc778 \ud5c8\ub9ac\ubcf4\ud638\ub760 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \uc9e7\uc740\ubc14\uc9c0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_leather_raiddruidethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ubcf4\uac15\ub41c \ub367\uc2e0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_leather_raidmonkethereal_d_01.jpg |\n| \uc190\ubaa9 | \ub8ec\ub099\uc778 \uc644\uc7a5 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_leather_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ub3c5\uc218\ub9ac \uc5b4\uba38\ub2c8\uc758 \ub0a0\uac1c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_leather_raiddruidethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ub17c\ub9ac \uad00\ubb38: \uc885\uadf9\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_terra.jpg |\n| \ubc18\uc9c0 2 | \ud06c\uc544\ub808\uc26c\uc758 \uc18d\uc0ad\uc784 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring01_etherealnontechnologicalstyle_gold.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc544\ub77c\uce74\ub77c \ub0ad\ucda9\ubd09\uc544 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_raid_mercurialegg_red.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \ub8f8\uc774\ud0c0\ub974\uc758 \uc0b4\uc544\uc788\ub294 \ube44\ub2e8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_astralspinneret.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \ud06c\ub9ac\uc2a4 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_knife_1h_etherealraid_d_02.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ub098\uc2a4\ub9ac\uc544 \uc131\ubb3c\ud568 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_offhand_1h_oribosdungeon_c_01.jpg |\n| \uac89\uc637 | \uafc8\uc758 \uac10\ub3c5\uad00 \ud718\uc7a5 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_tabard_denizens_b_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **81.6**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 97.5% | 6,353,683 | 9 |\n| Loom'ithar | 96.4% | 7,139,362 | 6 |\n| Soulbinder Naazindhri | 91.2% | 7,191,796 | 9 |\n| Forgeweaver Araz | 97.5% | 7,349,705 | 5 |\n| The Soul Hunters | 8.5% | 4,993,141 | 4 |\n| Fractillus | 98.2% | 6,945,141 | 5 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Balance | 502.1 | 840.0 | 92.7% |\n| 1 | Balance | 388.9 | 960.0 | 79.2% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Balance | 903 / 12,360 | 227 | 223 |\n| 1 | Balance | 2,637 / 12,659 | 371 | 354 |\n\n**Median Performance Average:** 73.3\n\n---", "\uba54\uc624": "# \uba54\uc624\n**Destruction Warlock** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_shadow_rainoffire.jpg**\n\n*Generated: 2025-11-03 10:11:44*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.4\n- **Mythic+ Score:** 2,033.4\n- **WarcraftLogs Average:** 98.6\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \ucc28\uc6d0\ubb38 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_cloth_raidwarlockethereal_d_01.jpg |\n| \ubaa9 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \uc544\ubbac\ub81b | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthennecklace02_color1.jpg |\n| \uc5b4\uae68 | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \uc2dc\uc120 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_cloth_raidwarlockethereal_d_01.jpg |\n| \uac00\uc2b4 | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \ub85c\ube0c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_robe_cloth_raidwarlockethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc81c\ub828\uc9c1\uacf5\uc758 \uc77c\uc9c0 \ubcf4\uad00\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_cloth_raidwarlockethereal_d_01.jpg |\n| \ub2e4\ub9ac | \uc2ec\ubb38\uad00\uc758 \uad11\uae30 \uc5b4\ub9b0 \ub2e4\ub9ac\ubcf4\ud638\uad6c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_cloth_raidwarlockethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ube44\ub2e8 \uc131\ud07c\uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_cloth_raidpriestethereal_d_01.jpg |\n| \uc190\ubaa9 | \ucd95\uc131\ub41c \uc18c\ub9e4\uc7a5\uc2dd | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ub3cc\ub9c8\uadc0 \uad6c\uccb4\uc790\uc758 \ubc18\uc7a5\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_cloth_oribosdungeon_c_01.jpg |\n| \ubc18\uc9c0 1 | \ub17c\ub9ac \uad00\ubb38: \uc2dc\ucd08\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_gold.jpg |\n| \ubc18\uc9c0 2 | \ub17c\ub9ac \uad00\ubb38: \uc885\uadf9\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_terra.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uae08\uac15\uc11d \uacf5\ud5c8\ud575 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_intdps_ancientkareshirelic.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \ud06c\ub9ac\uc2a4 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_knife_1h_etherealraid_d_02.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ubc29\ub791\uc790\uc758 \ud683\ubd88 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_offhand_1h_arathoroutdoor_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **98.6**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 99.7% | 6,579,694 | 10 |\n| Loom'ithar | 98.6% | 7,795,638 | 9 |\n| Soulbinder Naazindhri | 96.8% | 9,037,359 | 10 |\n| Forgeweaver Araz | 99.3% | 8,781,508 | 7 |\n| The Soul Hunters | 99.0% | 12,017,747 | 5 |\n| Fractillus | 98.0% | 6,561,561 | 6 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 1 | Destruction | 643.9 | 960.0 | 96.5% |\n| 2 | Destruction | 575.9 | 840.0 | 94.5% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 1 | Destruction | 914 / 25,855 | 142 | 141 |\n| 2 | Destruction | 1,315 / 24,080 | 256 | 251 |\n\n**Median Performance Average:** 83.9\n\n---", "\ub0e5\uafbc\ub9b0\uce20": "# \ub0e5\uafbc\ub9b0\uce20\n**BeastMastery Hunter** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/ability_hunter_bestialdiscipline.jpg**\n\n*Generated: 2025-11-03 10:11:29*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.4\n- **Mythic+ Score:** 3,053.8\n- **WarcraftLogs Average:** 89.3\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc218\ub3c4\ub450\uac74 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_mail_raidhunterethereal_d_01.jpg |\n| \ubaa9 | \ubb34\ud55c\uc758 \uc6a9\uad70\ub2e8\uc758 \uafb8\ubbf8\uac1c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_7_0raid_necklace_02c.jpg |\n| \uc5b4\uae68 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc5b4\ub460\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_mail_raidhunterethereal_d_01.jpg |\n| \uac00\uc2b4 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uac11\uc637 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_mail_raidhunterethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ubb38\uc591\uc0c8\uae40 \uacb0\uc18d\ub760 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \uc5ec\uacfc\uc2e4 \ud5c8\ub9ac\uc678\ud22c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_mail_raidhunterethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \uc0ac\uc2ac \uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_mail_raidshamanethereal_d_01.jpg |\n| \uc190\ubaa9 | \ubb38\uc591\uc0c8\uae40 \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ud55c\ubc24\uc758 \uc804\ub839\uc758 \uc7a5\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_mail_raidhunterethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ucf8c\uac80\uc758 \ubb34\uc9c8\uc11c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_dark.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc544\ub77c\uc988\uc758 \uc758\uc2dd\uc6a9 \uc81c\ub828\uc18c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_trinkettechnomancer_ritualengine.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uad74\ud558\uc9c0 \uc54a\ub294 \ud669\ucc9c\ubd84\uad11\uacbd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_voidprism.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uade0\uc5f4\ud30c\uad34\uad81 \uc57c\uc0bc | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_crossbow_2h_broker_c_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **89.3**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 99.8% | 6,099,628 | 10 |\n| Loom'ithar | 88.4% | 6,867,180 | 7 |\n| Soulbinder Naazindhri | 97.3% | 8,685,123 | 9 |\n| Forgeweaver Araz | 93.4% | 7,143,596 | 5 |\n| The Soul Hunters | 87.2% | 8,734,362 | 3 |\n| Fractillus | 69.6% | 5,764,470 | 5 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | BeastMastery | 500.9 | 840.0 | 94.2% |\n| 1 | BeastMastery | 458.4 | 960.0 | 90.8% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | BeastMastery | 2,249 / 38,703 | 513 | 498 |\n| 1 | BeastMastery | 3,403 / 36,942 | 539 | 515 |\n\n**Median Performance Average:** 68.6\n\n---", "\ub9cc\ubcf4\uba39\uace0": "# \ub9cc\ubcf4\uba39\uace0\n**Fire Mage** | **Ranged** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_fire_firebolt02.jpg**\n\n*Generated: 2025-11-03 10:11:41*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 729.4\n- **Mythic+ Score:** 3,424.5\n- **WarcraftLogs Average:** 91.4\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc790\ub450\uc2a4\uc758 \uc608\ubc30\uc2dd \ubaa8\uc790 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_cloth_raidmageethereal_d_01.jpg |\n| \ubaa9 | \ub354\uc2a4\ud06c\ube14\ub808\uc774\uc988\uc758 \uc808\ub9dd | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_necklace03_etherealtechnomancerstyle_gold.jpg |\n| \uc5b4\uae68 | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \ud798\uc758 \ubcf4\uc8fc | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_cloth_raidmageethereal_d_01.jpg |\n| \uc18d\uc637 | \ud53c\uc5d0 \uc816\uc740 \uc2f8\uc6c0\uafbc\uc758 \ub0b4\ubcf5 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_leather_20.jpg |\n| \uac00\uc2b4 | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \ubcf5\uc7a5 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_robe_cloth_raidmageethereal_d_01.jpg |\n| \ud5c8\ub9ac | \uc81c\ub828\uc9c1\uacf5\uc758 \uc77c\uc9c0 \ubcf4\uad00\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_belt_cloth_raidwarlockethereal_d_01.jpg |\n| \ub2e4\ub9ac | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \uae34\ubc14\uc9c0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_cloth_raidmageethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ube44\ub2e8 \uc131\ud07c\uc7a5\ud654 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_cloth_raidpriestethereal_d_01.jpg |\n| \uc190\ubaa9 | \ucd95\uc131\ub41c \uc18c\ub9e4\uc7a5\uc2dd | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cloth_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uc810\uc220\uac00\uc758 \ub367\uc5c6\ub294 \ubc18\uc7a5\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_cloth_raidmageethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \ubc18\uc9c0 2 | \ubd95\uad34\ud558\ub294 \ubcc4\uc758 \uc778\uc7a5 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_jewelcrafting_80_maxlvlring_blue.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc18c\ub808\uc544\uc758 \uc740\ubc00\ud55c \uae30\uc220 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_60pvp_trinket1d.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uae08\uac15\uc11d \uacf5\ud5c8\ud575 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_intdps_ancientkareshirelic.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacf5\ud5c8\uc720\ub9ac \uad70\uc8fc\uc758 \uce7c\ub0a0 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_sword_1h_etherealraid_d_01.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \ubc29\ub791\uc790\uc758 \ud683\ubd88 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_offhand_1h_arathoroutdoor_d_01.jpg |\n| \uac89\uc637 | \ube5b\uc758 \uc218\ud638\uc790\uc758 \ud718\uc7a5 | 32 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shirt_guildtabard_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **91.4**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 98.5% | 5,296,883 | 11 |\n| Loom'ithar | 99.4% | 8,140,233 | 10 |\n| Soulbinder Naazindhri | 98.2% | 9,162,519 | 11 |\n| Forgeweaver Araz | 95.4% | 8,018,239 | 8 |\n| The Soul Hunters | 99.8% | 11,841,591 | 7 |\n| Fractillus | 97.6% | 5,796,794 | 7 |\n| Nexus-King Salhadaar | 50.9% | 6,698,101 | 1 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 1 | Fire | 651.1 | 960.0 | 99.0% |\n| 2 | Fire | 670.7 | 840.0 | 98.5% |\n| 1 | Arcane | 626.8 | 960.0 | 96.9% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 1 | Fire | 40 / 3,817 | 5 | 5 |\n| 2 | Fire | 52 / 3,291 | 5 | 5 |\n| 1 | Arcane | 889 / 28,912 | 142 | 138 |\n\n**Median Performance Average:** 79.3\n\n---", "\ucc38\uaca9\ud669\uc81c": "# \ucc38\uaca9\ud669\uc81c\n**Holy Paladin** | **Healer** | **azshara**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_holy_holybolt.jpg**\n\n*Generated: 2025-11-03 10:11:19*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 726.9\n- **Mythic+ Score:** 3,065.7\n- **WarcraftLogs Average:** 65.1\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \ube5b\ub098\ub294 \ub300\ub300\uc758 \ube5b\uac08\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_helm.jpg |\n| \ubaa9 | \ud654\ub824\ud55c \uac01\uc778\uc774 \uc0c8\uaca8\uc9c4 \uc99d\ud3ed\uae30 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_misc_silverjadenecklace.jpg |\n| \uc5b4\uae68 | \uc601\uc6d0\ubcbc\ub9bc \uacac\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_outdoorarathor_d_01_shoulder.jpg |\n| \uc18d\uc637 | \uc608\uc090\uc758 \ub9ac\ubcf8 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_misc_ribbon_01.jpg |\n| \uac00\uc2b4 | \ube5b\ub098\ub294 \ub300\ub300\uc758 \ud749\uac11 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_chest.jpg |\n| \ud5c8\ub9ac | \ube5b\ub098\ub294 \ub300\ub300\uc758 \uc778\uc7a5 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_belt.jpg |\n| \ub2e4\ub9ac | \ube5b\ub098\ub294 \ub300\ub300\uc758 \ub2e4\ub9ac\uac00\ub9ac\uac1c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_pant.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \ud310\uae08 \ubc1c\ub36e\uac1c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_boot.jpg |\n| \uc190\ubaa9 | \uc601\uc6d0\ubcbc\ub9bc \uc644\uac11 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \ube5b\ub098\ub294 \ub300\ub300\uc758 \uc190\ubcf4\ud638\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_plate_raidpaladinethereal_d_01_glove.jpg |\n| \ubc18\uc9c0 1 | \ub17c\ub9ac \uad00\ubb38: \uc2dc\ucd08\uc810 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_gold.jpg |\n| \ubc18\uc9c0 2 | \ud1a0\uc11d\uc778 \uc7a5\uc778 \uc815\uc2e0\uc758 \ubc18\uc9c0 | 727 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_earthen_earthenring_color1.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \ubc15\uba78\uc758 \ube44\uc804\ud575 | 720 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_obliterationcannon.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uc78a\ud78c \ud558\ub298\uc758 \ube44\uba85 | 710 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_blobofswirlingvoid_terra.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \ud2b9\uae09 \uad11\uc790 \uc0ac\ube0c\ub974 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_sword_2h_etherealraid_d_01.jpg |\n| \uac89\uc637 | \ube5b\uc758 \uc218\ud638\uc790\uc758 \ud718\uc7a5 | 32 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shirt_guildtabard_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **65.1**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 87.3% | 5,141,601 | 10 |\n| Loom'ithar | 91.4% | 5,591,992 | 8 |\n| Soulbinder Naazindhri | 67.0% | 5,598,508 | 10 |\n| Forgeweaver Araz | 33.8% | 4,140,138 | 5 |\n| The Soul Hunters | 83.4% | 6,141,894 | 3 |\n| Fractillus | 89.5% | 5,165,196 | 5 |\n| Nexus-King Salhadaar | 2.9% | 3,571,666 | 1 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Holy | 611.8 | 960.0 | 93.9% |\n| 1 | Holy | 361.0 | 960.0 | 77.2% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Holy | 597 / 9,816 | 89 | 85 |\n| 1 | Holy | 2,532 / 11,113 | 272 | 253 |\n\n**Median Performance Average:** 32.3\n\n---", "\uc220\uc0ac\ucd08\uc774": "# \uc220\uc0ac\ucd08\uc774\n**Elemental Shaman** | **Ranged** | **hyjal**\n**SPEC_ICON:https://render.worldofwarcraft.com/kr/icons/56/spell_nature_lightning.jpg**\n\n*Generated: 2025-11-03 10:11:53*\n\n---\n\n## \ud83d\udcca Overview\n\n- **Average Item Level:** 723.8\n- **Mythic+ Score:** 2,672.3\n- **WarcraftLogs Average:** 75.2\n\n---\n\n## \u2694\ufe0f Equipment\n\n| Slot | Item Name | Item Level | Icon |\n|------|-----------|------------|------|\n| \uba38\ub9ac | \uc9d1\uc911\ub41c \uaca9\ub178\uc758 \uc704\uc0c1 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_helm_mail_raidshamanethereal_d_01.jpg |\n| \ubaa9 | \ubd84\ub9ac\ub41c \uc601\ud63c\uc758 \ubc88\ub370\uae30 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_necklace01_etherealnontechnologicalstyle_gold.jpg |\n| \uc5b4\uae68 | \uc9d1\uc911\ub41c \uaca9\ub178\uc758 \uc1a1\uacf3\ub2c8 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shoulder_mail_raidshamanethereal_d_01.jpg |\n| \uc18d\uc637 | \ub178\ub780\uc0c9 \ub098\ubb34\uafbc \uc154\uce20 | 1 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shirt_yellow_01.jpg |\n| \uac00\uc2b4 | \uc9d1\uc911\ub41c \uaca9\ub178\uc758 \ubaa8\ud53c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_chest_mail_raidshamanethereal_d_01.jpg |\n| \ud5c8\ub9ac | \ubb38\uc591\uc0c8\uae40 \uacb0\uc18d\ub760 | 720 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_belt.jpg |\n| \ub2e4\ub9ac | \uc9d1\uc911\ub41c \uaca9\ub178\uc758 \ubb34\ub98e\ubc1b\uc774 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_pant_mail_raidshamanethereal_d_01.jpg |\n| \ubc1c | \uce68\uc785\uc790\uc758 \uc0ac\uc2ac \uc7a5\ud654 | 717 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_boot_mail_raidshamanethereal_d_01.jpg |\n| \uc190\ubaa9 | \ubb38\uc591\uc0c8\uae40 \uc644\uac11 | 720 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mail_outdoorarathor_d_01_bracer.jpg |\n| \uc190 | \uc9d1\uc911\ub41c \uaca9\ub178\uc758 \ubc1c\ud1b1 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_glove_mail_raidshamanethereal_d_01.jpg |\n| \ubc18\uc9c0 1 | \ub0a1\uc740 \uc778\uc7a5 | 710 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_11_0_ventureco_ring02_color2.jpg |\n| \ubc18\uc9c0 2 | \ub17c\ub9ac \uad00\ubb38: \uc885\uadf9\uc810 | 710 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_ring03_etherealtechnomancerstyle_terra.jpg |\n| \uc7a5\uc2e0\uad6c 1 | \uc740\ud558\uc218\uc758 \ub354\ub4ec\uc774 | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_silkwormsantenna.jpg |\n| \uc7a5\uc2e0\uad6c 2 | \uc544\ub77c\uc988\uc758 \uc758\uc2dd\uc6a9 \uc81c\ub828\uc18c | 723 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_112_raidtrinkets_trinkettechnomancer_ritualengine.jpg |\n| \ub4f1 | \ub808\uc2dc \ubd95\ub300 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_cape_armor_etherealshawl_d_01.jpg |\n| \uc8fc\uc7a5\ube44 | \uacfc\ubd80\ud558\ub41c \uc5f0\uacb0\ub9dd\uce58 | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_mace_1h_etherealraid_d_01.jpg |\n| \ubcf4\uc870\uc7a5\ube44 | \uc5ee\uc5b4\ub0b4\ub294 \uc57c\uc218\uc758 \uc218\ud638\ubb3c | 730 | ICON:https://render.worldofwarcraft.com/kr/icons/56/inv_shield_1h_etherealraid_d_01.jpg |\n\n---\n\n## \ud83c\udfc6 WarcraftLogs Performance\n\n### Best Performance Average: **75.2**\n\n### \ud83d\udccb Boss Rankings\n\n| Boss | Rank % | Best DPS/HPS | Total Kills |\n|------|--------|--------------|-------------|\n| Plexus Sentinel | 97.2% | 5,387,412 | 9 |\n| Loom'ithar | 67.2% | 6,003,550 | 5 |\n| Soulbinder Naazindhri | 70.6% | 7,911,869 | 9 |\n| Forgeweaver Araz | 92.5% | 7,321,828 | 5 |\n| The Soul Hunters | 55.8% | 7,758,011 | 1 |\n| Fractillus | 67.9% | 5,916,244 | 5 |\n| Nexus-King Salhadaar | N/A% | N/A | 0 |\n| Dimensius, the All-Devouring | N/A% | N/A | 0 |\n\n### \u2b50 All Stars Points\n\n| Partition | Spec | Points | Possible | Rank % |\n|-----------|------|--------|----------|--------|\n| 2 | Elemental | 424.5 | 840.0 | 84.7% |\n| 1 | Elemental | 472.5 | 960.0 | 84.3% |\n\n### \ud83c\udf0d Rankings\n\n| Partition | Spec | Overall Rank | Region Rank | Server Rank |\n|-----------|------|--------------|-------------|-------------|\n| 2 | Elemental | 2,534 / 16,582 | 442 | 6 |\n| 1 | Elemental | 2,648 / 16,854 | 306 | 5 |\n\n**Median Performance Average:** 58.6\n\n---"};
+        
+        // Modal functions
+        function showCharacterDetails(charName) {
+            const modal = document.getElementById('characterModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            if (characterDetails[charName]) {
+                modalTitle.textContent = charName;
+                
+                // Convert markdown to HTML
+                const content = characterDetails[charName];
+                const lines = content.split('\n');
+                let html = '';
+                let inTable = false;
+                let tableRows = [];
+                
+                let isEquipmentSection = false;
+                let specIcon = '';
+                
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i];
+                    
+                    // Extract and SKIP the SPEC_ICON line completely
+                    if (line.startsWith('**SPEC_ICON:')) {
+                        specIcon = line.replace('**SPEC_ICON:', '').replace('**', '').trim();
+                        continue; // Don't process this line at all
+                    }
+                    
+                    // Check if we're in equipment section
+                    if (line.includes('## ⚔️ Equipment')) {
+                        isEquipmentSection = true;
+                    } else if (line.startsWith('##')) {
+                        isEquipmentSection = false;
+                    }
+                    
+                    if (line.trim().startsWith('|')) {
+                        if (!inTable) {
+                            inTable = true;
+                            tableRows = [];
+                        }
+                        tableRows.push(line);
+                        continue;
+                    } else if (inTable) {
+                        html += processTable(tableRows, isEquipmentSection);
+                        inTable = false;
+                        tableRows = [];
+                    }
+                    
+                    if (line.startsWith('# ')) {
+                        html += `<h2>${line.substring(2)}</h2>`;
+                    } else if (line.startsWith('## ')) {
+                        html += `<h3>${line.substring(3)}</h3>`;
+                    } else if (line.startsWith('### ')) {
+                        html += `<h4>${line.substring(4)}</h4>`;
+                    } else if (line.trim() === '---') {
+                        html += '<hr>';
+                    } else if (line.trim() === '') {
+                        html += '<br>';
+                    } else {
+                        line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                        line = line.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                        
+                        // Add spec icon if this is the class/role line and we have an icon
+                        if (specIcon && line.includes('|') && (line.includes('Tank') || line.includes('Healer') || line.includes('Melee') || line.includes('Ranged'))) {
+                            line = `<img src="${specIcon}" alt="spec" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> ` + line;
+                        }
+                        
+                        html += `<p>${line}</p>`;
+                    }
+                }
+                
+                if (inTable) {
+                    html += processTable(tableRows, isEquipmentSection);
+                }
+                
+                modalBody.innerHTML = html;
+                modal.style.display = 'block';
+            }
+        }
+        
+        function processTable(rows, isEquipmentTable = false) {
+            if (rows.length === 0) return '';
+            
+            let html = '<table style="width:100%; border-collapse: collapse; margin: 20px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">';
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].split('|').filter(cell => cell.trim());
+                
+                if (cells[0] && cells[0].includes('---')) continue;
+                
+                if (i === 0) {
+                    html += '<thead><tr>';
+                    cells.forEach((cell, idx) => {
+                        // Skip the Icon column header in equipment tables
+                        if (!(isEquipmentTable && idx === 3 && cell.trim() === 'Icon')) {
+                            html += `<th style="background: #667eea; color: white; padding: 12px; text-align: left; font-weight: 600;">${cell.trim()}</th>`;
+                        }
+                    });
+                    html += '</tr></thead><tbody>';
+                } else {
+                    html += '<tr style="border-bottom: 1px solid #eee;">';
+                    cells.forEach((cell, index) => {
+                        // For equipment tables
+                        if (isEquipmentTable) {
+                            if (index === 1 && cells.length >= 4) {
+                                // This is the item name column, add icon
+                                const iconCell = cells[3].trim();
+                                if (iconCell.startsWith('ICON:')) {
+                                    const iconUrl = iconCell.substring(5); // Remove 'ICON:' prefix
+                                    if (iconUrl && iconUrl.startsWith('http')) {
+                                        html += `<td style="padding: 12px;"><img src="${iconUrl}" alt="icon" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px; border: 2px solid #667eea;" onerror="this.style.display='none'"> ${cell.trim()}</td>`;
+                                    } else {
+                                        html += `<td style="padding: 12px;">${cell.trim()}</td>`;
+                                    }
+                                } else {
+                                    html += `<td style="padding: 12px;">${cell.trim()}</td>`;
+                                }
+                            } else if (index !== 3) {
+                                // Skip the Icon URL column (index 3)
+                                html += `<td style="padding: 12px;">${cell.trim()}</td>`;
+                            }
+                        } else {
+                            html += `<td style="padding: 12px;">${cell.trim()}</td>`;
+                        }
+                    });
+                    html += '</tr>';
+                }
+            }
+            
+            html += '</tbody></table>';
+            return html;
+        }
+        
+        function closeModal() {
+            document.getElementById('characterModal').style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            const modal = document.getElementById('characterModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Chart background plugin (lighter grey)
+        const lighterBgPlugin = {
+            beforeDraw: (chart) => {
+                const ctx = chart.ctx;
+                ctx.save();
+                ctx.fillStyle = '#F5F5F5';
+                ctx.fillRect(0, 0, chart.width, chart.height);
+                ctx.restore();
+            }
+        };
+        
+        // Trend Chart
+        const trendData = {
+            dates: ["2025-11-03"],
+            ilvl: [727.7349999999999],
+            mplus: [3076.5050000000006],
+            wcl: [81.38499999999999]
+        };
+        
+        if (trendData.dates.length > 0) {
+            new Chart(document.getElementById('trendChart'), {
+                type: 'line',
+                data: {
+                    labels: trendData.dates,
+                    datasets: [
+                        {
+                            label: 'Average ilvl',
+                            data: trendData.ilvl,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y-ilvl'
+                        },
+                        {
+                            label: 'Average M+ Score',
+                            data: trendData.mplus,
+                            borderColor: '#FF6B6B',
+                            backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y-mplus'
+                        },
+                        {
+                            label: 'Average WCL',
+                            data: trendData.wcl,
+                            borderColor: '#4ECDC4',
+                            backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y-wcl'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Date: ' + context[0].label;
+                                },
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toFixed(1);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#000000'
+                            },
+                            grid: {
+                                color: '#CCCCCC'
+                            }
+                        },
+                        'y-ilvl': {
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                color: '#667eea'
+                            },
+                            grid: {
+                                color: '#CCCCCC'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Item Level',
+                                color: '#667eea'
+                            }
+                        },
+                        'y-mplus': {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                color: '#FF6B6B'
+                            },
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'M+ Score',
+                                color: '#FF6B6B'
+                            }
+                        },
+                        'y-wcl': {
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                color: '#4ECDC4'
+                            },
+                            grid: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: 'WCL',
+                                color: '#4ECDC4'
+                            }
+                        }
+                    }
+                },
+                plugins: [lighterBgPlugin]
+            });
+        } else {
+            // Show placeholder message
+            const canvas = document.getElementById('trendChart');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#F5F5F5';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#999';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('No historical data yet. Run the crawler multiple times to see trends!', canvas.width/2, canvas.height/2);
+        }
+        
+        // Item Level Chart
+        new Chart(document.getElementById('ilvlChart'), {
+            type: 'bar',
+            data: {
+                labels: ["\uc804\uc0ac\uc7a0\ud0f1\uc774", "\uc5c5\ubcf4\ub9f9", "\ub9ac\uc27d", "\ucc38\uaca9\ud669\uc81c", "\ud558\uc580\ucc28", "\uc6a9\ubd88\ud0c0", "\ud0d1\uace8\uacf5\uc6d0\uccb4\uc2a4\uc655", "\ub0e5\uafbc\ub9b0\uce20", "\ud2b9\uc784\uc2dc\ud0a4\uba74\ub215\ub294\ub2e4", "\ud5cc\ud130\ub951", "\ub9cc\ubcf4\uba39\uace0", "\uce58\uc5d0\ub2c8", "\ubcf4\ub77c\ubc1c\uad7d", "\uba54\uc624", "\ubcf4\uc18c\ubc0d", "\uc220\uc0ac\ucd08\uc774", "\ub85c\uceec\ud478\ub4dc\uc0b0\ucd08", "Yoahjung", "\ucfe0\ub2c8", "\uc545\ud48d"],
+                datasets: [{
+                    label: 'Item Level',
+                    data: [727.8, 724.7, 727.7, 726.9, 729.4, 729.0, 726.9, 729.4, 729.4, 725.9, 729.4, 729.2, 728.1, 729.4, 729.2, 723.8, 728.5, 729.2, 721.4, 729.4],
+                    backgroundColor: ["#C69B6D", "#00FF98", "#FF7C0A", "#F48CBA", "#FFFFFF", "#33937F", "#FF7C0A", "#AAD372", "#AAD372", "#AAD372", "#3FC7EB", "#3FC7EB", "#8788EE", "#8788EE", "#33937F", "#0070DD", "#C41E3A", "#C41E3A", "#FFF468", "#A330C9"],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: false,
+                            font: {
+                                size: 11
+                            },
+                            color: '#000000'
+                        },
+                        grid: {
+                            color: '#CCCCCC'
+                        }
+                    },
+                    y: {
+                        min: 700,
+                        max: 730,
+                        ticks: {
+                            stepSize: 10,
+                            color: '#000000'
+                        },
+                        grid: {
+                            color: '#CCCCCC'
+                        }
+                    }
+                },
+                layout: {
+                    padding: 10
+                }
+            },
+            plugins: [lighterBgPlugin]
+        });
+        
+        // M+ Score Chart (with class colors)
+        new Chart(document.getElementById('mplusChart'), {
+            type: 'bar',
+            data: {
+                labels: ["\uc804\uc0ac\uc7a0\ud0f1\uc774", "\uc5c5\ubcf4\ub9f9", "\ub9ac\uc27d", "\ucc38\uaca9\ud669\uc81c", "\ud558\uc580\ucc28", "\uc6a9\ubd88\ud0c0", "\ud0d1\uace8\uacf5\uc6d0\uccb4\uc2a4\uc655", "\ub0e5\uafbc\ub9b0\uce20", "\ud2b9\uc784\uc2dc\ud0a4\uba74\ub215\ub294\ub2e4", "\ud5cc\ud130\ub951", "\ub9cc\ubcf4\uba39\uace0", "\uce58\uc5d0\ub2c8", "\ubcf4\ub77c\ubc1c\uad7d", "\uba54\uc624", "\ubcf4\uc18c\ubc0d", "\uc220\uc0ac\ucd08\uc774", "\ub85c\uceec\ud478\ub4dc\uc0b0\ucd08", "Yoahjung", "\ucfe0\ub2c8", "\uc545\ud48d"],
+                datasets: [{
+                    label: 'M+ Score',
+                    data: [2995.5, 3001.4, 3838.3, 3065.7, 3058.0, 2988.4, 3291.7, 3053.8, 2972.8, 3170.8, 3424.5, 3033.8, 3030.4, 2033.4, 2960.7, 2672.3, 3383.8, 3082.7, 2980.3, 3491.8],
+                    backgroundColor: ["#C69B6D", "#00FF98", "#FF7C0A", "#F48CBA", "#FFFFFF", "#33937F", "#FF7C0A", "#AAD372", "#AAD372", "#AAD372", "#3FC7EB", "#3FC7EB", "#8788EE", "#8788EE", "#33937F", "#0070DD", "#C41E3A", "#C41E3A", "#FFF468", "#A330C9"],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: false,
+                            font: {
+                                size: 11
+                            },
+                            color: '#000000'
+                        },
+                        grid: {
+                            color: '#CCCCCC'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#000000'
+                        },
+                        grid: {
+                            color: '#CCCCCC'
+                        }
+                    }
+                },
+                layout: {
+                    padding: 10
+                }
+            },
+            plugins: [lighterBgPlugin]
+        });
+        
+        // WCL Score Chart (with class colors)
+        new Chart(document.getElementById('wclChart'), {
+            type: 'bar',
+            data: {
+                labels: ["\uc804\uc0ac\uc7a0\ud0f1\uc774", "\uc5c5\ubcf4\ub9f9", "\ub9ac\uc27d", "\ucc38\uaca9\ud669\uc81c", "\ud558\uc580\ucc28", "\uc6a9\ubd88\ud0c0", "\ud0d1\uace8\uacf5\uc6d0\uccb4\uc2a4\uc655", "\ub0e5\uafbc\ub9b0\uce20", "\ud2b9\uc784\uc2dc\ud0a4\uba74\ub215\ub294\ub2e4", "\ud5cc\ud130\ub951", "\ub9cc\ubcf4\uba39\uace0", "\uce58\uc5d0\ub2c8", "\ubcf4\ub77c\ubc1c\uad7d", "\uba54\uc624", "\ubcf4\uc18c\ubc0d", "\uc220\uc0ac\ucd08\uc774", "\ub85c\uceec\ud478\ub4dc\uc0b0\ucd08", "Yoahjung", "\ucfe0\ub2c8", "\uc545\ud48d"],
+                datasets: [{
+                    label: 'WCL Score',
+                    data: [68.6, 87.8, 95.2, 65.1, 93.1, 75.4, 81.6, 89.3, 95.3, 80.3, 91.4, 74.2, 51.8, 98.6, 97.4, 75.2, 63.1, 88.5, 85.8, 70.0],
+                    backgroundColor: ["#C69B6D", "#00FF98", "#FF7C0A", "#F48CBA", "#FFFFFF", "#33937F", "#FF7C0A", "#AAD372", "#AAD372", "#AAD372", "#3FC7EB", "#3FC7EB", "#8788EE", "#8788EE", "#33937F", "#0070DD", "#C41E3A", "#C41E3A", "#FFF468", "#A330C9"],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0,
+                            autoSkip: false,
+                            font: {
+                                size: 11
+                            },
+                            color: '#000000'
+                        },
+                        grid: {
+                            color: '#CCCCCC'
+                        }
+                    },
+                    y: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            stepSize: 10,
+                            color: '#000000'
+                        },
+                        grid: {
+                            color: '#CCCCCC'
+                        }
+                    }
+                },
+                layout: {
+                    padding: 10
+                }
+            },
+            plugins: [lighterBgPlugin]
+        });
+    </script>
+</body>
+</html>
+    
