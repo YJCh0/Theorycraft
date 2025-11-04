@@ -3,14 +3,90 @@ import os
 import json
 from datetime import datetime
 
+def parse_wcl_from_markdown(content):
+    """Extract WCL data from markdown content"""
+    wcl_data = {
+        'has_logs': False,
+        'best_performance': 'N/A',
+        'boss_rankings': [],
+        'all_stars': []
+    }
+    
+    lines = content.split('\n')
+    in_wcl_section = False
+    in_boss_table = False
+    in_allstars_table = False
+    
+    for i, line in enumerate(lines):
+        if '## 🏆 WarcraftLogs Performance' in line:
+            in_wcl_section = True
+            # Check next line for "No raid logs"
+            if i + 1 < len(lines) and 'No raid logs' in lines[i + 1]:
+                return wcl_data
+            wcl_data['has_logs'] = True
+        
+        if in_wcl_section:
+            if 'Best Performance Average:' in line:
+                try:
+                    wcl_data['best_performance'] = line.split('**')[1].strip()
+                except:
+                    pass
+            
+            if '### 📋 Boss Rankings' in line:
+                in_boss_table = True
+                continue
+            
+            if '### ⭐ All Stars Points' in line:
+                in_boss_table = False
+                in_allstars_table = True
+                continue
+            
+            if in_boss_table and line.startswith('|') and '---' not in line:
+                parts = [p.strip() for p in line.split('|')[1:-1]]
+                if len(parts) >= 4 and parts[0] not in ['Boss', '']:
+                    try:
+                        wcl_data['boss_rankings'].append({
+                            'boss': parts[0],
+                            'rank_percent': parts[1].replace('%', '').strip(),
+                            'best_amount': int(parts[2].replace(',', '')),
+                            'total_kills': int(parts[3])
+                        })
+                    except:
+                        pass
+            
+            if in_allstars_table and line.startswith('|') and '---' not in line:
+                parts = [p.strip() for p in line.split('|')[1:-1]]
+                if len(parts) >= 5 and parts[0] not in ['Partition', '']:
+                    try:
+                        wcl_data['all_stars'].append({
+                            'partition': parts[0],
+                            'spec': parts[1],
+                            'points': float(parts[2].replace(',', '')),
+                            'possible': float(parts[3].replace(',', '')),
+                            'rank_percent': float(parts[4].replace('%', '').strip())
+                        })
+                    except:
+                        pass
+    
+    return wcl_data
+
+def get_rio_color(score):
+    """Get Raider.IO color based on score"""
+    if score >= 3500: return '#ff8000'  # Orange
+    elif score >= 3000: return '#a335ee'  # Epic Purple
+    elif score >= 2500: return '#0070dd'  # Rare Blue
+    elif score >= 2000: return '#1eff00'  # Uncommon Green
+    elif score >= 1500: return '#ffffff'  # Common White
+    else: return '#808080'  # Gray
+
 def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir="detailed"):
-    """Generate complete interactive dashboard"""
+    """Generate complete interactive dashboard with 5 tabs"""
     
     if not os.path.exists(csv_file):
         print(f"❌ CSV file not found: {csv_file}")
         return
     
-    print("🎨 Generating dashboard...")
+    print("🎨 Generating enhanced dashboard...")
     
     # Load history
     try:
@@ -27,10 +103,11 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         with open("logs/mplus_enhanced.json", 'r') as f:
             mplus_data = json.load(f)
     
-    # Read characters
+    # Read characters and their detailed data
     characters = []
     character_specs = {}
     character_details = {}
+    wcl_details = {}
     
     with open(csv_file, 'r', encoding='utf-8') as f:
         characters = list(csv.DictReader(f))
@@ -39,13 +116,18 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         for fname in os.listdir(detailed_dir):
             if fname.endswith('.md'):
                 name = fname[:-3]
-                with open(os.path.join(detailed_dir, fname), 'r') as f:
+                with open(os.path.join(detailed_dir, fname), 'r', encoding='utf-8') as f:
                     content = f.read()
                     character_details[name] = content
+                    
+                    # Extract spec icon
                     for line in content.split('\n'):
                         if line.startswith('**SPEC_ICON:'):
                             character_specs[name] = line.replace('**SPEC_ICON:', '').replace('**', '').strip()
                             break
+                    
+                    # Extract WCL data from markdown
+                    wcl_details[name] = parse_wcl_from_markdown(content)
     
     # Stats
     total = len(characters)
@@ -73,6 +155,26 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
     }
     colors = [class_colors.get(c,'#667eea') for c in classes]
     
+    # Create filtered WCL data (only characters with actual scores)
+    wcl_filtered_names = []
+    wcl_filtered_data = []
+    wcl_filtered_colors = []
+    for c in characters:
+        try:
+            wcl_val = float(str(c['WCL']).replace(',',''))
+            if wcl_val > 0:  # Only include characters with actual WCL data
+                wcl_filtered_names.append(c['ID'])
+                wcl_filtered_data.append(wcl_val)
+                # Get class color for this character
+                char_class = c['Class']
+                char_color = class_colors.get(char_class, '#667eea')
+                wcl_filtered_colors.append(char_color)
+        except:
+            pass
+    
+    print(f"   - WCL chart: {len(wcl_filtered_names)} characters with raid logs")
+    print(f"   - WCL colors: {wcl_filtered_colors[:3]}...")  # Debug: print first 3 colors
+    
     def wcl_color(s):
         if s==100: return '#e6cc80'
         elif s>=99: return '#e367a5'
@@ -82,11 +184,12 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
         elif s>=25: return '#1eff00'
         return '#808080'
     
-    # Generate HTML - keeping it simpler and complete
+    # Generate HTML
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <title>Guild Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -95,6 +198,24 @@ body{{font-family:system-ui;background:linear-gradient(135deg,#667eea,#764ba2);p
 .container{{max-width:1400px;margin:0 auto}}
 header{{text-align:center;color:#fff;margin-bottom:40px;padding:20px}}
 h1{{font-size:3em}}
+@media(max-width:768px){{
+h1{{font-size:2em}}
+header{{padding:10px;margin-bottom:20px}}
+.stats-grid{{grid-template-columns:repeat(2,1fr);gap:10px}}
+.stat-card{{padding:15px}}
+.value{{font-size:1.8em}}
+.tab-nav{{flex-wrap:wrap}}
+.tab-btn{{padding:12px;font-size:0.95em}}
+.tab-content{{padding:15px}}
+.chart-container{{height:400px}}
+.char-section{{padding:15px}}
+.char-header{{flex-direction:column;align-items:flex-start}}
+.char-avatar{{width:60px;height:60px;margin-bottom:10px}}
+.run-card{{padding:15px}}
+.key-level{{font-size:1.4em;padding:8px 15px}}
+.sort-controls{{gap:8px}}
+.sort-btn{{padding:8px 12px;font-size:0.9em}}
+}}
 .stats-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:40px}}
 .stat-card{{background:#fff;border-radius:15px;padding:25px;box-shadow:0 10px 30px rgba(0,0,0,.2)}}
 .value{{font-size:2.5em;font-weight:bold;color:#667eea}}
@@ -105,9 +226,14 @@ h1{{font-size:3em}}
 .tab-btn.active{{background:#fff;color:#667eea;border-bottom:3px solid #667eea}}
 .tab-content{{display:none;padding:30px}}
 .tab-content.active{{display:block}}
-.chart-container{{position:relative;height:600px}}
+.chart-container{{position:relative;height:600px;padding:20px;background:#fff;border-radius:10px;border:2px solid #e0e0e0}}
+.sort-controls{{display:flex;gap:15px;margin-bottom:20px;flex-wrap:wrap}}
+.sort-btn{{padding:10px 20px;background:#f0f0f0;border:2px solid #667eea;border-radius:8px;cursor:pointer;font-weight:600;color:#667eea;transition:all .3s}}
+.sort-btn:hover{{background:#667eea;color:#fff}}
+.sort-btn.active{{background:#667eea;color:#fff}}
 table{{width:100%;border-collapse:collapse}}
-th{{background:#667eea;color:#fff;padding:12px;text-align:left}}
+th{{background:#667eea;color:#fff;padding:12px;text-align:left;cursor:pointer;user-select:none}}
+th:hover{{background:#764ba2}}
 td{{padding:12px;border-bottom:1px solid #eee}}
 tr:hover{{background:#f8f9ff}}
 .clickable{{cursor:pointer;color:#667eea;font-weight:600;text-decoration:none}}
@@ -115,7 +241,7 @@ tr:hover{{background:#f8f9ff}}
 .badge{{display:inline-block;padding:4px 12px;border-radius:12px;font-size:.85em;font-weight:600}}
 .modal{{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.6)}}
 .modal-content{{background:#fff;margin:50px auto;padding:0;border-radius:15px;width:90%;max-width:900px;max-height:85vh;overflow-y:auto}}
-.modal-header{{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:25px;border-radius:15px 15px 0 0;position:sticky;top:0}}
+.modal-header{{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:25px;border-radius:15px 15px 0 0;position:sticky;top:0;z-index:1001}}
 .modal-body{{padding:30px}}
 .close{{color:#fff;float:right;font-size:32px;font-weight:bold;cursor:pointer}}
 .char-section{{background:#f8f9fa;border-radius:15px;padding:25px;margin-bottom:30px;border:2px solid #e0e0e0}}
@@ -123,7 +249,8 @@ tr:hover{{background:#f8f9ff}}
 .char-avatar{{width:80px;height:80px;border-radius:10px;margin-right:20px;border:3px solid #667eea}}
 .run-card{{background:#fff;border-radius:10px;padding:20px;margin-bottom:15px;border-left:4px solid #667eea}}
 .run-header{{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}}
-.key-level{{font-size:1.5em;font-weight:bold;padding:8px 20px;border-radius:8px;color:#fff}}
+.key-level{{font-size:1.8em;font-weight:bold;padding:10px 25px;border-radius:10px;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.2)}}
+.upgrade-badge{{display:inline-block;margin-left:8px;font-size:0.8em;background:rgba(255,255,255,.3);padding:4px 10px;border-radius:6px}}
 .affixes{{display:flex;gap:10px;margin:15px 0;flex-wrap:wrap}}
 .affix{{background:#667eea;color:#fff;padding:6px 12px;border-radius:6px;font-size:.85em}}
 .roster{{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:15px}}
@@ -132,6 +259,9 @@ tr:hover{{background:#f8f9ff}}
 .tank{{background:#C41E3A;color:#fff}}
 .healer{{background:#1EFF00;color:#fff}}
 .dps{{background:#667eea;color:#fff}}
+.boss-card{{background:#f8f9fa;padding:20px;border-radius:10px;margin-bottom:15px;border-left:4px solid}}
+.perf-bar{{height:30px;border-radius:6px;position:relative;overflow:hidden;margin-top:10px}}
+.perf-fill{{height:100%;transition:width .5s;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600}}
 footer{{text-align:center;color:#fff;margin-top:40px}}
 </style>
 </head>
@@ -150,6 +280,7 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
 <button class="tab-btn" onclick="switchTab(event,'roster')">📋 Roster</button>
 <button class="tab-btn" onclick="switchTab(event,'charts')">📈 Charts</button>
 <button class="tab-btn" onclick="switchTab(event,'mplus')">🏔️ M+ Details</button>
+<button class="tab-btn" onclick="switchTab(event,'raiding')">🏆 Raiding</button>
 </div>
 <div id="overview" class="tab-content active">
 <h2>Guild Progress Trends</h2>
@@ -158,6 +289,7 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
 <table style="margin-top:20px"><thead><tr><th>Rank</th><th>Character</th><th>Class</th><th>ilvl</th><th>M+</th><th>WCL</th></tr></thead><tbody>
 """
     
+    # Top Improvers
     if top_improvers:
         for i,p in enumerate(top_improvers[:10],1):
             medal = "🥇" if i==1 else "🥈" if i==2 else "🥉" if i==3 else f"{i}."
@@ -165,23 +297,32 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
     else:
         html_content += '<tr><td colspan="6" style="text-align:center;padding:20px">No data yet</td></tr>'
     
+    # Roster Tab with sorting
     html_content += """</tbody></table></div>
 <div id="roster" class="tab-content">
 <h2>Character Roster</h2>
-<table style="margin-top:20px"><thead><tr><th>Character</th><th>Class</th><th>Spec</th><th>ilvl</th><th>M+</th><th>WCL</th></tr></thead><tbody>
+<div class="sort-controls">
+<button class="sort-btn active" onclick="sortRoster('name')">📝 Name (A-Z)</button>
+<button class="sort-btn" onclick="sortRoster('ilvl')">⚔️ Item Level</button>
+<button class="sort-btn" onclick="sortRoster('mplus')">🏔️ M+ Score</button>
+<button class="sort-btn" onclick="sortRoster('wcl')">📈 WCL Score</button>
+</div>
+<table id="rosterTable" style="margin-top:20px"><thead><tr><th onclick="sortRoster('name')">Character</th><th>Class</th><th>Spec</th><th onclick="sortRoster('ilvl')">ilvl</th><th onclick="sortRoster('mplus')">M+</th><th onclick="sortRoster('wcl')">WCL</th></tr></thead><tbody>
 """
     
+    # Store roster data in JSON for client-side sorting
+    roster_data = []
     for c in characters:
         name = c['ID']
         has_detail = name in character_details
         spec_icon = character_specs.get(name,'')
-        spec_disp = f'<img src="{spec_icon}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;border-radius:4px" onerror="this.style.display=\'none\'"> {c["Spec"]}' if spec_icon else c['Spec']
-        name_disp = f'<a href="#" class="clickable" onclick="showChar(\'{name}\');return false">{name}</a>' if has_detail else f'<b>{name}</b>'
         
         try:
             mp = float(str(c['M+']).replace(',',''))
-            mp_badge = f'<span class="badge" style="background:#667eea;color:#fff">{mp:.0f}</span>'
+            mp_color = get_rio_color(mp)
+            mp_badge = f'<span class="badge" style="background:{mp_color};color:#fff">{mp:.0f}</span>'
         except:
+            mp = 0
             mp_badge = '<span class="badge" style="background:#808080;color:#fff">N/A</span>'
         
         try:
@@ -189,21 +330,50 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
             wc_col = wcl_color(wc)
             wc_badge = f'<span class="badge" style="background:{wc_col};color:#fff">{wc:.1f}</span>'
         except:
+            wc = 0
             wc_badge = '<span class="badge" style="background:#808080;color:#fff">N/A</span>'
         
-        html_content += f'<tr><td>{name_disp}</td><td>{c["Class"]}</td><td>{spec_disp}</td><td>{c["ilvl"]}</td><td>{mp_badge}</td><td>{wc_badge}</td></tr>'
+        try:
+            ilvl_val = float(c['ilvl'])
+        except:
+            ilvl_val = 0
+        
+        roster_data.append({
+            'name': name,
+            'class': c['Class'],
+            'spec': c['Spec'],
+            'spec_icon': spec_icon,
+            'ilvl': ilvl_val,
+            'ilvl_display': c['ilvl'],
+            'mplus': mp,
+            'mplus_badge': mp_badge,
+            'wcl': wc,
+            'wcl_badge': wc_badge,
+            'has_detail': has_detail
+        })
     
+    # Initial display (alphabetical)
+    roster_data.sort(key=lambda x: x['name'])
+    
+    for rd in roster_data:
+        spec_disp = f'<img src="{rd["spec_icon"]}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;border-radius:4px" onerror="this.style.display=\'none\'"> {rd["spec"]}' if rd["spec_icon"] else rd["spec"]
+        name_disp = f'<a href="#" class="clickable" onclick="showChar(\'{rd["name"]}\');return false">{rd["name"]}</a>' if rd["has_detail"] else f'<b>{rd["name"]}</b>'
+        
+        html_content += f'<tr><td>{name_disp}</td><td>{rd["class"]}</td><td>{spec_disp}</td><td>{rd["ilvl_display"]}</td><td>{rd["mplus_badge"]}</td><td>{rd["wcl_badge"]}</td></tr>'
+    
+    # Charts Tab
     html_content += """</tbody></table></div>
 <div id="charts" class="tab-content">
-<h2>Item Level</h2><div class="chart-container"><canvas id="ilvlChart"></canvas></div>
-<h2 style="margin-top:40px">M+ Score</h2><div class="chart-container"><canvas id="mplusChart"></canvas></div>
-<h2 style="margin-top:40px">WCL</h2><div class="chart-container"><canvas id="wclChart"></canvas></div>
+<h2>Item Level Distribution</h2><div class="chart-container"><canvas id="ilvlChart"></canvas></div>
+<h2 style="margin-top:40px">M+ Score Distribution</h2><div class="chart-container"><canvas id="mplusChart"></canvas></div>
+<h2 style="margin-top:40px">WCL Performance Distribution</h2><div class="chart-container"><canvas id="wclChart"></canvas></div>
 </div>
 <div id="mplus" class="tab-content">
 """
     
+    # M+ Tab with enhanced display
     if mplus_data:
-        html_content += '<h2 style="margin-bottom:30px">Mythic+ Best Runs</h2>'
+        html_content += '<h2 style="margin-bottom:30px">🏔️ Mythic+ Best Runs</h2>'
         sorted_m = sorted([(n,d) for n,d in mplus_data.items() if d], key=lambda x:x[1].get("character",{}).get("score",0), reverse=True)
         
         for name,data in sorted_m:
@@ -211,28 +381,36 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
             runs = data.get("best_runs",[])
             if not runs: continue
             
-            html_content += f'<div class="char-section"><div class="char-header"><img src="{ci.get("thumbnail","")}" class="char-avatar" onerror="this.style.display=\'none\'"><div><h3>{ci.get("name",name)}</h3><div style="display:flex;gap:15px;margin-top:10px"><span class="badge">{ci.get("spec","")} {ci.get("class","")}</span><span class="badge">ilvl {ci.get("ilvl",0)}</span><span class="badge" style="background:#667eea;color:#fff">M+ {ci.get("score",0):.0f}</span></div></div></div>'
+            score = ci.get("score",0)
+            score_color = get_rio_color(score)
+            
+            html_content += f'<div class="char-section"><div class="char-header"><img src="{ci.get("thumbnail","")}" class="char-avatar" onerror="this.style.display=\'none\'"><div><h3>{ci.get("name",name)}</h3><div style="display:flex;gap:15px;margin-top:10px"><span class="badge">{ci.get("spec","")} {ci.get("class","")}</span><span class="badge">ilvl {ci.get("ilvl",0)}</span><span class="badge" style="background:{score_color};color:#fff">M+ {score:.0f}</span></div></div></div>'
             
             for i,run in enumerate(runs,1):
                 lv = run.get('level',0)
                 timed = run.get('timed',False)
                 chests = run.get('num_chests',0)
                 lv_col = "#FF8000" if lv>=12 else "#A335EE" if lv>=10 else "#0070DD" if lv>=8 else "#1EFF00"
-                up_txt = f"+{chests}" if timed and chests>0 else ""
+                
+                # Unified key level display
+                if timed and chests > 0:
+                    key_display = f'+{lv} <span class="upgrade-badge">(+{chests})</span>'
+                else:
+                    key_display = f'+{lv}'
                 
                 def fmt(ms):
                     if ms<=0: return "N/A"
                     s=ms/1000
                     return f"{int(s//60)}:{int(s%60):02d}"
                 
-                html_content += f'<div class="run-card"><div class="run-header"><div><div style="font-size:1.3em;font-weight:600">#{i} {run.get("dungeon","")}</div><div style="color:#666;font-size:.9em">{run.get("completed_at","")}</div></div><div class="key-level" style="background:{lv_col}">+{lv} {up_txt}</div></div><div style="margin-bottom:10px;font-weight:600;color:{"#28a745" if timed else "#dc3545"}">{"✅ Timed" if timed else "❌ Depleted"} | Score: {run.get("score",0):.1f}</div><div class="affixes">'
+                html_content += f'<div class="run-card"><div class="run-header"><div><div style="font-size:1.3em;font-weight:600">#{i} {run.get("dungeon","")}</div><div style="color:#666;font-size:.9em">{run.get("completed_at","")}</div></div><div class="key-level" style="background:{lv_col}">{key_display}</div></div><div style="margin-bottom:10px;font-weight:600;color:{"#28a745" if timed else "#dc3545"}">{"✅ Timed" if timed else "❌ Depleted"} | Score: {run.get("score",0):.1f}</div><div class="affixes">'
                 
                 aff_emoji = {"Tyrannical":"👑","Fortified":"🛡️","Bolstering":"💪","Bursting":"💥","Raging":"😡","Sanguine":"🩸","Volcanic":"🌋","Explosive":"💣","Quaking":"🌊","Grievous":"⚔️","Necrotic":"☠️","Storming":"⛈️","Afflicted":"🤢","Incorporeal":"👻","Entangling":"🌿","Xal'atath's Bargain":"🔮","Xal'atath's Guile":"🔮"}
                 
                 for aff in run.get('affixes',[]):
                     html_content += f'<span class="affix">{aff_emoji.get(aff.get("name",""),"🔸")} {aff.get("name","")}</span>'
                 
-                html_content += f'</div><div style="display:flex;gap:20px;margin:15px 0"><span>⏱️ {fmt(run.get("clear_time_ms",0))}</span><span>🎯 {fmt(run.get("par_time_ms",0))}</span></div><h4 style="color:#667eea">Party</h4><div class="roster">'
+                html_content += f'</div><div style="display:flex;gap:20px;margin:15px 0"><span>⏱️ {fmt(run.get("clear_time_ms",0))}</span><span>🎯 {fmt(run.get("par_time_ms",0))}</span></div><h4 style="color:#667eea">Party Composition</h4><div class="roster">'
                 
                 for mem in run.get('roster',[]):
                     role = mem.get('role','dps').lower()
@@ -240,13 +418,92 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
                     html_content += f'<div class="roster-member"><div class="role-icon {role}">{emoji}</div><div><div style="font-weight:600">{mem.get("name","")}</div><div style="font-size:.85em;color:#666">{mem.get("spec","")} {mem.get("class","")}</div></div></div>'
                 
                 if run.get('url'):
-                    html_content += f'<a href="{run["url"]}" target="_blank" style="display:inline-block;margin-top:10px;padding:10px 20px;background:#667eea;color:#fff;text-decoration:none;border-radius:8px">View on Raider.IO</a>'
+                    html_content += f'<a href="{run["url"]}" target="_blank" style="display:inline-block;margin-top:15px;padding:10px 20px;background:#667eea;color:#fff;text-decoration:none;border-radius:8px;font-weight:600">📊 View on Raider.IO</a>'
                 
                 html_content += '</div></div>'
             
             html_content += '</div>'
     else:
-        html_content += '<div style="text-align:center;padding:60px"><h2>No M+ Data</h2><p>Run python mplus_enhanced.py</p></div>'
+        html_content += '<div style="text-align:center;padding:60px"><h2>No M+ Data</h2><p>Run python mplus_enhanced.py to fetch detailed dungeon data</p></div>'
+    
+    # Raiding Tab
+    html_content += """</div>
+<div id="raiding" class="tab-content">
+<h2 style="margin-bottom:30px">🏆 Warcraft Logs Performance</h2>
+"""
+    
+    if wcl_details:
+        sorted_wcl = sorted([(name, data, next((c for c in characters if c['ID']==name), None)) 
+                            for name, data in wcl_details.items() if data.get('has_logs')], 
+                           key=lambda x: float(str(x[2]['WCL']).replace(',','')) if x[2] and x[2]['WCL']!='N/A' else 0, 
+                           reverse=True)
+        
+        for name, wcl_data, char_info in sorted_wcl:
+            if not char_info:
+                continue
+                
+            spec_icon = character_specs.get(name, '')
+            best_perf = wcl_data.get('best_performance', 'N/A')
+            
+            try:
+                wcl_score = float(str(char_info['WCL']).replace(',',''))
+                perf_color = wcl_color(wcl_score)
+            except:
+                wcl_score = 0
+                perf_color = '#808080'
+            
+            html_content += f'<div class="char-section"><div class="char-header">'
+            if spec_icon:
+                html_content += f'<img src="{spec_icon}" class="char-avatar" onerror="this.style.display=\'none\'">'
+            html_content += f'<div><h3>{name}</h3><div style="display:flex;gap:15px;margin-top:10px"><span class="badge">{char_info["Spec"]} {char_info["Class"]}</span><span class="badge" style="background:{perf_color};color:#fff">Best Avg: {best_perf}</span></div></div></div>'
+            
+            # Boss Rankings
+            boss_rankings = wcl_data.get('boss_rankings', [])
+            if boss_rankings:
+                html_content += '<h4 style="margin-bottom:15px">📋 Boss Performance</h4>'
+                for boss in boss_rankings:
+                    boss_name = boss.get('boss', 'Unknown')
+                    rank_pct = boss.get('rank_percent', 0)
+                    best_amount = boss.get('best_amount', 0)
+                    kills = boss.get('total_kills', 0)
+                    
+                    try:
+                        rank_val = float(rank_pct)
+                        boss_color = wcl_color(rank_val)
+                    except:
+                        rank_val = 0
+                        boss_color = '#808080'
+                    
+                    html_content += f'<div class="boss-card" style="border-left-color:{boss_color}"><div style="display:flex;justify-content:space-between;align-items:center"><div><strong>{boss_name}</strong><div style="color:#666;font-size:.9em;margin-top:5px">{kills} kills | Best: {best_amount:,}</div></div><div style="font-size:1.5em;font-weight:bold;color:{boss_color}">{rank_pct}%</div></div><div class="perf-bar" style="background:#e0e0e0"><div class="perf-fill" style="width:{rank_val}%;background:{boss_color}">{rank_pct}%</div></div></div>'
+            
+            # All-Stars Summary
+            all_stars = wcl_data.get('all_stars', [])
+            if all_stars:
+                html_content += '<h4 style="margin-top:25px;margin-bottom:15px">⭐ All-Stars Points</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px">'
+                for star in all_stars:
+                    partition = star.get('partition', 'N/A')
+                    spec = star.get('spec', 'Unknown')
+                    points = star.get('points', 0)
+                    possible = star.get('possible', 0)
+                    rank_pct = star.get('rank_percent', 0)
+                    
+                    try:
+                        pct_val = (points / possible * 100) if possible > 0 else 0
+                        star_color = wcl_color(rank_pct)
+                    except:
+                        pct_val = 0
+                        star_color = '#808080'
+                    
+                    html_content += f'<div style="background:#f8f9fa;padding:15px;border-radius:10px;border:2px solid {star_color}"><div style="font-weight:600;margin-bottom:10px">{spec} - {partition}</div><div style="font-size:1.3em;color:{star_color};font-weight:bold">{points:.1f} / {possible:.1f}</div><div style="color:#666;font-size:.9em;margin-top:5px">Rank: {rank_pct}%</div></div>'
+                
+                html_content += '</div>'
+            
+            html_content += '</div>'
+        
+        if not sorted_wcl:
+            html_content += '<div style="text-align:center;padding:60px"><h2>No Raid Logs Available</h2><p>Characters need raid parses on Warcraft Logs</p></div>'
+    else:
+        html_content += '<div style="text-align:center;padding:60px"><h2>No Raid Data</h2><p>Run the crawler to fetch Warcraft Logs data</p></div>'
     
     html_content += f"""</div>
 </div>
@@ -260,16 +517,55 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
 </div>
 <script>
 const details={json.dumps(character_details)};
+const rosterData={json.dumps(roster_data)};
+let currentSort='name';
+
+function sortRoster(by){{
+    currentSort=by;
+    document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    let sorted=[...rosterData];
+    if(by==='name')sorted.sort((a,b)=>a.name.localeCompare(b.name));
+    else if(by==='ilvl')sorted.sort((a,b)=>b.ilvl-a.ilvl);
+    else if(by==='mplus')sorted.sort((a,b)=>b.mplus-a.mplus);
+    else if(by==='wcl')sorted.sort((a,b)=>b.wcl-a.wcl);
+    
+    const tbody=document.querySelector('#rosterTable tbody');
+    tbody.innerHTML='';
+    sorted.forEach(rd=>{{
+        const specDisp=rd.spec_icon?`<img src="${{rd.spec_icon}}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;border-radius:4px" onerror="this.style.display='none'"> ${{rd.spec}}`:rd.spec;
+        const nameDisp=rd.has_detail?`<a href="#" class="clickable" onclick="showChar('${{rd.name}}');return false">${{rd.name}}</a>`:`<b>${{rd.name}}</b>`;
+        tbody.innerHTML+=`<tr><td>${{nameDisp}}</td><td>${{rd.class}}</td><td>${{specDisp}}</td><td>${{rd.ilvl_display}}</td><td>${{rd.mplus_badge}}</td><td>${{rd.wcl_badge}}</td></tr>`;
+    }});
+}}
+
 function switchTab(e,t){{document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));document.getElementById(t).classList.add('active');e.currentTarget.classList.add('active')}}
+
 function showChar(n){{const m=document.getElementById('modal');document.getElementById('modalTitle').textContent=n;if(details[n]){{let c=details[n],lines=c.split('\\n'),html='',inT=false,rows=[],isEq=false,specIcon='';for(let line of lines){{if(line.startsWith('**SPEC_ICON:')){{specIcon=line.replace('**SPEC_ICON:','').replace('**','').trim();continue}}if(line.includes('## ⚔️ Equipment'))isEq=true;else if(line.startsWith('##'))isEq=false;if(line.trim().startsWith('|')){{if(!inT){{inT=true;rows=[]}}rows.push(line);continue}}else if(inT){{html+=procTable(rows,isEq);inT=false;rows=[]}}if(line.startsWith('# '))html+=`<h2>${{line.substring(2)}}</h2>`;else if(line.startsWith('## '))html+=`<h3>${{line.substring(3)}}</h3>`;else if(line.startsWith('### '))html+=`<h4>${{line.substring(4)}}</h4>`;else if(line.trim()==='---')html+='<hr>';else if(line.trim()==='')html+='<br>';else{{line=line.replace(/\\*\\*(.+?)\\*\\*/g,'<strong>$1</strong>').replace(/\\*(.+?)\\*/g,'<em>$1</em>');if(specIcon&&line.includes('|')&&(line.includes('Tank')||line.includes('Healer')||line.includes('Melee')||line.includes('Ranged')))line=`<img src="${{specIcon}}" style="width:24px;height:24px;vertical-align:middle;margin-right:8px;border-radius:4px;border:2px solid #667eea" onerror="this.style.display='none'"> `+line;html+=`<p>${{line}}</p>`}}}}if(inT)html+=procTable(rows,isEq);document.getElementById('modalBody').innerHTML=html;m.style.display='block'}}}}
+
 function procTable(rows,isEq){{if(!rows.length)return '';let h='<table style="width:100%;border-collapse:collapse;margin:20px 0">';for(let i=0;i<rows.length;i++){{const cells=rows[i].split('|').filter(c=>c.trim());if(cells[0]&&cells[0].includes('---'))continue;if(i===0){{h+='<thead><tr>';cells.forEach((c,idx)=>{{if(!(isEq&&idx===3&&c.trim()==='Icon'))h+=`<th style="background:#667eea;color:#fff;padding:12px">${{c.trim()}}</th>`}});h+='</tr></thead><tbody>'}}else{{h+='<tr>';cells.forEach((c,idx)=>{{if(isEq){{if(idx===1&&cells.length>=4){{const ic=cells[3].trim();if(ic.startsWith('ICON:')){{const url=ic.substring(5);if(url&&url.startsWith('http'))h+=`<td style="padding:12px"><img src="${{url}}" style="width:32px;height:32px;vertical-align:middle;margin-right:8px;border-radius:4px;border:2px solid #667eea" onerror="this.style.display='none'"> ${{c.trim()}}</td>`;else h+=`<td style="padding:12px">${{c.trim()}}</td>`}}else h+=`<td style="padding:12px">${{c.trim()}}</td>`}}else if(idx!==3)h+=`<td style="padding:12px">${{c.trim()}}</td>`}}else h+=`<td style="padding:12px">${{c.trim()}}</td>`}});h+='</tr>'}}}}return h+'</tbody></table>'}}
+
 function closeModal(){{document.getElementById('modal').style.display='none'}}
 window.onclick=e=>{{if(e.target==document.getElementById('modal'))closeModal()}}
-const bg={{beforeDraw:c=>{{const x=c.ctx;x.save();x.fillStyle='#F5F5F5';x.fillRect(0,0,c.width,c.height);x.restore()}}}};
-new Chart(document.getElementById('trendChart'),{{type:'line',data:{{labels:{json.dumps(guild_history['dates'])},datasets:[{{label:'ilvl',data:{json.dumps(guild_history['avg_ilvl'])},borderColor:'#667eea',tension:.4,yAxisID:'y1'}},{{label:'M+',data:{json.dumps(guild_history['avg_mplus'])},borderColor:'#FF6B6B',tension:.4,yAxisID:'y2'}},{{label:'WCL',data:{json.dumps(guild_history['avg_wcl'])},borderColor:'#4ECDC4',tension:.4,yAxisID:'y3'}}]}},options:{{responsive:true,maintainAspectRatio:false,scales:{{y1:{{type:'linear',position:'left',title:{{display:true,text:'ilvl',color:'#667eea'}},ticks:{{color:'#667eea'}}}},y2:{{type:'linear',position:'right',title:{{display:true,text:'M+',color:'#FF6B6B'}},ticks:{{color:'#FF6B6B'}},grid:{{display:false}}}},y3:{{type:'linear',position:'right',title:{{display:true,text:'WCL',color:'#4ECDC4'}},ticks:{{color:'#4ECDC4'}},grid:{{display:false}}}}}}}},plugins:[bg]}});
-new Chart(document.getElementById('ilvlChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{data:{json.dumps(ilvl_data)},backgroundColor:{json.dumps(colors)}}}]}},options:{{responsive:true,maintainAspectRatio:false,scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0}}}}}}}},plugins:[bg]}});
-new Chart(document.getElementById('mplusChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{data:{json.dumps(mplus_data_chart)},backgroundColor:{json.dumps(colors)}}}]}},options:{{responsive:true,maintainAspectRatio:false,scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0}}}}}}}},plugins:[bg]}});
-new Chart(document.getElementById('wclChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{data:{json.dumps(wcl_data)},backgroundColor:{json.dumps(colors)}}}]}},options:{{responsive:true,maintainAspectRatio:false,scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0}}}},y:{{min:0,max:100}}}}}},plugins:[bg]}});
+
+const bg={{beforeDraw:c=>{{const x=c.ctx;x.save();x.fillStyle='#f8f9fa';x.fillRect(0,0,c.width,c.height);x.restore()}}}};
+
+new Chart(document.getElementById('trendChart'),{{type:'line',data:{{labels:{json.dumps(guild_history['dates'])},datasets:[{{label:'ilvl',data:{json.dumps(guild_history['avg_ilvl'])},borderColor:'#667eea',tension:.4,yAxisID:'y1'}},{{label:'M+',data:{json.dumps(guild_history['avg_mplus'])},borderColor:'#FF6B6B',tension:.4,yAxisID:'y2'}},{{label:'WCL',data:{json.dumps(guild_history['avg_wcl'])},borderColor:'#4ECDC4',tension:.4,yAxisID:'y3'}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top'}}}},scales:{{y1:{{type:'linear',position:'left',title:{{display:true,text:'ilvl',color:'#667eea'}},ticks:{{color:'#667eea'}}}},y2:{{type:'linear',position:'right',title:{{display:true,text:'M+',color:'#FF6B6B'}},ticks:{{color:'#FF6B6B'}},grid:{{display:false}}}},y3:{{type:'linear',position:'right',title:{{display:true,text:'WCL',color:'#4ECDC4'}},ticks:{{color:'#4ECDC4'}},grid:{{display:false}}}}}}}},plugins:[bg]}});
+
+new Chart(document.getElementById('ilvlChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{label:'Item Level',data:{json.dumps(ilvl_data)},backgroundColor:{json.dumps(colors)},borderColor:'#000000',borderWidth:2}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{min:720,max:730,title:{{display:true,text:'Item Level'}}}}}}}},plugins:[bg]}});
+
+new Chart(document.getElementById('mplusChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{label:'M+ Score',data:{json.dumps(mplus_data_chart)},backgroundColor:{json.dumps(colors)},borderColor:'#000000',borderWidth:2}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{title:{{display:true,text:'M+ Score'}}}}}}}},plugins:[bg]}});
+
+const wclNames={json.dumps(wcl_filtered_names)};
+const wclData={json.dumps(wcl_filtered_data)};
+const wclColors={json.dumps(wcl_filtered_colors)};
+
+console.log('WCL Names:', wclNames);
+console.log('WCL Data:', wclData);
+console.log('WCL Colors:', wclColors);
+
+new Chart(document.getElementById('wclChart'),{{type:'bar',data:{{labels:wclNames,datasets:[{{label:'WCL Performance',data:wclData,backgroundColor:wclColors,borderColor:'#000000',borderWidth:2}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top'}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{min:0,max:100,title:{{display:true,text:'WCL Percentile'}}}}}}}},plugins:[bg]}});
 </script>
 </body>
 </html>"""
@@ -278,9 +574,12 @@ new Chart(document.getElementById('wclChart'),{{type:'bar',data:{{labels:{json.d
         f.write(html_content)
     
     print(f"✅ Dashboard generated: {output_file}")
-    print(f"   - 4 tabs (Overview, Roster, Charts, M+ Details)")
-    print(f"   - Click character names to see equipment")
-    print(f"   - 3 separate Y-axes on trend chart")
+    print(f"   - 5 tabs (Overview, Roster, Charts, M+ Details, Raiding)")
+    print(f"   - Roster with sortable columns (Name/ilvl/M+/WCL)")
+    print(f"   - M+ scores colored by Raider.IO standard")
+    print(f"   - Charts with borders and fixed legends")
+    print(f"   - ilvl chart Y-axis: 720-730 range")
+    print(f"   - Enhanced M+ display with +12 (+2) format")
 
 if __name__ == "__main__":
     generate_html_dashboard("logs/Player_data.csv")
