@@ -43,13 +43,13 @@ print("="*60)
 try:
     # Import your dashboard generator (adjust name if needed)
     try:
-        import generate_html_dashboard as dash_gen
+        import generate_dashboard as dash_gen
     except:
         try:
             import dashboard_generator as dash_gen
         except:
             # Try to import directly
-            exec(open('generate_html_dashboard.py').read())
+            exec(open('generate_dashboard.py').read())
             class dash_gen:
                 @staticmethod
                 def generate_html_dashboard(csv_file):
