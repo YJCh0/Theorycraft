@@ -553,9 +553,9 @@ const bg={{beforeDraw:c=>{{const x=c.ctx;x.save();x.fillStyle='#f8f9fa';x.fillRe
 
 new Chart(document.getElementById('trendChart'),{{type:'line',data:{{labels:{json.dumps(guild_history['dates'])},datasets:[{{label:'ilvl',data:{json.dumps(guild_history['avg_ilvl'])},borderColor:'#667eea',tension:.4,yAxisID:'y1'}},{{label:'M+',data:{json.dumps(guild_history['avg_mplus'])},borderColor:'#FF6B6B',tension:.4,yAxisID:'y2'}},{{label:'WCL',data:{json.dumps(guild_history['avg_wcl'])},borderColor:'#4ECDC4',tension:.4,yAxisID:'y3'}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top'}}}},scales:{{y1:{{type:'linear',position:'left',title:{{display:true,text:'ilvl',color:'#667eea'}},ticks:{{color:'#667eea'}}}},y2:{{type:'linear',position:'right',title:{{display:true,text:'M+',color:'#FF6B6B'}},ticks:{{color:'#FF6B6B'}},grid:{{display:false}}}},y3:{{type:'linear',position:'right',title:{{display:true,text:'WCL',color:'#4ECDC4'}},ticks:{{color:'#4ECDC4'}},grid:{{display:false}}}}}}}},plugins:[bg]}});
 
-new Chart(document.getElementById('ilvlChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{label:'Item Level',data:{json.dumps(ilvl_data)},backgroundColor:{json.dumps(colors)},borderColor:'#000000',borderWidth:2}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{min:720,max:730,title:{{display:true,text:'Item Level'}}}}}}}},plugins:[bg]}});
+new Chart(document.getElementById('ilvlChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{label:'Item Level',data:{json.dumps(ilvl_data)},backgroundColor:{json.dumps(colors)},borderColor:'#000000',borderWidth:1}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{min:720,max:730,title:{{display:true,text:'Item Level'}}}}}}}},plugins:[bg]}});
 
-new Chart(document.getElementById('mplusChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{label:'M+ Score',data:{json.dumps(mplus_data_chart)},backgroundColor:{json.dumps(colors)},borderColor:'#000000',borderWidth:2}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{title:{{display:true,text:'M+ Score'}}}}}}}},plugins:[bg]}});
+new Chart(document.getElementById('mplusChart'),{{type:'bar',data:{{labels:{json.dumps(names)},datasets:[{{label:'M+ Score',data:{json.dumps(mplus_data_chart)},backgroundColor:{json.dumps(colors)},borderColor:'#000000',borderWidth:1}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{title:{{display:true,text:'M+ Score'}}}}}}}},plugins:[bg]}});
 
 const wclNames={json.dumps(wcl_filtered_names)};
 const wclData={json.dumps(wcl_filtered_data)};
@@ -565,7 +565,7 @@ console.log('WCL Names:', wclNames);
 console.log('WCL Data:', wclData);
 console.log('WCL Colors:', wclColors);
 
-new Chart(document.getElementById('wclChart'),{{type:'bar',data:{{labels:wclNames,datasets:[{{label:'WCL Performance',data:wclData,backgroundColor:wclColors,borderColor:'#000000',borderWidth:2}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top'}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{min:0,max:100,title:{{display:true,text:'WCL Percentile'}}}}}}}},plugins:[bg]}});
+new Chart(document.getElementById('wclChart'),{{type:'bar',data:{{labels:wclNames,datasets:[{{label:'WCL Performance',data:wclData,backgroundColor:wclColors,borderColor:'#000000',borderWidth:1}}]}},options:{{responsive:true,maintainAspectRatio:false,plugins:{{legend:{{display:true,position:'top'}}}},scales:{{x:{{ticks:{{autoSkip:false,maxRotation:0,minRotation:0}}}},y:{{min:0,max:100,title:{{display:true,text:'WCL Percentile'}}}}}}}},plugins:[bg]}});
 </script>
 </body>
 </html>"""
