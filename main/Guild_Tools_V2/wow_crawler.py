@@ -46,6 +46,72 @@ theme = Theme({
 console = Console(theme=theme)
 
 # ────────────────────────────────────────────────
+# TWW Season 3 Upgrade Tracks
+UPGRADE_TRACKS = {
+    'myth': {
+        'base': 707,
+        'max_upgrades': 8,
+        'upgrade_increment': 3,
+        'levels': [707, 710, 714, 717, 720, 723, 727, 730]
+    },
+    'hero': {
+        'base': 694,
+        'max_upgrades': 8,
+        'upgrade_increment': 3,
+        'levels': [694, 697, 701, 704, 707, 710, 714, 717]
+    },
+    'champion': {
+        'base': 681,
+        'max_upgrades': 8,
+        'upgrade_increment': 3,
+        'levels': [681, 684, 688, 691, 694, 697, 701, 704]
+    },
+    'veteran': {
+        'base': 668,
+        'max_upgrades': 8,
+        'upgrade_increment': 3,
+        'levels': [668, 671, 675, 678, 681, 684, 688, 691]
+    },
+    'adventurer': {
+        'base': 655,
+        'max_upgrades': 8,
+        'upgrade_increment': 3,
+        'levels': [655, 658, 661, 665, 668, 671, 675, 678]
+    },
+    'explorer': {
+        'base': 643,
+        'max_upgrades': 8,
+        'upgrade_increment': 3,
+        'levels': [643, 646, 649, 652, 655, 658, 661, 665]
+    }
+}
+
+def detect_upgrade_track(item_level):
+    """
+    Detect which upgrade track and upgrade level based on item level
+    Returns: (track_name, upgrade_level, max_upgrades) or None
+    """
+    for track_name, track_info in UPGRADE_TRACKS.items():
+        if item_level in track_info['levels']:
+            upgrade_level = track_info['levels'].index(item_level)
+            return (track_name.title(), upgrade_level, track_info['max_upgrades'])
+    
+    # Check if it's beyond max level for myth track
+    myth_max = UPGRADE_TRACKS['myth']['base'] + (UPGRADE_TRACKS['myth']['max_upgrades'] * UPGRADE_TRACKS['myth']['upgrade_increment'])
+    if item_level >= myth_max:
+        return ("Myth", 8, 8)
+    
+    return None
+
+def format_upgrade_info(item_level):
+    """Format upgrade info as readable string"""
+    upgrade_info = detect_upgrade_track(item_level)
+    if upgrade_info:
+        track, current, maximum = upgrade_info
+        return f"{track} {current+1}/{maximum}"
+    return "Unknown"
+
+# ────────────────────────────────────────────────
 # Token Management
 class TokenManager:
     def __init__(self):
@@ -241,7 +307,7 @@ def get_item_icon(item_id, token):
     return ""
 
 def get_character_equipment(server, character):
-    """Get detailed equipment list from Blizzard API with item icons"""
+    """Get detailed equipment list from Blizzard API with item icons and upgrade tracking"""
     token = token_manager.get_token()
     if not token:
         return []
@@ -269,12 +335,16 @@ def get_character_equipment(server, character):
             # Get icon URL from Blizzard media API
             icon_url = get_item_icon(item_id, token)
             
+            # Detect upgrade track
+            upgrade_text = format_upgrade_info(item_level)
+            
             equipment_list.append({
                 "slot": slot_name,
                 "name": item_name,
                 "ilvl": item_level,
                 "item_id": item_id,
-                "icon": icon_url
+                "icon": icon_url,
+                "upgrade": upgrade_text
             })
         
         return equipment_list
@@ -406,7 +476,7 @@ def get_wcl_data(server, character, role):
 
 def format_comprehensive_report(character, character_class, role, server, wcl_spec, wcl_spec_icon,
                                equipment_data, ilvl, mplus_score, wcl_data):
-    """Format comprehensive character report with all data including item IDs"""
+    """Format comprehensive character report with all data including upgrades"""
     lines = []
     lines.append(f"# {character}")
     lines.append(f"**{wcl_spec} {character_class}** | **{role}** | **{server}**")
@@ -425,22 +495,22 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
     lines.append(f"- **WarcraftLogs Average:** {format_amount(best_perf_avg)}\n")
     
     # ═══════════════════════════════════════
-    # EQUIPMENT SECTION (with item IDs)
+    # EQUIPMENT SECTION (with upgrades)
     # ═══════════════════════════════════════
     lines.append("---\n")
     lines.append("## ⚔️ Equipment\n")
     
     if equipment_data:
-        lines.append("| Slot | Item Name | Item Level | Icon |")
-        lines.append("|------|-----------|------------|------|")
+        lines.append("| Slot | Item Name | Item Level | Upgrade | Icon |")
+        lines.append("|------|-----------|------------|---------|------|")
         
         for item in equipment_data:
             slot = item.get('slot', 'Unknown')
             name = item.get('name', 'Unknown')
             item_ilvl = item.get('ilvl', 0)
+            upgrade = item.get('upgrade', 'Unknown')
             icon_url = item.get('icon', '')
-            # Store icon URL but display as hidden marker
-            lines.append(f"| {slot} | {name} | {item_ilvl} | ICON:{icon_url} |")
+            lines.append(f"| {slot} | {name} | {item_ilvl} | {upgrade} | ICON:{icon_url} |")
     else:
         lines.append("*Equipment data not available*")
     
@@ -737,6 +807,7 @@ def main():
     
     roster_num = len(characters)
     console.print(f"[bold cyan]🎮 Fetching data for {roster_num} players...[/bold cyan]\n")
+    console.print(f"[bold green]✨ Upgrade tracking enabled! (Explorer → Myth tracks)[/bold green]\n")
     
     results = []
     
@@ -768,6 +839,7 @@ def main():
     elapsed = time.time() - start_time
     console.print(f"\n[success]✅ Crawling complete in {elapsed:.1f}s[/success]")
     console.print(f"[info]📁 Results saved to: {OUTPUT_FILE}[/info]")
+    console.print(f"[info]📝 Detailed reports with upgrade tracking in: {DETAIL_DIR}/[/info]")
     
     # Print summary
     print_console_summary(results)
@@ -776,6 +848,7 @@ def main():
     generate_weekly_comparison(OUTPUT_FILE, PREVIOUS_FILE, WEEKLY_FILE)
     
     console.print("\n[success]🎉 All tasks completed![/success]")
+    console.print("[info]💡 Check detailed/*.md files to see item upgrade levels (e.g., Myth 6/8)[/info]")
 
 if __name__ == "__main__":
     main()
