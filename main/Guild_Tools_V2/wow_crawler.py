@@ -99,7 +99,7 @@ def detect_upgrade_track(item_level):
     # Check if it's beyond max level for myth track
     myth_max = UPGRADE_TRACKS['myth']['base'] + (UPGRADE_TRACKS['myth']['max_upgrades'] * UPGRADE_TRACKS['myth']['upgrade_increment'])
     if item_level >= myth_max:
-        return ("Myth", 8, 8)
+        return ("N/A")
     
     return None
 
