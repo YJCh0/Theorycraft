@@ -231,7 +231,7 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
     
     classes = [c['Class'] for c in characters]
     class_colors = {
-        'Deathknight':'#C41E3A','Demon Hunter':'#A330C9','Druid':'#FF7C0A',
+        'Death Knight':'#C41E3A','Demon Hunter':'#A330C9','Druid':'#FF7C0A',
         'Evoker':'#33937F','Hunter':'#AAD372','Mage':'#3FC7EB',
         'Monk':'#00FF98','Paladin':'#F48CBA','Priest':'#FFFFFF',
         'Rogue':'#FFF468','Shaman':'#0070DD','Warlock':'#8788EE',
@@ -748,6 +748,9 @@ new Chart(document.getElementById('wclChart'),{{type:'bar',data:{{labels:wclName
     print(f"   - 5 tabs (Overview, Roster, Charts, M+ Details, Raiding)")
     print(f"   - Roster with sortable columns (Name/ilvl/M+/WCL)")
     print(f"   - M+ scores colored by Raider.IO standard")
+    print(f"   - Charts with borders and fixed legends")
+    print(f"   - ilvl chart Y-axis: 720-730 range")
+    print(f"   - Enhanced M+ display with +12 (+2) format")
 
 if __name__ == "__main__":
     generate_html_dashboard("logs/Player_data.csv")
