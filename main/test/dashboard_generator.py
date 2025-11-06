@@ -192,7 +192,8 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
     character_specs = {}
     character_details = {}
     wcl_details = {}
-    
+    character_servers = {}  # Initialize this early, before any other code    
+
     with open(csv_file, 'r', encoding='utf-8') as f:
         characters = list(csv.DictReader(f))
     
@@ -231,7 +232,7 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
     
     classes = [c['Class'] for c in characters]
     class_colors = {
-        'Death Knight':'#C41E3A','Demon Hunter':'#A330C9','Druid':'#FF7C0A',
+        'Deathknight':'#C41E3A','Demon Hunter':'#A330C9','Druid':'#FF7C0A',
         'Evoker':'#33937F','Hunter':'#AAD372','Mage':'#3FC7EB',
         'Monk':'#00FF98','Paladin':'#F48CBA','Priest':'#FFFFFF',
         'Rogue':'#FFF468','Shaman':'#0070DD','Warlock':'#8788EE',
@@ -419,7 +420,7 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
 <button class="sort-btn" onclick="sortRoster('mplus')">🏔️ M+ Score</button>
 <button class="sort-btn" onclick="sortRoster('wcl')">📈 WCL Score</button>
 </div>
-<table id="rosterTable" style="margin-top:20px"><thead><tr><th onclick="sortRoster('name')">Character</th><th>Class</th><th>Spec</th><th onclick="sortRoster('ilvl')">ilvl</th><th onclick="sortRoster('mplus')">M+</th><th onclick="sortRoster('wcl')">WCL</th></tr></thead><tbody>
+<table id="rosterTable" style="margin-top:20px"><thead><tr><th onclick="sortRoster('name')">Character</th><th>Class</th><th>Spec</th><th onclick="sortRoster('ilvl')">ilvl</th><th onclick="sortRoster('mplus')">M+</th><th onclick="sortRoster('wcl')">WCL</th><th>Links</th></tr></thead><tbody>
 """
     
     # Store roster data in JSON for client-side sorting
@@ -428,6 +429,14 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
         name = c['ID']
         has_detail = name in character_details
         spec_icon = character_specs.get(name,'')
+        server = character_servers.get(name, 'azshara')
+        
+        # Generate profile links
+        armory_url = f"https://worldofwarcraft.blizzard.com/ko-kr/character/kr/{server.lower()}/{name.lower()}"
+        raiderio_url = f"https://raider.io/characters/kr/{server}/{name}"
+        wcl_url = f"https://www.warcraftlogs.com/character/kr/{server.lower()}/{name}"
+        
+        links_html = f'<a href="{armory_url}" target="_blank" title="Armory" style="display:inline-block;padding:6px 10px;background:#0070dd;color:#fff;text-decoration:none;border-radius:4px;font-size:0.85em;margin-right:4px">🛡️</a><a href="{raiderio_url}" target="_blank" title="Raider.IO" style="display:inline-block;padding:6px 10px;background:#667eea;color:#fff;text-decoration:none;border-radius:4px;font-size:0.85em;margin-right:4px">🏔️</a><a href="{wcl_url}" target="_blank" title="Warcraft Logs" style="display:inline-block;padding:6px 10px;background:#ff8000;color:#fff;text-decoration:none;border-radius:4px;font-size:0.85em">📊</a>'
         
         try:
             mp = float(str(c['M+']).replace(',',''))
@@ -461,7 +470,8 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
             'mplus_badge': mp_badge,
             'wcl': wc,
             'wcl_badge': wc_badge,
-            'has_detail': has_detail
+            'has_detail': has_detail,
+            'links': links_html
         })
     
     # Initial display (alphabetical)
@@ -471,7 +481,7 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
         spec_disp = f'<img src="{rd["spec_icon"]}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;border-radius:4px" onerror="this.style.display=\'none\'"> {rd["spec"]}' if rd["spec_icon"] else rd["spec"]
         name_disp = f'<a href="#" class="clickable" onclick="showChar(\'{rd["name"]}\');return false">{rd["name"]}</a>' if rd["has_detail"] else f'<b>{rd["name"]}</b>'
         
-        html_content += f'<tr><td>{name_disp}</td><td>{rd["class"]}</td><td>{spec_disp}</td><td>{rd["ilvl_display"]}</td><td>{rd["mplus_badge"]}</td><td>{rd["wcl_badge"]}</td></tr>'
+        html_content += f'<tr><td>{name_disp}</td><td>{rd["class"]}</td><td>{spec_disp}</td><td>{rd["ilvl_display"]}</td><td>{rd["mplus_badge"]}</td><td>{rd["wcl_badge"]}</td><td>{rd["links"]}</td></tr>'
     
     # Charts Tab
     html_content += """</tbody></table></div>
@@ -485,7 +495,7 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
     
     # M+ Tab with enhanced display
     if mplus_data:
-        html_content += '<h2 style="margin-bottom:30px">🏔️ Mythic+ Best Runs</h2>'
+        html_content += '<h2 style="margin-bottom:30px">🏔️ Mythic+ Recent Runs</h2>'
         sorted_m = sorted([(n,d) for n,d in mplus_data.items() if d], key=lambda x:x[1].get("character",{}).get("score",0), reverse=True)
         
         for name,data in sorted_m:
@@ -580,22 +590,27 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
             heroic_bosses = heroic_data.get('boss_rankings', [])
             
             # Use best available performance for color
+            mythic_perf_color = '#808080'
+            heroic_perf_color = '#808080'
+            
             try:
                 if mythic_perf != 'N/A':
-                    wcl_score = float(str(mythic_perf).replace(',',''))
-                elif heroic_perf != 'N/A':
-                    wcl_score = float(str(heroic_perf).replace(',',''))
-                else:
-                    wcl_score = 0
-                perf_color = wcl_color(wcl_score)
+                    mythic_score = float(str(mythic_perf).replace(',',''))
+                    mythic_perf_color = wcl_color(mythic_score)
             except:
-                wcl_score = 0
-                perf_color = '#808080'
+                pass
+            
+            try:
+                if heroic_perf != 'N/A':
+                    heroic_score = float(str(heroic_perf).replace(',',''))
+                    heroic_perf_color = wcl_color(heroic_score)
+            except:
+                pass
             
             html_content += f'<div class="char-section"><div class="char-header">'
             if spec_icon:
                 html_content += f'<img src="{spec_icon}" class="char-avatar" onerror="this.style.display=\'none\'">'
-            html_content += f'<div style="flex:1"><h3>{name}</h3><div style="display:flex;gap:15px;margin-top:10px;flex-wrap:wrap"><span class="badge">{char_info["Spec"]} {char_class}</span><span class="badge" style="background:{perf_color};color:#fff">Mythic: {mythic_perf}</span><span class="badge" style="background:{perf_color};color:#fff">Heroic: {heroic_perf}</span></div></div>'
+            html_content += f'<div style="flex:1"><h3>{name}</h3><div style="display:flex;gap:15px;margin-top:10px;flex-wrap:wrap"><span class="badge">{char_info["Spec"]} {char_class}</span><span class="badge" style="background:{mythic_perf_color};color:#fff">Mythic: {mythic_perf}</span><span class="badge" style="background:{heroic_perf_color};color:#fff">Heroic: {heroic_perf}</span></div></div>'
             
             # Profile links
             html_content += f'<div style="display:flex;gap:10px;margin-left:auto"><a href="{armory_url}" target="_blank" title="Armory" style="padding:8px 12px;background:#0070dd;color:#fff;text-decoration:none;border-radius:6px;font-size:0.9em">🛡️</a><a href="{raiderio_url}" target="_blank" title="Raider.IO" style="padding:8px 12px;background:#667eea;color:#fff;text-decoration:none;border-radius:6px;font-size:0.9em">🏔️</a><a href="{wcl_url}" target="_blank" title="Warcraft Logs" style="padding:8px 12px;background:#ff8000;color:#fff;text-decoration:none;border-radius:6px;font-size:0.9em">📊</a></div></div>'
@@ -693,7 +708,7 @@ function switchDifficulty(diff){{
 
 function sortRoster(by){{
     currentSort=by;
-    document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.sort-controls .sort-btn').forEach(b=>b.classList.remove('active'));
     event.target.classList.add('active');
     
     let sorted=[...rosterData];
@@ -707,7 +722,7 @@ function sortRoster(by){{
     sorted.forEach(rd=>{{
         const specDisp=rd.spec_icon?`<img src="${{rd.spec_icon}}" style="width:24px;height:24px;vertical-align:middle;margin-right:6px;border-radius:4px" onerror="this.style.display='none'"> ${{rd.spec}}`:rd.spec;
         const nameDisp=rd.has_detail?`<a href="#" class="clickable" onclick="showChar('${{rd.name}}');return false">${{rd.name}}</a>`:`<b>${{rd.name}}</b>`;
-        tbody.innerHTML+=`<tr><td>${{nameDisp}}</td><td>${{rd.class}}</td><td>${{specDisp}}</td><td>${{rd.ilvl_display}}</td><td>${{rd.mplus_badge}}</td><td>${{rd.wcl_badge}}</td></tr>`;
+        tbody.innerHTML+=`<tr><td>${{nameDisp}}</td><td>${{rd.class}}</td><td>${{specDisp}}</td><td>${{rd.ilvl_display}}</td><td>${{rd.mplus_badge}}</td><td>${{rd.wcl_badge}}</td><td>${{rd.links}}</td></tr>`;
     }});
 }}
 
