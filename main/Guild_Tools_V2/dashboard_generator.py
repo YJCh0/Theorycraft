@@ -3,6 +3,74 @@ import os
 import json
 from datetime import datetime
 
+# Complete Raid buff mapping - 13 essential buffs
+RAID_BUFFS = {
+    'battle_shout': {
+        'name': 'Battle Shout',
+        'classes': ['Warrior'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_warrior_battleshout.jpg'
+    },
+    'mark_of_the_wild': {
+        'name': 'Mark of the Wild',
+        'classes': ['Druid'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_nature_regeneration.jpg'
+    },
+    'arcane_intellect': {
+        'name': 'Arcane Intellect',
+        'classes': ['Mage'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_magicalsentry.jpg'
+    },
+    'skyfury': {
+        'name': 'Skyfury',
+        'classes': ['Shaman'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/achievement_raidprimalist_windelemental.jpg'
+    },
+    'blessing_of_the_bronze': {
+        'name': 'Blessing of the Bronze',
+        'classes': ['Evoker'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_evoker_blessingofthebronze.jpg'
+    },
+    'hunters_mark': {
+        'name': "Hunter's Mark",
+        'classes': ['Hunter'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_hunter_markedfordeath.jpg'
+    },
+    'power_word_fortitude': {
+        'name': 'Power Word: Fortitude',
+        'classes': ['Priest'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_wordfortitude.jpg'
+    },
+    'devotion_aura': {
+        'name': 'devotion_aura',
+        'classes': ['Paladin'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_devotionaura.jpg'
+    },
+    'numbing_poison': {
+        'name': 'numbing_poison',
+        'classes': ['Rogue'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_nature_nullifydisease.jpg'
+    },
+    'mystic_touch': {
+        'name': 'Mystic Touch',
+        'classes': ['Monk'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_monk_sparring.jpg'
+    },
+    'chaos_brand': {
+        'name': 'Chaos Brand',
+        'classes': ['Demon Hunter', 'Demonhunter'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_empowerwards.jpg'
+    },
+    'healthstone': {
+        'name': 'Healthstone',
+        'classes': ['Warlock'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/warlock_-healthstone.jpg'
+    },
+    'death_grip': {
+        'name': 'Death Grip',
+        'classes': ['Deathknight', 'Death Knight'],
+        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_strangulate.jpg'
+    }
+}
 def parse_wcl_from_markdown(content):
     """Extract WCL data from markdown content"""
     wcl_data = {
@@ -163,6 +231,25 @@ def parse_wcl_from_markdown(content):
     
     return wcl_data
 
+def check_missing_buffs(characters):
+    """Check which raid buffs are missing from roster"""
+    present_classes = set()
+    for char in characters:
+        char_class = char['Class'].strip()
+        present_classes.add(char_class)
+    
+    missing_buffs = []
+    present_buffs = []
+    
+    for buff_key, buff_info in RAID_BUFFS.items():
+        buff_classes = set(buff_info['classes'])
+        if buff_classes.isdisjoint(present_classes):
+            missing_buffs.append(buff_info)
+        else:
+            present_buffs.append(buff_info)
+    
+    return present_buffs, missing_buffs
+
 def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir="detailed"):
     """Generate complete interactive dashboard with 5 tabs"""
     
@@ -214,6 +301,9 @@ def generate_html_dashboard(csv_file, output_file="dashboard.html", detailed_dir
                     # Extract WCL data from markdown
                     wcl_details[name] = parse_wcl_from_markdown(content)
     
+    # Check raid buffs
+    present_buffs, missing_buffs = check_missing_buffs(characters)
+
     # Stats
     total = len(characters)
     ilvls = [float(c['ilvl']) for c in characters if c['ilvl'] != 'N/A']
@@ -398,8 +488,8 @@ footer{{text-align:center;color:#fff;margin-top:40px}}
 <div id="overview" class="tab-content active">
 <h2>Guild Progress Trends</h2>
 <div class="chart-container"><canvas id="trendChart"></canvas></div>
-<h2 style="margin-top:40px">Top Improvers</h2>
-<table style="margin-top:20px"><thead><tr><th>Rank</th><th>Character</th><th>Class</th><th>ilvl</th><th>M+</th><th>WCL</th></tr></thead><tbody>
+<h2 style="margin-top:40px">🏆 Top Improvers (Last 7 Days)</h2>
+<table style="margin-top:20px"><thead><tr><th style="width:80px">Rank</th><th>Character</th><th>Class & Spec</th><th>ilvl</th><th>M+</th><th>WCL</th></tr></thead><tbody>
 """
     
     # Top Improvers
@@ -763,9 +853,6 @@ new Chart(document.getElementById('wclChart'),{{type:'bar',data:{{labels:wclName
     print(f"   - 5 tabs (Overview, Roster, Charts, M+ Details, Raiding)")
     print(f"   - Roster with sortable columns (Name/ilvl/M+/WCL)")
     print(f"   - M+ scores colored by Raider.IO standard")
-    print(f"   - Charts with borders and fixed legends")
-    print(f"   - ilvl chart Y-axis: 720-730 range")
-    print(f"   - Enhanced M+ display with +12 (+2) format")
 
 if __name__ == "__main__":
     generate_html_dashboard("logs/Player_data.csv")

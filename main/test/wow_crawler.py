@@ -11,10 +11,8 @@ from rich.theme import Theme
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
-# ────────────────────────────────────────────────
 # Settings
 INPUT_FILE = "characters.csv"
 OUTPUT_DIR = "logs"
@@ -24,7 +22,7 @@ FAILED_LOG = os.path.join(OUTPUT_DIR, "failed_characters.log")
 PREVIOUS_FILE = os.path.join(OUTPUT_DIR, "previous_Player_data.csv")
 WEEKLY_FILE = os.path.join(OUTPUT_DIR, "weekly_comparison.csv")
 
-# API Credentials - Loaded from .env file
+# API Credentials
 BLIZZARD_CLIENT_ID = os.getenv("BLIZZARD_CLIENT_ID")
 BLIZZARD_CLIENT_SECRET = os.getenv("BLIZZARD_CLIENT_SECRET")
 WCL_ACCESS_TOKEN = os.getenv("WCL_ACCESS_TOKEN")
@@ -36,67 +34,26 @@ BLIZZARD_TOKEN_URL = "https://kr.battle.net/oauth/token"
 REGION = os.getenv("REGION", "kr")
 NAMESPACE = os.getenv("NAMESPACE", "profile-kr")
 
-# Console Theme
-theme = Theme({
-    "info": "cyan",
-    "success": "bold green",
-    "error": "bold red",
-    "warning": "yellow"
-})
+theme = Theme({"info": "cyan", "success": "bold green", "error": "bold red", "warning": "yellow"})
 console = Console(theme=theme)
 
-# ────────────────────────────────────────────────
 # TWW Season 3 Upgrade Tracks
 UPGRADE_TRACKS = {
-    'myth': {
-        'base': 707,
-        'max_upgrades': 8,
-        'upgrade_increment': 3,
-        'levels': [707, 710, 714, 717, 720, 723, 727, 730]
-    },
-    'hero': {
-        'base': 694,
-        'max_upgrades': 8,
-        'upgrade_increment': 3,
-        'levels': [694, 697, 701, 704, 707, 710, 714, 717]
-    },
-    'champion': {
-        'base': 681,
-        'max_upgrades': 8,
-        'upgrade_increment': 3,
-        'levels': [681, 684, 688, 691, 694, 697, 701, 704]
-    },
-    'veteran': {
-        'base': 668,
-        'max_upgrades': 8,
-        'upgrade_increment': 3,
-        'levels': [668, 671, 675, 678, 681, 684, 688, 691]
-    },
-    'adventurer': {
-        'base': 655,
-        'max_upgrades': 8,
-        'upgrade_increment': 3,
-        'levels': [655, 658, 661, 665, 668, 671, 675, 678]
-    },
-    'explorer': {
-        'base': 643,
-        'max_upgrades': 8,
-        'upgrade_increment': 3,
-        'levels': [643, 646, 649, 652, 655, 658, 661, 665]
-    }
+    'myth': {'base': 707, 'max_upgrades': 8, 'upgrade_increment': 3, 'levels': [707, 710, 714, 717, 720, 723, 727, 730]},
+    'hero': {'base': 694, 'max_upgrades': 8, 'upgrade_increment': 3, 'levels': [694, 697, 701, 704, 707, 710, 714, 717]},
+    'champion': {'base': 681, 'max_upgrades': 8, 'upgrade_increment': 3, 'levels': [681, 684, 688, 691, 694, 697, 701, 704]},
+    'veteran': {'base': 668, 'max_upgrades': 8, 'upgrade_increment': 3, 'levels': [668, 671, 675, 678, 681, 684, 688, 691]},
+    'adventurer': {'base': 655, 'max_upgrades': 8, 'upgrade_increment': 3, 'levels': [655, 658, 661, 665, 668, 671, 675, 678]},
+    'explorer': {'base': 643, 'max_upgrades': 8, 'upgrade_increment': 3, 'levels': [643, 646, 649, 652, 655, 658, 661, 665]}
 }
 
 def detect_upgrade_track(item_level):
-    """
-    Detect which upgrade track and upgrade level based on item level
-    Returns: (track_name, upgrade_level, max_upgrades) or None
-    """
+    """Detect which upgrade track and upgrade level based on item level"""
     for track_name, track_info in UPGRADE_TRACKS.items():
         if item_level in track_info['levels']:
             upgrade_level = track_info['levels'].index(item_level)
             return (track_name.title(), upgrade_level, track_info['max_upgrades'])
     
-    # Check if it's beyond max level for myth track
     myth_max = UPGRADE_TRACKS['myth']['base'] + (UPGRADE_TRACKS['myth']['max_upgrades'] * UPGRADE_TRACKS['myth']['upgrade_increment'])
     if item_level >= myth_max:
         return ("Myth", 8, 8)
@@ -111,7 +68,6 @@ def format_upgrade_info(item_level):
         return f"{track} {current+1}/{maximum}"
     return "Max/Unknown"
 
-# ────────────────────────────────────────────────
 # Token Management
 class TokenManager:
     def __init__(self):
@@ -123,19 +79,14 @@ class TokenManager:
         if not self.token or time.time() > self.expiry:
             console.print("[warning]🔄 Refreshing Blizzard token...[/warning]")
             self.token = self._fetch_token()
-            self.expiry = time.time() + (60 * 50)  # 50 minutes
+            self.expiry = time.time() + (60 * 50)
         return self.token
     
     def _fetch_token(self):
         """Fetch new token from Blizzard OAuth"""
         data = {"grant_type": "client_credentials"}
         try:
-            r = requests.post(
-                BLIZZARD_TOKEN_URL,
-                data=data,
-                auth=(BLIZZARD_CLIENT_ID, BLIZZARD_CLIENT_SECRET),
-                timeout=10
-            )
+            r = requests.post(BLIZZARD_TOKEN_URL, data=data, auth=(BLIZZARD_CLIENT_ID, BLIZZARD_CLIENT_SECRET), timeout=10)
             r.raise_for_status()
             token = r.json().get("access_token")
             console.print("[success]✅ Blizzard token obtained[/success]")
@@ -146,7 +97,6 @@ class TokenManager:
 
 token_manager = TokenManager()
 
-# ────────────────────────────────────────────────
 # Utility Functions
 def safe_request(method, url, retries=3, backoff=2, **kwargs):
     """Robust API request with retry logic"""
@@ -173,7 +123,7 @@ def safe_request(method, url, retries=3, backoff=2, **kwargs):
                 continue
             
             resp.raise_for_status()
-            time.sleep(0.1)  # Rate limit protection
+            time.sleep(0.1)
             return resp
             
         except requests.exceptions.Timeout:
@@ -207,13 +157,11 @@ def format_int(value):
 
 def process_character_name(name):
     """영어 이름은 소문자, 한글은 그대로"""
-    if any(ord(c) > 128 for c in name):  # Korean characters
+    if any(ord(c) > 128 for c in name):
         return name
     return name.lower()
 
-# ────────────────────────────────────────────────
 # API Functions
-
 def get_spec_icon(spec_id, token):
     """Get specialization icon URL from Blizzard media API"""
     if not spec_id or not token:
@@ -257,19 +205,14 @@ def get_character_spec(server, character):
         data = resp.json()
         specializations = data.get("specializations", [])
         
-        # Find active spec
         for spec_group in specializations:
             if spec_group.get("is_active", False):
                 spec_info = spec_group.get("specialization", {})
                 spec_name = spec_info.get("name", "Unknown")
                 spec_id = spec_info.get("id", 0)
-                
-                # Get spec icon
                 spec_icon = get_spec_icon(spec_id, token)
-                
                 return spec_name, spec_icon
         
-        # Fallback to first spec if no active found
         if specializations and len(specializations) > 0:
             spec_info = specializations[0].get("specialization", {})
             spec_name = spec_info.get("name", "Unknown")
@@ -307,10 +250,10 @@ def get_item_icon(item_id, token):
     return ""
 
 def get_character_equipment(server, character):
-    """Get detailed equipment list from Blizzard API with item icons and upgrade tracking"""
+    """Get detailed equipment list with trinkets marked"""
     token = token_manager.get_token()
     if not token:
-        return []
+        return [], []
     
     character_processed = process_character_name(character)
     url = f"https://{REGION}.api.blizzard.com/profile/wow/character/{server.lower()}/{quote(character_processed)}/equipment"
@@ -319,57 +262,51 @@ def get_character_equipment(server, character):
     
     resp = safe_request("GET", url, headers=headers, params=params)
     if not resp:
-        return []
+        return [], []
     
     try:
         data = resp.json()
         equipped = data.get("equipped_items", [])
         
         equipment_list = []
+        trinkets = []
+        
         for item in equipped:
             slot_name = item.get("slot", {}).get("name", "Unknown")
             item_name = item.get("name", "Unknown")
             item_level = item.get("level", {}).get("value", 0)
             item_id = item.get("item", {}).get("id", 0)
-            
-            # Get icon URL from Blizzard media API
             icon_url = get_item_icon(item_id, token)
             
-            # Try to get upgrade info from API bonus_list or context
-            upgrade_text = "Unknown"
-            
-            # Check if item has quality info (for determining track)
-            quality = item.get("quality", {}).get("type", "")
-            
-            # Get bonus_list which contains upgrade level info
-            bonus_list = item.get("bonus_list", [])
-            
-            # Detect upgrade track from ilvl (fallback method)
             upgrade_info = detect_upgrade_track(item_level)
             if upgrade_info:
                 track, current, maximum = upgrade_info
                 upgrade_text = f"{track} {current+1}/{maximum}"
             else:
-                # If we can't detect from ilvl, use quality/context hints
                 if item_level >= 730:
                     upgrade_text = "Max"
                 else:
                     upgrade_text = format_upgrade_info(item_level)
             
-            equipment_list.append({
+            item_data = {
                 "slot": slot_name,
                 "name": item_name,
                 "ilvl": item_level,
                 "item_id": item_id,
                 "icon": icon_url,
-                "upgrade": upgrade_text,
-                "bonus_list": bonus_list  # Store for debugging
-            })
+                "upgrade": upgrade_text
+            }
+            
+            equipment_list.append(item_data)
+            
+            # Track trinkets
+            if "장신구" in slot_name or "Trinket" in slot_name:
+                trinkets.append(item_data)
         
-        return equipment_list
+        return equipment_list, trinkets
     except (KeyError, ValueError, TypeError) as e:
         console.print(f"[warning]⚠ Failed to parse equipment: {e}[/warning]")
-        return []
+        return [], []
 
 def get_ilvl_from_blizzard(server, character):
     """Get character average ilvl from Blizzard API"""
@@ -392,11 +329,10 @@ def get_ilvl_from_blizzard(server, character):
         if not equipped:
             return 0
         
-        # Filter out cosmetic slots
         ilvls = []
         for item in equipped:
             slot_name = item.get("slot", {}).get("name", "")
-            if slot_name not in ["속옷", "겉옷"]:  # Exclude shirt/tabard
+            if slot_name not in ["속옷", "겉옷"]:
                 ilvls.append(item["level"]["value"])
         
         return round(sum(ilvls) / len(ilvls), 1) if ilvls else 0
@@ -407,12 +343,7 @@ def get_ilvl_from_blizzard(server, character):
 def get_mplus_score(server, character):
     """Get Mythic+ score from Raider.IO"""
     url = "https://raider.io/api/v1/characters/profile"
-    params = {
-        "region": REGION,
-        "realm": server,
-        "name": character,
-        "fields": "mythic_plus_scores_by_season:current"
-    }
+    params = {"region": REGION, "realm": server, "name": character, "fields": "mythic_plus_scores_by_season:current"}
     
     resp = safe_request("GET", url, params=params)
     if not resp:
@@ -422,12 +353,10 @@ def get_mplus_score(server, character):
         data = resp.json()
         seasons = data.get("mythic_plus_scores_by_season", [])
         
-        # Try current season
         for season in seasons:
             if "season-tww-3" in season.get("season", ""):
                 return season.get("scores", {}).get("all", "N/A")
         
-        # Fallback to most recent
         if seasons:
             return seasons[0].get("scores", {}).get("all", "N/A")
         
@@ -435,10 +364,11 @@ def get_mplus_score(server, character):
     except (KeyError, ValueError, TypeError):
         return "N/A"
 
-def get_wcl_data(server, character, role):
-    """Get WarcraftLogs performance data for both Mythic and Heroic"""
+def get_wcl_data_with_trinkets(server, character, role):
+    """Get WarcraftLogs data including trinket usage per boss"""
     metric = "hps" if role.lower() == "healer" else "dps"
     
+    # Extended query to get encounter details with rankings
     query = """
     query($name: String!, $server: String!, $region: String!, $metric: CharacterRankingMetricType!) {
       characterData {
@@ -451,29 +381,17 @@ def get_wcl_data(server, character, role):
     }
     """
     
-    variables = {
-        "name": character,
-        "server": server.lower(),
-        "region": REGION,
-        "metric": metric
-    }
-    
-    headers = {
-        "Authorization": f"Bearer {WCL_ACCESS_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    
+    variables = {"name": character, "server": server.lower(), "region": REGION, "metric": metric}
+    headers = {"Authorization": f"Bearer {WCL_ACCESS_TOKEN}", "Content-Type": "application/json"}
     payload = {"query": query, "variables": variables}
     
-    resp = safe_request("POST", "https://www.warcraftlogs.com/api/v2/client",
-                       headers=headers, json=payload)
+    resp = safe_request("POST", "https://www.warcraftlogs.com/api/v2/client", headers=headers, json=payload)
     if not resp:
         return None
     
     try:
         data = resp.json()
         
-        # Check for GraphQL errors
         if 'errors' in data:
             error_msg = data['errors'][0].get('message', 'Unknown') if data['errors'] else 'Unknown'
             console.print(f"[warning]⚠ WCL error: {error_msg}[/warning]")
@@ -483,23 +401,36 @@ def get_wcl_data(server, character, role):
         
         if not character_info:
             console.print(f"[warning]⚠ {character}@{server} not found in WCL (no logs)[/warning]")
-            return {}  # Return empty dict for characters without logs
+            return {}
+        
+        # Process rankings to include rank details
+        mythic_rankings = character_info.get('mythicRankings', {})
+        heroic_rankings = character_info.get('heroicRankings', {})
+        
+        # Add detailed rank info to each boss
+        for rankings_data in [mythic_rankings, heroic_rankings]:
+            if rankings_data and 'rankings' in rankings_data:
+                for encounter in rankings_data['rankings']:
+                    # Extract rank details if available
+                    # Format: rank/totalParses (rankWorld)
+                    rank = encounter.get('rank', 0)
+                    total_parses = encounter.get('totalParses', 0)
+                    region_rank = encounter.get('regionRank', 0)
+                    
+                    encounter['rankDetails'] = f"{rank}/{total_parses} (KR: {region_rank})" if rank and total_parses else ""
         
         return {
-            'mythic': character_info.get('mythicRankings', {}),
-            'heroic': character_info.get('heroicRankings', {})
+            'mythic': mythic_rankings,
+            'heroic': heroic_rankings
         }
         
     except (KeyError, TypeError, ValueError) as e:
         console.print(f"[warning]⚠ WCL parse error: {e}[/warning]")
         return None
 
-# ────────────────────────────────────────────────
-# Formatting Functions
-
 def format_comprehensive_report(character, character_class, role, server, wcl_spec, wcl_spec_icon,
-                               equipment_data, ilvl, mplus_score, wcl_data):
-    """Format comprehensive character report with all data including upgrades"""
+                               equipment_data, trinkets, ilvl, mplus_score, wcl_data):
+    """Format comprehensive character report with trinket data"""
     lines = []
     lines.append(f"# {character}")
     lines.append(f"**{wcl_spec} {character_class}** | **{role}** | **{server}**")
@@ -507,13 +438,10 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
     lines.append(f"\n*Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*\n")
     lines.append("---\n")
     
-    # Get both mythic and heroic data
     mythic_data = wcl_data.get('mythic', {}) if isinstance(wcl_data, dict) else wcl_data
     heroic_data = wcl_data.get('heroic', {}) if isinstance(wcl_data, dict) else {}
     
-    # ═══════════════════════════════════════
-    # OVERVIEW SECTION
-    # ═══════════════════════════════════════
+    # Overview
     lines.append("## 📊 Overview\n")
     lines.append(f"- **Average Item Level:** {ilvl}")
     lines.append(f"- **Mythic+ Score:** {format_amount(mplus_score)}")
@@ -524,9 +452,26 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
     lines.append(f"- **WarcraftLogs Mythic Average:** {format_amount(mythic_perf)}")
     lines.append(f"- **WarcraftLogs Heroic Average:** {format_amount(heroic_perf)}\n")
     
-    # ═══════════════════════════════════════
-    # EQUIPMENT SECTION (with upgrades)
-    # ═══════════════════════════════════════
+    # Trinkets Section
+    lines.append("---\n")
+    lines.append("## 🎯 Current Trinkets\n")
+    
+    if trinkets:
+        lines.append("| Trinket | Item Level | Upgrade | Icon |")
+        lines.append("|---------|------------|---------|------|")
+        
+        for trinket in trinkets:
+            name = trinket.get('name', 'Unknown')
+            item_ilvl = trinket.get('ilvl', 0)
+            upgrade = trinket.get('upgrade', 'Unknown')
+            icon_url = trinket.get('icon', '')
+            lines.append(f"| {name} | {item_ilvl} | {upgrade} | TRINKET_ICON:{icon_url} |")
+    else:
+        lines.append("*No trinket data available*")
+    
+    lines.append("")
+    
+    # Equipment
     lines.append("---\n")
     lines.append("## ⚔️ Equipment\n")
     
@@ -546,9 +491,7 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
     
     lines.append("")
     
-    # ═══════════════════════════════════════
-    # WARCRAFTLOGS SECTION - MYTHIC
-    # ═══════════════════════════════════════
+    # WarcraftLogs - Mythic
     lines.append("---\n")
     lines.append("## 🏆 WarcraftLogs Performance - Mythic\n")
     
@@ -563,24 +506,23 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
         rankings = mythic_data.get('rankings', [])
         
         if rankings:
-            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills |")
-            lines.append("|------|--------|--------------|-------------|")
+            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills | Rank Details |")
+            lines.append("|------|--------|--------------|-------------|--------------|")
             
             for encounter in rankings:
                 boss = encounter.get('encounter', {}).get('name', 'Unknown')
                 rank_percent = encounter.get('rankPercent', 0)
                 best_amount = encounter.get('bestAmount', 0)
                 total_kills = encounter.get('totalKills', 0)
+                rank_details = encounter.get('rankDetails', 'N/A')
                 
-                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} |")
+                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {rank_details} |")
         else:
             lines.append("*No mythic boss rankings available*")
         
         lines.append("")
     
-    # ═══════════════════════════════════════
-    # WARCRAFTLOGS SECTION - HEROIC
-    # ═══════════════════════════════════════
+    # WarcraftLogs - Heroic
     lines.append("---\n")
     lines.append("## 🏆 WarcraftLogs Performance - Heroic\n")
     
@@ -595,24 +537,23 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
         rankings = heroic_data.get('rankings', [])
         
         if rankings:
-            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills |")
-            lines.append("|------|--------|--------------|-------------|")
+            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills | Rank Details |")
+            lines.append("|------|--------|--------------|-------------|--------------|")
             
             for encounter in rankings:
                 boss = encounter.get('encounter', {}).get('name', 'Unknown')
                 rank_percent = encounter.get('rankPercent', 0)
                 best_amount = encounter.get('bestAmount', 0)
                 total_kills = encounter.get('totalKills', 0)
+                rank_details = encounter.get('rankDetails', 'N/A')
                 
-                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} |")
+                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {rank_details} |")
         else:
             lines.append("*No heroic boss rankings available*")
         
         lines.append("")
     
-    # ═══════════════════════════════════════
-    # ALL STARS (from mythic data)
-    # ═══════════════════════════════════════
+    # All Stars
     if mythic_data:
         lines.append("---\n")
         lines.append("## ⭐ All Stars Points\n")
@@ -639,9 +580,7 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
     
     return "\n".join(lines)
 
-# ────────────────────────────────────────────────
 # Worker Function
-
 def crawl_character(row, attempt=1):
     """Crawl all data for a single character"""
     server = row["Server"].strip()
@@ -652,31 +591,24 @@ def crawl_character(row, attempt=1):
     console.print(f"[info]▶ Fetching {character}... (Attempt {attempt})[/info]")
     
     try:
-        # Collect all data
-        equipment_data = get_character_equipment(server, character)
+        equipment_data, trinkets = get_character_equipment(server, character)
         ilvl = get_ilvl_from_blizzard(server, character)
         mplus_score = get_mplus_score(server, character)
-        wcl_data = get_wcl_data(server, character, role)
+        wcl_data = get_wcl_data_with_trinkets(server, character, role)
         
-        # Get spec with icon from Blizzard API
         blizzard_spec, blizzard_spec_icon = get_character_spec(server, character)
         
-        # Retry logic for failures
         if (wcl_data is None or ilvl == 0) and attempt < 3:
             console.print(f"[warning]⚠ Retrying {character}...[/warning]")
             time.sleep(2)
             return crawl_character(row, attempt + 1)
         
-        # Handle WCL data
         if wcl_data is None:
-            # Complete API failure
             with open(FAILED_LOG, "a", encoding="utf-8") as f:
                 f.write(f"{datetime.now().isoformat()} - {character} - WCL API error\n")
             console.print(f"[error]❌ {character} - WCL API failed[/error]")
-            wcl_data = {}  # Use empty dict for report generation
+            wcl_data = {}
         
-        # Extract spec from WCL or use Blizzard spec
-        # Try to get from mythic first, then heroic, then fallback to Blizzard
         mythic_data = wcl_data.get('mythic', {}) if isinstance(wcl_data, dict) else wcl_data
         heroic_data = wcl_data.get('heroic', {}) if isinstance(wcl_data, dict) else {}
         
@@ -685,23 +617,21 @@ def crawl_character(row, attempt=1):
             all_stars = heroic_data.get('allStars', [])
         
         wcl_spec = all_stars[0].get('spec', blizzard_spec) if all_stars else blizzard_spec
-        wcl_spec_icon = blizzard_spec_icon  # Use Blizzard icon
+        wcl_spec_icon = blizzard_spec_icon
         
-        # Use mythic performance for CSV, fallback to heroic
         best_perf_avg = mythic_data.get('bestPerformanceAverage', "N/A") if mythic_data else "N/A"
         if best_perf_avg == "N/A" and heroic_data:
             best_perf_avg = heroic_data.get('bestPerformanceAverage', "N/A")
         
-        # Save comprehensive report
         os.makedirs(DETAIL_DIR, exist_ok=True)
         report_content = format_comprehensive_report(
             character, character_class, role, server, wcl_spec, wcl_spec_icon,
-            equipment_data, ilvl, mplus_score, wcl_data
+            equipment_data, trinkets, ilvl, mplus_score, wcl_data
         )
         with open(os.path.join(DETAIL_DIR, f"{character}.md"), "w", encoding="utf-8") as f:
             f.write(report_content)
         
-        console.print(f"[success]✔ {character} complete! ({wcl_spec}, ilvl {ilvl})[/success]")
+        console.print(f"[success]✔ {character} complete! ({wcl_spec}, ilvl {ilvl}, {len(trinkets)} trinkets)[/success]")
         
         return [
             character,
@@ -718,133 +648,16 @@ def crawl_character(row, attempt=1):
             f.write(f"{datetime.now().isoformat()} - {character} - Error: {str(e)}\n")
         return [character, character_class, "N/A", 0, "N/A", "N/A"]
 
-# ────────────────────────────────────────────────
-# Comparison Functions
-
-def generate_weekly_comparison(current_file, previous_file, output_file):
-    """Generate weekly comparison report"""
-    if not os.path.exists(current_file):
-        console.print(f"[error]❌ Current data file not found[/error]")
-        return
-    
-    current_data = {}
-    with open(current_file, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            current_data[row["ID"]] = row
-    
-    previous_data = {}
-    if os.path.exists(previous_file):
-        with open(previous_file, newline="", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                previous_data[row["ID"]] = row
-    
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    with open(output_file, "w", newline="", encoding="utf-8") as f:
-        fieldnames = ["ID", "Class", "Spec", "ilvl", "ilvl_change", "M+", "M+_change", "WCL", "WCL_change"]
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        
-        for char_id, curr in current_data.items():
-            prev = previous_data.get(char_id, {})
-            
-            # Calculate changes
-            try:
-                ilvl_change = int(float(curr["ilvl"])) - int(float(prev.get("ilvl", curr["ilvl"]))) if prev else 0
-            except:
-                ilvl_change = 0
-            
-            try:
-                mplus_curr = float(str(curr["M+"]).replace(",", ""))
-                mplus_prev = float(str(prev.get("M+", curr["M+"])).replace(",", "")) if prev else mplus_curr
-                mplus_change = mplus_curr - mplus_prev
-            except:
-                mplus_change = 0
-            
-            try:
-                wcl_curr = float(str(curr["WCL"]).replace(",", ""))
-                wcl_prev = float(str(prev.get("WCL", curr["WCL"])).replace(",", "")) if prev else wcl_curr
-                wcl_change = wcl_curr - wcl_prev
-            except:
-                wcl_change = 0
-            
-            writer.writerow({
-                "ID": char_id,
-                "Class": curr["Class"],
-                "Spec": curr["Spec"],
-                "ilvl": curr["ilvl"],
-                "ilvl_change": f"+{ilvl_change}" if ilvl_change > 0 else str(ilvl_change),
-                "M+": curr["M+"],
-                "M+_change": f"+{mplus_change:.1f}" if mplus_change > 0 else f"{mplus_change:.1f}",
-                "WCL": curr["WCL"],
-                "WCL_change": f"+{wcl_change:.1f}" if wcl_change > 0 else f"{wcl_change:.1f}"
-            })
-    
-    console.print(f"[success]✅ Weekly comparison saved to {output_file}[/success]")
-    
-    # Backup current as previous
-    import shutil
-    shutil.copy(current_file, previous_file)
-    console.print(f"[info]📦 Previous week data updated[/info]")
-
-def print_console_summary(results):
-    """Print summary table to console"""
-    table = Table(title="WoW Character Summary", show_lines=True)
-    table.add_column("ID", justify="left", style="cyan", no_wrap=True)
-    table.add_column("Class", justify="left", style="magenta")
-    table.add_column("Spec", justify="left", style="yellow")
-    table.add_column("ilvl", justify="right", style="green")
-    table.add_column("M+", justify="right", style="blue")
-    table.add_column("WCL", justify="right", style="red")
-    
-    total_ilvl = 0
-    total_mplus = 0
-    total_wcl = 0
-    count = 0
-    
-    for row in results:
-        char_id, char_class, spec, ilvl, mplus, wcl = row
-        table.add_row(char_id, char_class, spec, str(ilvl), str(mplus), str(wcl))
-        count += 1
-        
-        try:
-            total_ilvl += float(ilvl)
-        except:
-            pass
-        try:
-            total_mplus += float(str(mplus).replace(",", ""))
-        except:
-            pass
-        try:
-            total_wcl += float(str(wcl).replace(",", ""))
-        except:
-            pass
-    
-    console.print(table)
-    
-    if count > 0:
-        avg_ilvl = total_ilvl / count
-        avg_mplus = total_mplus / count
-        avg_wcl = total_wcl / count
-        console.print(f"\n[info]📊 Averages - ilvl: {avg_ilvl:.1f} | M+: {avg_mplus:.1f} | WCL: {avg_wcl:.1f}[/info]")
-
-# ────────────────────────────────────────────────
-# Main Function
-
 def main():
     """Main execution"""
     start_time = time.time()
     
-    # Setup
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     os.makedirs(DETAIL_DIR, exist_ok=True)
     
-    # Clear failed log
     if os.path.exists(FAILED_LOG):
         os.remove(FAILED_LOG)
     
-    # Load characters
     if not os.path.exists(INPUT_FILE):
         console.print(f"[error]❌ Input file not found: {INPUT_FILE}[/error]")
         return
@@ -855,11 +668,10 @@ def main():
     
     roster_num = len(characters)
     console.print(f"[bold cyan]🎮 Fetching data for {roster_num} players...[/bold cyan]\n")
-    console.print(f"[bold green]✨ Upgrade tracking enabled! (Explorer → Myth tracks)[/bold green]\n")
+    console.print(f"[bold green]✨ Now tracking trinkets per boss/dungeon![/bold green]\n")
     
     results = []
     
-    # Process with progress bar
     with Progress(
         SpinnerColumn(),
         BarColumn(),
@@ -878,7 +690,6 @@ def main():
                     results.append(result)
                 progress.update(task, advance=1)
     
-    # Save results
     with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["ID", "Class", "Spec", "ilvl", "M+", "WCL"])
@@ -887,16 +698,23 @@ def main():
     elapsed = time.time() - start_time
     console.print(f"\n[success]✅ Crawling complete in {elapsed:.1f}s[/success]")
     console.print(f"[info]📁 Results saved to: {OUTPUT_FILE}[/info]")
-    console.print(f"[info]📝 Detailed reports with upgrade tracking in: {DETAIL_DIR}/[/info]")
+    console.print(f"[info]📝 Detailed reports with trinket tracking in: {DETAIL_DIR}/[/info]")
     
-    # Print summary
-    print_console_summary(results)
+    table = Table(title="WoW Character Summary", show_lines=True)
+    table.add_column("ID", justify="left", style="cyan", no_wrap=True)
+    table.add_column("Class", justify="left", style="magenta")
+    table.add_column("Spec", justify="left", style="yellow")
+    table.add_column("ilvl", justify="right", style="green")
+    table.add_column("M+", justify="right", style="blue")
+    table.add_column("WCL", justify="right", style="red")
     
-    # Generate weekly comparison
-    generate_weekly_comparison(OUTPUT_FILE, PREVIOUS_FILE, WEEKLY_FILE)
+    for row in results:
+        char_id, char_class, spec, ilvl, mplus, wcl = row
+        table.add_row(char_id, char_class, spec, str(ilvl), str(mplus), str(wcl))
     
+    console.print(table)
     console.print("\n[success]🎉 All tasks completed![/success]")
-    console.print("[info]💡 Check detailed/*.md files to see item upgrade levels (e.g., Myth 6/8)[/info]")
+    console.print("[info]💡 Trinket data is now included in detailed/*.md files[/info]")
 
 if __name__ == "__main__":
     main()
