@@ -368,7 +368,7 @@ def get_wcl_data_with_trinkets(server, character, role):
     """Get WarcraftLogs data including trinket usage per boss"""
     metric = "hps" if role.lower() == "healer" else "dps"
     
-    # Extended query to get encounter details with rankings
+    # Extended query to get encounter details with rankings and report IDs
     query = """
     query($name: String!, $server: String!, $region: String!, $metric: CharacterRankingMetricType!) {
       characterData {
@@ -403,21 +403,47 @@ def get_wcl_data_with_trinkets(server, character, role):
             console.print(f"[warning]⚠ {character}@{server} not found in WCL (no logs)[/warning]")
             return {}
         
-        # Process rankings to include rank details
+        # Process rankings to include rank details and trinkets
         mythic_rankings = character_info.get('mythicRankings', {})
         heroic_rankings = character_info.get('heroicRankings', {})
         
         # Add detailed rank info to each boss
-        for rankings_data in [mythic_rankings, heroic_rankings]:
+        for difficulty_name, rankings_data in [('mythic', mythic_rankings), ('heroic', heroic_rankings)]:
             if rankings_data and 'rankings' in rankings_data:
                 for encounter in rankings_data['rankings']:
-                    # Extract rank details if available
-                    # Format: rank/totalParses (rankWorld)
-                    rank = encounter.get('rank', 0)
-                    total_parses = encounter.get('totalParses', 0)
-                    region_rank = encounter.get('regionRank', 0)
+                    # Extract rank details
+                    all_stars = encounter.get('allStars', {})
+                    rank = all_stars.get('rank', 0)
+                    total = all_stars.get('total', 0)
+                    region_rank = all_stars.get('regionRank', 0)
+                    server_rank = all_stars.get('serverRank', 0)
                     
-                    encounter['rankDetails'] = f"{rank}/{total_parses} (KR: {region_rank})" if rank and total_parses else ""
+                    # Format: partition | spec | overall_rank/total | region_rank | server_rank
+                    partition = all_stars.get('partition', 1)
+                    spec_name = all_stars.get('spec', 'Unknown')
+                    
+                    encounter['rankDetails'] = {
+                        'partition': partition,
+                        'spec': spec_name,
+                        'overall': f"{rank}/{total}" if rank and total else "N/A",
+                        'region': region_rank if region_rank else "N/A",
+                        'server': server_rank if server_rank else "N/A"
+                    }
+                    
+                    # Get trinkets from best log
+                    encounter['trinkets'] = []
+                    
+                    # Try to get report code and fight ID for trinket data
+                    if 'brackets' in encounter and encounter['brackets']:
+                        best_bracket = encounter['brackets'][0]
+                        if 'bestReportID' in best_bracket and 'bestFightID' in best_bracket:
+                            report_code = best_bracket['bestReportID']
+                            fight_id = best_bracket['bestFightID']
+                            
+                            # Fetch trinkets from this specific fight
+                            trinkets = get_trinkets_from_report(report_code, fight_id, character)
+                            if trinkets:
+                                encounter['trinkets'] = trinkets
         
         return {
             'mythic': mythic_rankings,
@@ -427,6 +453,100 @@ def get_wcl_data_with_trinkets(server, character, role):
     except (KeyError, TypeError, ValueError) as e:
         console.print(f"[warning]⚠ WCL parse error: {e}[/warning]")
         return None
+
+def get_trinkets_from_report(report_code, fight_id, character_name):
+    """Fetch trinket data from a specific WCL report"""
+    query = """
+    query($code: String!, $fightIDs: [Int]!, $name: String!) {
+      reportData {
+        report(code: $code) {
+          events(
+            fightIDs: $fightIDs
+            dataType: Summary
+            hostilityType: Friendlies
+            filterExpression: "source.name = \\\"$name\\\""
+          ) {
+            data
+          }
+          playerDetails(fightIDs: $fightIDs)
+        }
+      }
+    }
+    """
+    
+    variables = {
+        "code": report_code,
+        "fightIDs": [fight_id],
+        "name": character_name
+    }
+    
+    headers = {"Authorization": f"Bearer {WCL_ACCESS_TOKEN}", "Content-Type": "application/json"}
+    payload = {"query": query, "variables": variables}
+    
+    resp = safe_request("POST", "https://www.warcraftlogs.com/api/v2/client", headers=headers, json=payload)
+    if not resp:
+        return []
+    
+    try:
+        data = resp.json()
+        
+        if 'errors' in data:
+            return []
+        
+        report_data = data.get('data', {}).get('reportData', {}).get('report', {})
+        player_details = report_data.get('playerDetails', {}).get('data', {}).get('playerDetails', {})
+        
+        # Find the character's combat info
+        trinkets = []
+        if player_details:
+            for player_name, details in player_details.items():
+                if player_name.lower() == character_name.lower():
+                    combatant_info = details.get('combatantInfo', {})
+                    gear = combatant_info.get('gear', [])
+                    
+                    # Trinkets are typically slots 12 and 13
+                    for item in gear:
+                        slot = item.get('slot', 0)
+                        if slot in [12, 13]:  # Trinket slots
+                            item_id = item.get('id', 0)
+                            item_level = item.get('itemLevel', 0)
+                            
+                            # Get item name from ID (we'll need to fetch this)
+                            trinket_info = {
+                                'id': item_id,
+                                'ilvl': item_level,
+                                'name': f"Item {item_id}",  # Placeholder
+                                'icon': f"https://wow.zamimg.com/images/wow/icons/large/inv_misc_questionmark.jpg"  # Placeholder
+                            }
+                            
+                            # Try to get actual item name from Blizzard API
+                            token = token_manager.get_token()
+                            if token and item_id:
+                                item_url = f"https://{REGION}.api.blizzard.com/data/wow/item/{item_id}"
+                                item_headers = {"Authorization": f"Bearer {token}"}
+                                item_params = {"namespace": "static-kr", "locale": "ko_KR"}
+                                
+                                item_resp = safe_request("GET", item_url, headers=item_headers, params=item_params)
+                                if item_resp:
+                                    try:
+                                        item_data = item_resp.json()
+                                        trinket_info['name'] = item_data.get('name', f"Item {item_id}")
+                                        
+                                        # Get icon
+                                        icon_url = get_item_icon(item_id, token)
+                                        if icon_url:
+                                            trinket_info['icon'] = icon_url
+                                    except:
+                                        pass
+                            
+                            trinkets.append(trinket_info)
+                    break
+        
+        return trinkets
+        
+    except Exception as e:
+        console.print(f"[warning]⚠ Trinket fetch error: {e}[/warning]")
+        return []
 
 def format_comprehensive_report(character, character_class, role, server, wcl_spec, wcl_spec_icon,
                                equipment_data, trinkets, ilvl, mplus_score, wcl_data):
@@ -506,17 +626,27 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
         rankings = mythic_data.get('rankings', [])
         
         if rankings:
-            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills | Rank Details |")
-            lines.append("|------|--------|--------------|-------------|--------------|")
+            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills | Partition | Spec | Overall Rank | Region Rank | Server Rank | Trinkets |")
+            lines.append("|------|--------|--------------|-------------|-----------|------|--------------|-------------|-------------|----------|")
             
             for encounter in rankings:
                 boss = encounter.get('encounter', {}).get('name', 'Unknown')
                 rank_percent = encounter.get('rankPercent', 0)
                 best_amount = encounter.get('bestAmount', 0)
                 total_kills = encounter.get('totalKills', 0)
-                rank_details = encounter.get('rankDetails', 'N/A')
                 
-                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {rank_details} |")
+                rank_details = encounter.get('rankDetails', {})
+                partition = rank_details.get('partition', 'N/A')
+                spec = rank_details.get('spec', 'N/A')
+                overall = rank_details.get('overall', 'N/A')
+                region = rank_details.get('region', 'N/A')
+                server = rank_details.get('server', 'N/A')
+                
+                # Format trinkets
+                trinkets = encounter.get('trinkets', [])
+                trinket_str = ', '.join([f"{t['name']} ({t['ilvl']})" for t in trinkets]) if trinkets else "N/A"
+                
+                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {partition} | {spec} | {overall} | {region} | {server} | {trinket_str} |")
         else:
             lines.append("*No mythic boss rankings available*")
         
@@ -537,17 +667,27 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
         rankings = heroic_data.get('rankings', [])
         
         if rankings:
-            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills | Rank Details |")
-            lines.append("|------|--------|--------------|-------------|--------------|")
+            lines.append("| Boss | Rank % | Best DPS/HPS | Total Kills | Partition | Spec | Overall Rank | Region Rank | Server Rank | Trinkets |")
+            lines.append("|------|--------|--------------|-------------|-----------|------|--------------|-------------|-------------|----------|")
             
             for encounter in rankings:
                 boss = encounter.get('encounter', {}).get('name', 'Unknown')
                 rank_percent = encounter.get('rankPercent', 0)
                 best_amount = encounter.get('bestAmount', 0)
                 total_kills = encounter.get('totalKills', 0)
-                rank_details = encounter.get('rankDetails', 'N/A')
                 
-                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {rank_details} |")
+                rank_details = encounter.get('rankDetails', {})
+                partition = rank_details.get('partition', 'N/A')
+                spec = rank_details.get('spec', 'N/A')
+                overall = rank_details.get('overall', 'N/A')
+                region = rank_details.get('region', 'N/A')
+                server = rank_details.get('server', 'N/A')
+                
+                # Format trinkets
+                trinkets = encounter.get('trinkets', [])
+                trinket_str = ', '.join([f"{t['name']} ({t['ilvl']})" for t in trinkets]) if trinkets else "N/A"
+                
+                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {partition} | {spec} | {overall} | {region} | {server} | {trinket_str} |")
         else:
             lines.append("*No heroic boss rankings available*")
         

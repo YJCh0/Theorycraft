@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 
-# Complete Raid buff mapping - 11 essential buffs
+# Complete Raid buff mapping - 13 essential buffs
 RAID_BUFFS = {
     'battle_shout': {
         'name': 'Battle Shout',
@@ -71,6 +71,7 @@ RAID_BUFFS = {
         'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_strangulate.jpg'
     }
 }
+
 def parse_wcl_from_markdown(content):
     """Extract WCL data from markdown content for both difficulties"""
     wcl_data = {
@@ -115,6 +116,7 @@ def parse_wcl_from_markdown(content):
             
             if in_boss_table and line.startswith('|') and '---' not in line:
                 parts = [p.strip() for p in line.split('|')[1:-1]]
+                # New format: Boss | Rank % | Best DPS/HPS | Total Kills | Partition | Spec | Overall Rank | Region Rank | Server Rank | Trinkets
                 if len(parts) >= 4 and parts[0] not in ['Boss', '']:
                     try:
                         boss_entry = {
@@ -123,12 +125,34 @@ def parse_wcl_from_markdown(content):
                             'best_amount': int(parts[2].replace(',', '')),
                             'total_kills': int(parts[3])
                         }
-                        # Check if rank details column exists
-                        if len(parts) >= 5:
-                            boss_entry['rank_details'] = parts[4]
+                        
+                        # Parse ranking table if exists
+                        if len(parts) >= 10:
+                            boss_entry['rank_details'] = {
+                                'partition': parts[4],
+                                'spec': parts[5],
+                                'overall': parts[6],
+                                'region': parts[7],
+                                'server': parts[8]
+                            }
+                            
+                            # Parse trinkets
+                            trinket_str = parts[9]
+                            boss_entry['trinkets'] = []
+                            if trinket_str != 'N/A' and trinket_str:
+                                # Parse "ItemName1 (ilvl), ItemName2 (ilvl)"
+                                trinket_parts = trinket_str.split(', ')
+                                for tp in trinket_parts:
+                                    if '(' in tp and ')' in tp:
+                                        name_part = tp[:tp.rfind('(')].strip()
+                                        ilvl_part = tp[tp.rfind('(')+1:tp.rfind(')')].strip()
+                                        boss_entry['trinkets'].append({
+                                            'name': name_part,
+                                            'ilvl': ilvl_part
+                                        })
                         
                         wcl_data[current_difficulty]['boss_rankings'].append(boss_entry)
-                    except:
+                    except Exception as e:
                         pass
             
             if line.startswith('---') or line.startswith('##'):
@@ -407,9 +431,6 @@ tr:hover{{background:#f8f9ff}}
 .clickable{{cursor:pointer;color:#667eea;font-weight:600;text-decoration:none;transition:color .3s}}
 .clickable:hover{{color:#764ba2;text-decoration:underline}}
 .badge{{display:inline-block;padding:5px 12px;border-radius:12px;font-size:.85em;font-weight:600;white-space:nowrap}}
-.trinket-display{{display:flex;gap:15px;margin:20px 0;padding:15px;background:#fff;border-radius:10px;border:2px solid #667eea}}
-.trinket-item{{display:flex;align-items:center;gap:10px;padding:10px;background:#f8f9fa;border-radius:8px;flex:1}}
-.trinket-item img{{width:48px;height:48px;border-radius:6px;border:2px solid #667eea}}
 .modal{{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.7);animation:fadeIn .3s}}
 @keyframes fadeIn{{from{{opacity:0}}to{{opacity:1}}}}
 .modal-content{{background:#fff;margin:30px auto;padding:0;border-radius:15px;width:95%;max-width:1200px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}}
@@ -499,15 +520,15 @@ footer{{text-align:center;color:#fff;margin-top:40px;padding:20px}}
         spec_icon = character_specs.get(name, '')
         server = character_servers.get(name, 'azshara')
         
-        # Profile links with proper logos
+        # Profile links with REAL logos from their CDNs
         armory_url = f"https://worldofwarcraft.blizzard.com/ko-kr/character/kr/{server.lower()}/{name.lower()}"
         raiderio_url = f"https://raider.io/characters/kr/{server}/{name}"
         wcl_url = f"https://www.warcraftlogs.com/character/kr/{server.lower()}/{name}"
         
-        # Use SVG icons for better quality
-        links_html = f'<a href="{armory_url}" target="_blank" title="Armory" class="profile-link armory-link"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'white\'%3E%3Cpath d=\'M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z\'/%3E%3C/svg%3E" alt="Armory"></a>'
-        links_html += f'<a href="{raiderio_url}" target="_blank" title="Raider.IO" class="profile-link raiderio-link"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'white\'%3E%3Cpath d=\'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z\'/%3E%3C/svg%3E" alt="RIO"></a>'
-        links_html += f'<a href="{wcl_url}" target="_blank" title="Warcraft Logs" class="profile-link wcl-link"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'white\'%3E%3Cpath d=\'M3 3v18h18V3H3zm16 16H5V5h14v14zM7 12h2v5H7zm4-3h2v8h-2zm4-3h2v11h-2z\'/%3E%3C/svg%3E" alt="WCL"></a>'
+        # Use actual logo URLs
+        links_html = f'<a href="{armory_url}" target="_blank" title="Armory" class="profile-link armory-link"><img src="https://bnetcmsus-a.akamaihd.net/cms/template_resource/PHUULZHA87721637799160317.png" alt="Armory" style="width:20px;height:20px;object-fit:contain"></a>'
+        links_html += f'<a href="{raiderio_url}" target="_blank" title="Raider.IO" class="profile-link raiderio-link"><img src="https://cdnassets.raider.io/images/fb2.jpg" alt="RIO" style="width:20px;height:20px;object-fit:contain"></a>'
+        links_html += f'<a href="{wcl_url}" target="_blank" title="Warcraft Logs" class="profile-link wcl-link"><img src="https://dmszsuqyoe6y6.cloudfront.net/img/warcraft/favicon.png" alt="WCL" style="width:20px;height:20px;object-fit:contain"></a>'
         
         # M+ badge
         try:
@@ -570,16 +591,15 @@ footer{{text-align:center;color:#fff;margin-top:40px;padding:20px}}
 </div>
 
 <div id="mplus" class="tab-content">
-<h2 style="margin-bottom:30px">🏔️ Mythic+ Recent Runs with Trinket Usage</h2>
-<p style="color:#666;margin-bottom:20px">📊 Note: Trinket data shown is current equipped trinkets. Per-dungeon tracking coming soon!</p>
+<h2 style="margin-bottom:30px">🏔️ Mythic+ Recent Runs</h2>
 """
     
-    # M+ Tab with trinket display
+    # M+ Tab with collapsible sections
     if mplus_data:
         sorted_m = sorted([(n, d) for n, d in mplus_data.items() if d], 
                          key=lambda x: x[1].get("character", {}).get("score", 0), reverse=True)
         
-        for name, data in sorted_m:
+        for char_idx, (name, data) in enumerate(sorted_m):
             ci = data.get("character", {})
             runs = data.get("best_runs", [])
             if not runs:
@@ -594,24 +614,93 @@ footer{{text-align:center;color:#fff;margin-top:40px;padding:20px}}
             avg_key_level = sum([r.get('level', 0) for r in runs]) / len(runs) if runs else 0
             
             html_content += f'<div class="char-section">'
-            html_content += f'<div style="display:flex;align-items:center;margin-bottom:20px">'
+            # Collapsible header
+            html_content += f'<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:15px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;margin-bottom:15px" onclick="toggleSection(\'mplus_{char_idx}\')">'
+            html_content += f'<div style="display:flex;align-items:center;gap:15px">'
             if ci.get("thumbnail"):
-                html_content += f'<img src="{ci["thumbnail"]}" style="width:80px;height:80px;border-radius:10px;margin-right:20px;border:3px solid #667eea" onerror="this.style.display=\'none\'">'
-            html_content += f'<div style="flex:1"><h3>{ci.get("name", name)}</h3><div style="display:flex;gap:15px;margin-top:10px;flex-wrap:wrap"><span class="badge">{ci.get("spec", "")} {ci.get("class", "")}</span><span class="badge">ilvl {ci.get("ilvl", 0)}</span><span class="badge" style="background:{score_color};color:#fff">M+ {score:.0f}</span></div></div></div>'
+                html_content += f'<img src="{ci["thumbnail"]}" style="width:60px;height:60px;border-radius:8px;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,0.2)" onerror="this.style.display=\'none\'">'
+            html_content += f'<div><h3 style="color:#fff;margin:0">{ci.get("name", name)}</h3><div style="display:flex;gap:10px;margin-top:8px"><span style="background:rgba(255,255,255,0.3);color:#fff;padding:4px 10px;border-radius:6px;font-size:0.85em">{ci.get("spec", "")} {ci.get("class", "")}</span><span style="background:{score_color};color:#fff;padding:4px 10px;border-radius:6px;font-size:0.85em;font-weight:600">M+ {score:.0f}</span><span style="background:rgba(255,255,255,0.3);color:#fff;padding:4px 10px;border-radius:6px;font-size:0.85em">{timed_runs}/{len(runs)} timed</span></div></div></div>'
+            html_content += f'<div style="color:#fff;font-size:1.5em;transition:transform 0.3s" id="mplus_{char_idx}_arrow">▼</div></div>'
             
-            html_content += f'<div style="background:#e3f2fd;padding:12px;border-radius:8px;margin-bottom:15px;border-left:4px solid #2196f3"><strong>📊 Quick Stats:</strong> {timed_runs}/{len(runs)} timed | Avg Key: +{avg_key_level:.1f}</div>'
+            # Collapsible content
+            html_content += f'<div id="mplus_{char_idx}" style="display:none">'
             
-            # Trinkets
+            # Current trinkets
             if trinkets:
-                html_content += '<div class="trinket-display"><strong style="width:100%;margin-bottom:10px;display:block;color:#667eea">🎯 Current Trinkets:</strong>'
+                html_content += '<div style="margin:20px 0;padding:20px;background:#fff;border-radius:10px;border:2px solid #667eea"><h4 style="color:#667eea;margin-bottom:15px">🎯 Current Equipped Trinkets</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px">'
                 for trinket in trinkets:
+                    html_content += '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:8px;border:1px solid #e0e0e0">'
                     if trinket['icon']:
-                        html_content += f'<div class="trinket-item"><img src="{trinket["icon"]}" onerror="this.style.display=\'none\'"><div><div style="font-weight:600;font-size:0.9em">{trinket["name"]}</div><div style="font-size:0.85em;color:#666">ilvl {trinket["ilvl"]} | {trinket["upgrade"]}</div></div></div>'
+                        html_content += f'<div style="flex-shrink:0"><img src="{trinket["icon"]}" style="width:56px;height:56px;border-radius:8px;border:2px solid #667eea;box-shadow:0 2px 8px rgba(0,0,0,0.15)" onerror="this.style.display=\'none\'"></div>'
+                    html_content += f'<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:0.95em;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{trinket["name"]}">{trinket["name"]}</div><div style="font-size:0.85em;color:#666;margin-top:4px">ilvl {trinket["ilvl"]} | {trinket["upgrade"]}</div></div></div>'
+                html_content += '</div></div>'
+            
+            # Individual runs
+            for i, run in enumerate(runs, 1):
+                lv = run.get('level', 0)
+                timed = run.get('timed', False)
+                chests = run.get('num_chests', 0)
+                lv_col = "#FF8000" if lv >= 12 else "#A335EE" if lv >= 10 else "#0070DD" if lv >= 8 else "#1EFF00"
+                
+                key_display = f'+{lv}'
+                if timed and chests > 0:
+                    key_display += f' <span style="font-size:0.7em;background:rgba(255,255,255,0.3);padding:4px 8px;border-radius:4px;margin-left:8px">(+{chests})</span>'
+                
+                def fmt(ms):
+                    if ms <= 0:
+                        return "N/A"
+                    s = ms / 1000
+                    return f"{int(s//60)}:{int(s%60):02d}"
+                
+                html_content += f'<div style="background:#fff;border-radius:10px;padding:20px;margin-bottom:15px;border-left:4px solid {lv_col};box-shadow:0 2px 8px rgba(0,0,0,0.1)">'
+                html_content += f'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:15px"><div><div style="font-size:1.3em;font-weight:600;color:#333">#{i} {run.get("dungeon", "Unknown")}</div><div style="color:#666;font-size:0.9em;margin-top:5px">📅 {run.get("completed_at", "")}</div></div><div style="font-size:1.8em;font-weight:bold;padding:10px 25px;border-radius:10px;color:#fff;background:{lv_col};box-shadow:0 4px 10px rgba(0,0,0,0.2)">{key_display}</div></div>'
+                
+                # Status
+                status_color = "#28a745" if timed else "#dc3545"
+                status_text = "✅ Timed" if timed else "❌ Depleted"
+                html_content += f'<div style="margin:15px 0;padding:12px;background:{status_color}15;border-left:4px solid {status_color};border-radius:6px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div><strong style="color:{status_color}">{status_text}</strong> | Score: <strong>{run.get("score", 0):.1f}</strong></div><div>⏱️ {fmt(run.get("clear_time_ms", 0))} / 🎯 {fmt(run.get("par_time_ms", 0))}</div></div>'
+                
+                # Trinkets used in this run (currently showing equipped - placeholder for future WCL integration)
+                if trinkets:
+                    html_content += '<div style="background:#fff3cd;padding:12px;border-radius:8px;border-left:3px solid #ffc107;margin:15px 0"><strong>🎯 Trinkets (Current Equipped):</strong><div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">'
+                    for trinket in trinkets:
+                        html_content += f'<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border-radius:6px;border:1px solid #ffc107">'
+                        if trinket['icon']:
+                            html_content += f'<img src="{trinket["icon"]}" style="width:32px;height:32px;border-radius:4px" onerror="this.style.display=\'none\'">'
+                        html_content += f'<div style="font-size:0.85em"><div style="font-weight:600">{trinket["name"]}</div><div style="color:#666">ilvl {trinket["ilvl"]}</div></div></div>'
+                    html_content += '</div></div>'
+                
+                # Affixes
+                html_content += '<div style="display:flex;gap:10px;margin:15px 0;flex-wrap:wrap">'
+                aff_emoji = {"Tyrannical": "👑", "Fortified": "🛡️", "Bolstering": "💪", "Bursting": "💥", 
+                           "Raging": "😡", "Sanguine": "🩸", "Volcanic": "🌋", "Explosive": "💣",
+                           "Quaking": "🌊", "Grievous": "⚔️", "Necrotic": "☠️", "Storming": "⛈️",
+                           "Afflicted": "🤢", "Incorporeal": "👻", "Entangling": "🌿", 
+                           "Xal'atath's Bargain": "🔮", "Xal'atath's Guile": "🔮"}
+                
+                for aff in run.get('affixes', []):
+                    emoji = aff_emoji.get(aff.get("name", ""), "🔸")
+                    html_content += f'<span style="background:#667eea;color:#fff;padding:8px 14px;border-radius:6px;font-size:0.9em">{emoji} {aff.get("name", "Unknown")}</span>'
+                html_content += '</div>'
+                
+                # Party roster
+                html_content += '<h4 style="color:#667eea;margin-top:15px;margin-bottom:10px">👥 Party Composition</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">'
+                for mem in run.get('roster', []):
+                    role = mem.get('role', 'dps').lower()
+                    emoji = "🛡️" if role == "tank" else "💚" if role == "healer" else "⚔️"
+                    role_color = "#C41E3A" if role == "tank" else "#1EFF00" if role == "healer" else "#667eea"
+                    html_content += f'<div style="background:#f8f9fa;padding:12px;border-radius:8px;display:flex;align-items:center;gap:12px;border:1px solid #e0e0e0"><div style="width:35px;height:35px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2em;background:{role_color};color:#fff;flex-shrink:0">{emoji}</div><div style="min-width:0"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{mem.get("name", "Unknown")}</div><div style="font-size:0.85em;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{mem.get("spec", "")} {mem.get("class", "")}</div></div></div>'
+                html_content += '</div>'
+                
+                # RIO link
+                if run.get('url'):
+                    html_content += f'<a href="{run["url"]}" target="_blank" style="display:inline-block;margin-top:15px;padding:12px 24px;background:#667eea;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;transition:all 0.3s;box-shadow:0 2px 8px rgba(0,0,0,0.15)">📊 View on Raider.IO</a>'
+                
                 html_content += '</div>'
             
-            html_content += '</div>'
+            html_content += '</div></div>'
     else:
-        html_content += '<div style="text-align:center;padding:80px;background:#f8f9fa;border-radius:15px"><h2 style="color:#999">📊 No M+ Data</h2><p style="color:#666;margin-top:15px">Run <code>python mplus_enhanced.py</code></p></div>'
+        html_content += '<div style="text-align:center;padding:80px;background:#f8f9fa;border-radius:15px"><h2 style="color:#999">📊 No M+ Data Available</h2><p style="color:#666;margin-top:15px">Run <code style="background:#e0e0e0;padding:4px 8px;border-radius:4px;font-family:monospace">python mplus_enhanced.py</code></p></div>'
     
     html_content += """
 </div>
@@ -668,11 +757,13 @@ footer{{text-align:center;color:#fff;margin-top:40px;padding:20px}}
             
             # Trinkets for raiding
             if trinkets:
-                html_content += '<div class="trinket-display"><strong style="width:100%;margin-bottom:10px;display:block;color:#667eea">🎯 Raid Trinkets:</strong>'
+                html_content += '<div style="margin:20px 0;padding:20px;background:#fff;border-radius:10px;border:2px solid #667eea"><h4 style="color:#667eea;margin-bottom:15px">🎯 Raid Trinkets</h4><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px">'
                 for trinket in trinkets:
+                    html_content += '<div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8f9fa;border-radius:8px;border:1px solid #e0e0e0">'
                     if trinket['icon']:
-                        html_content += f'<div class="trinket-item"><img src="{trinket["icon"]}" onerror="this.style.display=\'none\'"><div><div style="font-weight:600;font-size:0.9em">{trinket["name"]}</div><div style="font-size:0.85em;color:#666">ilvl {trinket["ilvl"]} | {trinket["upgrade"]}</div></div></div>'
-                html_content += '</div>'
+                        html_content += f'<div style="flex-shrink:0"><img src="{trinket["icon"]}" style="width:56px;height:56px;border-radius:8px;border:2px solid #667eea;box-shadow:0 2px 8px rgba(0,0,0,0.15)" onerror="this.style.display=\'none\'"></div>'
+                    html_content += f'<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:0.95em;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{trinket["name"]}">{trinket["name"]}</div><div style="font-size:0.85em;color:#666;margin-top:4px">ilvl {trinket["ilvl"]} | {trinket["upgrade"]}</div></div></div>'
+                html_content += '</div></div>'
             
             # Mythic bosses
             if mythic_bosses:
@@ -747,6 +838,20 @@ footer{{text-align:center;color:#fff;margin-top:40px;padding:20px}}
 const details = {json.dumps(character_details)};
 const rosterData = {json.dumps(roster_data)};
 
+// Toggle section function for collapsible areas
+function toggleSection(sectionId) {{
+    const section = document.getElementById(sectionId);
+    const arrow = document.getElementById(sectionId + '_arrow');
+    
+    if (section.style.display === 'none' || section.style.display === '') {{
+        section.style.display = 'block';
+        if (arrow) arrow.textContent = '▲';
+    }} else {{
+        section.style.display = 'none';
+        if (arrow) arrow.textContent = '▼';
+    }}
+}}
+
 // Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {{
     btn.addEventListener('click', function() {{
@@ -808,20 +913,33 @@ function showChar(name) {{
         let rows = [];
         let isEquipment = false;
         let isTrinket = false;
+        let skipTrinketSection = false;
         
         for (let line of lines) {{
+            // Skip spec icon metadata
             if (line.startsWith('**SPEC_ICON:')) continue;
             
+            // Track sections
+            if (line.includes('## 🎯 Current Trinkets')) {{
+                skipTrinketSection = true;
+                continue;
+            }}
+            if (line.startsWith('##') && !line.includes('## 🎯 Current Trinkets')) {{
+                skipTrinketSection = false;
+            }}
+            
+            // Skip entire trinket section
+            if (skipTrinketSection) continue;
+            
             if (line.includes('## ⚔️ Equipment')) isEquipment = true;
-            else if (line.includes('## 🎯 Current Trinkets')) isTrinket = true;
-            else if (line.startsWith('##')) {{ isEquipment = false; isTrinket = false; }}
+            else if (line.startsWith('##')) isEquipment = false;
             
             if (line.trim().startsWith('|')) {{
                 if (!inTable) {{ inTable = true; rows = []; }}
                 rows.push(line);
                 continue;
             }} else if (inTable) {{
-                html += processTable(rows, isEquipment, isTrinket);
+                html += processTable(rows, isEquipment);
                 inTable = false;
                 rows = [];
             }}
@@ -837,14 +955,14 @@ function showChar(name) {{
             }}
         }}
         
-        if (inTable) html += processTable(rows, isEquipment, isTrinket);
+        if (inTable) html += processTable(rows, isEquipment);
         
         document.getElementById('modalBody').innerHTML = html;
         modal.style.display = 'block';
     }}
 }}
 
-function processTable(rows, isEquipment, isTrinket) {{
+function processTable(rows, isEquipment) {{
     if (!rows.length) return '';
     
     let html = '<table style="width:100%;border-collapse:collapse;margin:20px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,0.1)">';
@@ -856,7 +974,8 @@ function processTable(rows, isEquipment, isTrinket) {{
         if (i === 0) {{
             html += '<thead><tr>';
             cells.forEach((c, idx) => {{
-                if (!((isEquipment || isTrinket) && idx === 3 && c.trim() === 'Icon')) {{
+                // Skip Icon column header
+                if (!(isEquipment && (c.trim() === 'Icon' || idx === cells.length - 1))) {{
                     html += `<th style="background:#667eea;color:#fff;padding:15px;text-align:left">${{c.trim()}}</th>`;
                 }}
             }});
@@ -864,33 +983,34 @@ function processTable(rows, isEquipment, isTrinket) {{
         }} else {{
             html += '<tr>';
             cells.forEach((c, idx) => {{
-                if (isEquipment || isTrinket) {{
-                    if (idx === 0 && cells.length >= 4) {{
-                        const iconCell = cells[3].trim();
+                if (isEquipment) {{
+                    // Name column with icon
+                    if (idx === 1 && cells.length >= 5) {{
+                        const iconCell = cells[cells.length - 1].trim();
                         let iconUrl = '';
                         if (iconCell.startsWith('ICON:')) iconUrl = iconCell.substring(5);
-                        else if (iconCell.startsWith('TRINKET_ICON:')) iconUrl = iconCell.substring(13);
                         
                         if (iconUrl && iconUrl.startsWith('http')) {{
                             html += `<td style="padding:12px 15px"><img src="${{iconUrl}}" style="width:36px;height:36px;vertical-align:middle;margin-right:10px;border-radius:6px;border:2px solid #667eea" onerror="this.style.display='none'"> ${{c.trim()}}</td>`;
                         }} else {{
                             html += `<td style="padding:12px 15px">${{c.trim()}}</td>`;
                         }}
-                    }} else if (idx === 2 && isEquipment) {{
+                    }} else if (idx === 3) {{ // Upgrade column
                         const upgrade = c.trim();
                         let color = '#667eea';
                         if (upgrade.includes('8/8')) color = '#ff8000';
                         else if (upgrade.includes('7/8') || upgrade.includes('6/8')) color = '#a335ee';
                         else if (upgrade.includes('5/8') || upgrade.includes('4/8')) color = '#0070dd';
                         html += `<td style="padding:12px 15px"><span style="color:${{color}};font-weight:600">${{upgrade}}</span></td>`;
-                    }} else if (idx !== 3) {{
+                    }} else if (idx !== 0 && idx !== cells.length - 1) {{ // Skip slot and icon columns
+                        html += `<td style="padding:12px 15px">${{c.trim()}}</td>`;
+                    }} else if (idx === 0) {{ // Slot column
                         html += `<td style="padding:12px 15px">${{c.trim()}}</td>`;
                     }}
                 }} else {{
-                    // For boss rankings table, show rank information properly
-                    if (idx === 1 && c.trim().includes('%')) {{
-                        // This is the rank percent column
-                        html += `<td style="padding:12px 15px;font-weight:600">${{c.trim()}}</td>`;
+                    // For boss rankings table - show rank details
+                    if (idx === 4 && c.trim().includes('(KR:')) {{
+                        html += `<td style="padding:12px 15px;font-weight:600;color:#667eea">${{c.trim()}}</td>`;
                     }} else {{
                         html += `<td style="padding:12px 15px">${{c.trim()}}</td>`;
                     }}
