@@ -2,6 +2,7 @@ import csv
 import os
 import time
 import requests
+import json
 from urllib.parse import quote
 from concurrent.futures import ThreadPoolExecutor
 from rich.console import Console
@@ -411,17 +412,27 @@ def get_wcl_data_with_trinkets(server, character, role):
         for difficulty_name, rankings_data in [('mythic', mythic_rankings), ('heroic', heroic_rankings)]:
             if rankings_data and 'rankings' in rankings_data:
                 for encounter in rankings_data['rankings']:
-                    # Extract rank details
-                    all_stars = encounter.get('allStars', {})
-                    rank = all_stars.get('rank', 0)
-                    total = all_stars.get('total', 0)
-                    region_rank = all_stars.get('regionRank', 0)
-                    server_rank = all_stars.get('serverRank', 0)
+                    # Extract rank details - safely handle None values
+                    all_stars = encounter.get('allStars')
+                    
+                    # Initialize default values
+                    rank = 0
+                    total = 0
+                    region_rank = 0
+                    server_rank = 0
+                    partition = 1
+                    spec_name = 'Unknown'
+                    
+                    # Only extract if all_stars exists and is a dict
+                    if all_stars and isinstance(all_stars, dict):
+                        rank = all_stars.get('rank', 0)
+                        total = all_stars.get('total', 0)
+                        region_rank = all_stars.get('regionRank', 0)
+                        server_rank = all_stars.get('serverRank', 0)
+                        partition = all_stars.get('partition', 1)
+                        spec_name = all_stars.get('specializations', 'Unknown')
                     
                     # Format: partition | spec | overall_rank/total | region_rank | server_rank
-                    partition = all_stars.get('partition', 1)
-                    spec_name = all_stars.get('spec', 'Unknown')
-                    
                     encounter['rankDetails'] = {
                         'partition': partition,
                         'spec': spec_name,
@@ -434,16 +445,21 @@ def get_wcl_data_with_trinkets(server, character, role):
                     encounter['trinkets'] = []
                     
                     # Try to get report code and fight ID for trinket data
-                    if 'brackets' in encounter and encounter['brackets']:
-                        best_bracket = encounter['brackets'][0]
-                        if 'bestReportID' in best_bracket and 'bestFightID' in best_bracket:
-                            report_code = best_bracket['bestReportID']
-                            fight_id = best_bracket['bestFightID']
+                    brackets = encounter.get('brackets')
+                    if brackets and isinstance(brackets, list) and len(brackets) > 0:
+                        best_bracket = brackets[0]
+                        if isinstance(best_bracket, dict):
+                            report_code = best_bracket.get('bestReportID')
+                            fight_id = best_bracket.get('bestFightID')
                             
-                            # Fetch trinkets from this specific fight
-                            trinkets = get_trinkets_from_report(report_code, fight_id, character)
-                            if trinkets:
-                                encounter['trinkets'] = trinkets
+                            if report_code and fight_id:
+                                # Fetch trinkets from this specific fight
+                                try:
+                                    trinkets = get_trinkets_from_report(report_code, fight_id, character)
+                                    if trinkets:
+                                        encounter['trinkets'] = trinkets
+                                except Exception as e:
+                                    console.print(f"[warning]⚠ Trinket fetch failed for {character}: {e}[/warning]")
         
         return {
             'mythic': mythic_rankings,
@@ -646,7 +662,7 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
                 trinkets = encounter.get('trinkets', [])
                 trinket_str = ', '.join([f"{t['name']} ({t['ilvl']})" for t in trinkets]) if trinkets else "N/A"
                 
-                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {partition} | {spec} | {overall} | {region} | {server} | {trinket_str} |")
+                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {partition} | {spec} | {overall} | {region} | {server} | TRINKETS:{json.dumps(trinkets)} |")
         else:
             lines.append("*No mythic boss rankings available*")
         
@@ -687,7 +703,7 @@ def format_comprehensive_report(character, character_class, role, server, wcl_sp
                 trinkets = encounter.get('trinkets', [])
                 trinket_str = ', '.join([f"{t['name']} ({t['ilvl']})" for t in trinkets]) if trinkets else "N/A"
                 
-                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {partition} | {spec} | {overall} | {region} | {server} | {trinket_str} |")
+                lines.append(f"| {boss} | {format_amount(rank_percent)}% | {format_int(best_amount)} | {total_kills} | {partition} | {spec} | {overall} | {region} | {server} | TRINKETS:{json.dumps(trinkets)} |")
         else:
             lines.append("*No heroic boss rankings available*")
         
@@ -749,8 +765,9 @@ def crawl_character(row, attempt=1):
             console.print(f"[error]❌ {character} - WCL API failed[/error]")
             wcl_data = {}
         
-        mythic_data = wcl_data.get('mythic', {}) if isinstance(wcl_data, dict) else wcl_data
-        heroic_data = wcl_data.get('heroic', {}) if isinstance(wcl_data, dict) else {}
+        # Safely extract WCL data
+        mythic_data = wcl_data.get('mythic', {}) if isinstance(wcl_data, dict) and wcl_data else {}
+        heroic_data = wcl_data.get('heroic', {}) if isinstance(wcl_data, dict) and wcl_data else {}
         
         all_stars = mythic_data.get('allStars', []) if mythic_data else []
         if not all_stars and heroic_data:
@@ -783,7 +800,9 @@ def crawl_character(row, attempt=1):
         ]
         
     except Exception as e:
+        import traceback
         console.print(f"[error]❌ Unexpected error for {character}: {e}[/error]")
+        console.print(f"[error]{traceback.format_exc()}[/error]")
         with open(FAILED_LOG, "a", encoding="utf-8") as f:
             f.write(f"{datetime.now().isoformat()} - {character} - Error: {str(e)}\n")
         return [character, character_class, "N/A", 0, "N/A", "N/A"]

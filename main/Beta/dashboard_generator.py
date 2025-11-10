@@ -5,71 +5,19 @@ from datetime import datetime
 
 # Complete Raid buff mapping - 13 essential buffs
 RAID_BUFFS = {
-    'battle_shout': {
-        'name': 'Battle Shout',
-        'classes': ['Warrior'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_warrior_battleshout.jpg'
-    },
-    'mark_of_the_wild': {
-        'name': 'Mark of the Wild',
-        'classes': ['Druid'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_nature_regeneration.jpg'
-    },
-    'arcane_intellect': {
-        'name': 'Arcane Intellect',
-        'classes': ['Mage'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_magicalsentry.jpg'
-    },
-    'skyfury': {
-        'name': 'Skyfury',
-        'classes': ['Shaman'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/achievement_raidprimalist_windelemental.jpg'
-    },
-    'blessing_of_the_bronze': {
-        'name': 'Blessing of the Bronze',
-        'classes': ['Evoker'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_evoker_blessingofthebronze.jpg'
-    },
-    'hunters_mark': {
-        'name': "Hunter's Mark",
-        'classes': ['Hunter'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_hunter_markedfordeath.jpg'
-    },
-    'power_word_fortitude': {
-        'name': 'Power Word: Fortitude',
-        'classes': ['Priest'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_wordfortitude.jpg'
-    },
-    'devotion_aura': {
-        'name': 'devotion_aura',
-        'classes': ['Paladin'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_devotionaura.jpg'
-    },
-    'numbing_poison': {
-        'name': 'numbing_poison',
-        'classes': ['Rogue'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_nature_nullifydisease.jpg'
-    },
-    'mystic_touch': {
-        'name': 'Mystic Touch',
-        'classes': ['Monk'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_monk_sparring.jpg'
-    },
-    'chaos_brand': {
-        'name': 'Chaos Brand',
-        'classes': ['Demon Hunter', 'Demonhunter'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_empowerwards.jpg'
-    },
-    'healthstone': {
-        'name': 'Healthstone',
-        'classes': ['Warlock'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/warlock_-healthstone.jpg'
-    },
-    'death_grip': {
-        'name': 'Death Grip',
-        'classes': ['Deathknight', 'Death Knight'],
-        'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_strangulate.jpg'
-    }
+    'battle_shout': {'name': 'Battle Shout', 'classes': ['Warrior'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_warrior_battleshout.jpg'},
+    'mark_of_the_wild': {'name': 'Mark of the Wild', 'classes': ['Druid'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_nature_regeneration.jpg'},
+    'arcane_intellect': {'name': 'Arcane Intellect', 'classes': ['Mage'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_magicalsentry.jpg'},
+    'skyfury': {'name': 'Skyfury', 'classes': ['Shaman'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/achievement_raidprimalist_windelemental.jpg'},
+    'blessing_of_the_bronze': {'name': 'Blessing of the Bronze', 'classes': ['Evoker'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_evoker_blessingofthebronze.jpg'},
+    'hunters_mark': {'name': "Hunter's Mark", 'classes': ['Hunter'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_hunter_markedfordeath.jpg'},
+    'power_word_fortitude': {'name': 'Power Word: Fortitude', 'classes': ['Priest'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_wordfortitude.jpg'},
+    'devotion_aura': {'name': 'Devotion Aura', 'classes': ['Paladin'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_holy_devotionaura.jpg'},
+    'numbing_poison': {'name': 'Numbing Poison', 'classes': ['Rogue'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_rogue_numbingpoison.jpg'},
+    'mystic_touch': {'name': 'Mystic Touch', 'classes': ['Monk'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_monk_sparring.jpg'},
+    'chaos_brand': {'name': 'Chaos Brand', 'classes': ['Demon Hunter', 'Demonhunter'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/ability_demonhunter_empowerwards.jpg'},
+    'healthstone': {'name': 'Healthstone', 'classes': ['Warlock'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/warlock_-healthstone.jpg'},
+    'death_grip': {'name': 'Death Grip', 'classes': ['Deathknight', 'Death Knight'], 'icon': 'https://wow.zamimg.com/images/wow/icons/large/spell_deathknight_strangulate.jpg'}
 }
 
 def parse_wcl_from_markdown(content):
@@ -126,7 +74,7 @@ def parse_wcl_from_markdown(content):
                             'total_kills': int(parts[3])
                         }
                         
-                        # Parse ranking table if exists
+                        # Parse ranking table if exists (should be columns 5-9)
                         if len(parts) >= 10:
                             boss_entry['rank_details'] = {
                                 'partition': parts[4],
@@ -136,20 +84,16 @@ def parse_wcl_from_markdown(content):
                                 'server': parts[8]
                             }
                             
-                            # Parse trinkets
-                            trinket_str = parts[9]
+                            # Parse trinkets from JSON format
+                            trinket_cell = parts[9]
                             boss_entry['trinkets'] = []
-                            if trinket_str != 'N/A' and trinket_str:
-                                # Parse "ItemName1 (ilvl), ItemName2 (ilvl)"
-                                trinket_parts = trinket_str.split(', ')
-                                for tp in trinket_parts:
-                                    if '(' in tp and ')' in tp:
-                                        name_part = tp[:tp.rfind('(')].strip()
-                                        ilvl_part = tp[tp.rfind('(')+1:tp.rfind(')')].strip()
-                                        boss_entry['trinkets'].append({
-                                            'name': name_part,
-                                            'ilvl': ilvl_part
-                                        })
+                            if trinket_cell.startswith('TRINKETS:'):
+                                try:
+                                    import json
+                                    trinket_json = trinket_cell.replace('TRINKETS:', '')
+                                    boss_entry['trinkets'] = json.loads(trinket_json)
+                                except:
+                                    pass
                         
                         wcl_data[current_difficulty]['boss_rankings'].append(boss_entry)
                     except Exception as e:
@@ -1091,7 +1035,6 @@ new Chart(document.getElementById('wclChart'), {{
     print(f"✅ Enhanced Dashboard v3 generated: {output_file}")
     print(f"   ✨ Features:")
     print(f"   - 🎯 Trinket tracking (current equipment)")
-    print(f"   - 🛡️ 11 raid buffs with visual coverage")
     print(f"   - 🔗 Proper icons for Armory/RIO/WCL links")
     print(f"   - ✅ Fixed tab navigation")
     print(f"   - 📊 Boss rank details visible in modal")
