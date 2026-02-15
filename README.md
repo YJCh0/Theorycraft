@@ -155,11 +155,14 @@ Every other characters which is not written is "**hidden**" in this page.
     
 #### Manaforge Omega (11.2)
 * 전사잠탱이 (7/8M)
-  * Progression in 두부킴의 유기견들
+  * killed with 두부킴의 유기견들
   * **Raid Leader**
 
+* 죽기싫은잠탱이 (8/8M)
+  * killed with Rinz
+
 ### **Midnight (12.0)**
-* **TBD**
+* **Progression in 두부킴의 유기견들**
 
 ## Filmography
 - 가족공격대 시즌3: 한 여름밤의 캠프 (2024.7), 멘티 (팀 [RenieHouR](https://www.youtube.com/@RenieHouR))

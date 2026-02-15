@@ -372,11 +372,23 @@ h1{{font-size:1.8em}}
 </div>
 
 <script>
-function switchTab(e,t){
-document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
-document.querySelectorAll('.tab-btn').forEach(el=>el.classList.remove('active'));
-document.getElementById(t).classList.add('active');
-e.currentTarget.classList.add('active');
+function switchTab(event, tabName) {
+    // Remove active class from all tabs and buttons
+    const contents = document.querySelectorAll('.tab-content');
+    const buttons = document.querySelectorAll('.tab-btn');
+    
+    contents.forEach(content => content.classList.remove('active'));
+    buttons.forEach(button => button.classList.remove('active'));
+    
+    // Add active class to selected tab and button
+    const selectedTab = document.getElementById(tabName);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('active');
+    }
 }
 
 const chartBg={

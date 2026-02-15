@@ -129,41 +129,39 @@ class WarcraftLogsAPI:
         return self._get_rankings_simple(name, server, region, metric, char_data)
     
     def _get_rankings_simple(self, name: str, server: str, region: str, metric: str, char_info: dict) -> dict:
-        """Get rankings using multiple simple queries (more reliable)"""
+        """Get rankings using multiple queries per boss (more reliable)"""
         processed = {
             'name': char_info.get('name'),
             'class_id': char_info.get('classID'),
-            'mythic': {},
-            'heroic': {},
+            'mythic': {'best_performance': None, 'median_performance': None, 'boss_rankings': [], 'all_stars': []},
+            'heroic': {'best_performance': None, 'median_performance': None, 'boss_rankings': [], 'all_stars': []},
             'recent_activity': [],
             'has_logs': False
         }
         
-        # Query for each encounter individually (more reliable than zoneRankings)
-        for encounter_name in self.current_raid['encounters']:
-            # For now, use a simpler approach - just get best performance
-            pass
+        # Get rankings for each difficulty
+        mythic_rankings = self._get_all_boss_rankings(name, server, region, metric, 5)
+        heroic_rankings = self._get_all_boss_rankings(name, server, region, metric, 4)
         
-        # Simplified: Use the REST API style query for now
-        # This is more stable than the complex GraphQL queries
-        mythic_data = self._get_difficulty_rankings(name, server, region, metric, 5)
-        heroic_data = self._get_difficulty_rankings(name, server, region, metric, 4)
-        
-        if mythic_data or heroic_data:
+        if mythic_rankings:
+            processed['mythic'] = mythic_rankings
             processed['has_logs'] = True
-            processed['mythic'] = mythic_data
-            processed['heroic'] = heroic_data
+        
+        if heroic_rankings:
+            processed['heroic'] = heroic_rankings
+            processed['has_logs'] = True
         
         return processed
     
-    def _get_difficulty_rankings(self, name: str, server: str, region: str, metric: str, difficulty: int) -> dict:
-        """Get rankings for specific difficulty using correct WCL API"""
-        # WCL API v2: encounterRankings doesn't take parameters, returns all as JSON
+    def _get_all_boss_rankings(self, name: str, server: str, region: str, metric: str, difficulty: int) -> dict:
+        """Get rankings for all bosses in current raid"""
+        # Use simpler query that gets rankings without needing encounterID
+        # We'll use the character's overall zone performance
         query = """
         query($name: String!, $server: String!, $region: String!) {
           characterData {
             character(name: $name, serverSlug: $server, serverRegion: $region) {
-              encounterRankings
+              zoneRankings
             }
           }
         }
@@ -182,40 +180,101 @@ class WarcraftLogsAPI:
         
         try:
             char_data = result.get('data', {}).get('characterData', {}).get('character', {})
-            rankings_json = char_data.get('encounterRankings')
+            zone_rankings_json = char_data.get('zoneRankings')
             
-            if not rankings_json:
+            if not zone_rankings_json:
                 return {}
             
-            # Parse the JSON response
+            # Parse the JSON
             import json
-            all_rankings = json.loads(rankings_json) if isinstance(rankings_json, str) else rankings_json
+            zone_rankings = json.loads(zone_rankings_json) if isinstance(zone_rankings_json, str) else zone_rankings_json
             
-            # Filter for the specific zone and difficulty we want
-            filtered_rankings = self._filter_rankings(all_rankings, self.current_raid['id'], difficulty, metric)
+            # Filter for our zone and difficulty
+            return self._extract_difficulty_data(zone_rankings, self.current_raid['id'], difficulty, metric)
             
-            return self._process_rankings_json(filtered_rankings)
         except Exception as e:
-            print(f"  ⚠️ Error parsing difficulty {difficulty}: {e}")
+            print(f"  ⚠️ Error parsing rankings for difficulty {difficulty}: {e}")
             return {}
     
-    def _filter_rankings(self, all_rankings, zone_id: int, difficulty: int, metric: str) -> dict:
-        """Filter rankings for specific zone/difficulty from the full JSON"""
-        if not all_rankings or not isinstance(all_rankings, list):
+    def _extract_difficulty_data(self, zone_rankings, zone_id: int, difficulty: int, metric: str) -> dict:
+        """Extract data for specific zone/difficulty from zoneRankings JSON"""
+        if not zone_rankings:
             return {}
         
-        # Find rankings for our zone
-        for zone_rankings in all_rankings:
-            if zone_rankings.get('zone') == zone_id and zone_rankings.get('difficulty') == difficulty:
-                # Filter by metric
-                if zone_rankings.get('metric') == metric:
-                    return zone_rankings
+        result = {
+            'best_performance': None,
+            'median_performance': None,
+            'boss_rankings': [],
+            'all_stars': []
+        }
         
-        # If exact match not found, try to find any matching zone/difficulty
-        for zone_rankings in all_rankings:
-            if zone_rankings.get('zone') == zone_id and zone_rankings.get('difficulty') == difficulty:
-                return zone_rankings
+        # zone_rankings is a dict with zone IDs as keys
+        zone_key = str(zone_id)
+        if zone_key not in zone_rankings:
+            return {}
         
+        zone_data = zone_rankings[zone_key]
+        
+        # Find difficulty data
+        difficulty_key = str(difficulty)
+        if difficulty_key not in zone_data:
+            return {}
+        
+        difficulty_data = zone_data[difficulty_key]
+        
+        # Find metric data
+        metric_key = metric.lower()
+        if metric_key not in difficulty_data:
+            # Try without metric
+            metric_data = difficulty_data
+        else:
+            metric_data = difficulty_data[metric_key]
+        
+        # Extract best/median performance
+        result['best_performance'] = metric_data.get('bestPerformanceAverage')
+        result['median_performance'] = metric_data.get('medianPerformanceAverage')
+        
+        # Extract boss rankings
+        rankings = metric_data.get('rankings', [])
+        for rank in rankings:
+            boss_name = rank.get('encounterName', rank.get('encounter', {}).get('name', 'Unknown'))
+            encounter_id = rank.get('encounterID', rank.get('encounter', {}).get('id', 0))
+            
+            result['boss_rankings'].append({
+                'boss': boss_name,
+                'encounter_id': encounter_id,
+                'rank_percent': rank.get('rankPercent', 0),
+                'median_percent': rank.get('medianPercent', 0),
+                'best_amount': rank.get('bestAmount', 0),
+                'total_kills': rank.get('totalKills', 0),
+                'fastest_kill': rank.get('fastestKill', 0),
+                'locked_in': rank.get('lockedIn', False),
+                'today_percent': rank.get('todayPercent', 0),
+                'historical_percent': rank.get('historicalPercent', 0),
+                'spec': rank.get('spec', 'Unknown'),
+                'consistency_score': self._calculate_consistency(
+                    rank.get('rankPercent', 0),
+                    rank.get('medianPercent', 0)
+                )
+            })
+        
+        # Extract all-stars
+        all_stars = metric_data.get('allStars', [])
+        for star in all_stars:
+            result['all_stars'].append({
+                'partition': star.get('partition'),
+                'spec': star.get('spec'),
+                'points': star.get('points', 0),
+                'possible': star.get('possiblePoints', 0),
+                'rank': star.get('rank', 0),
+                'rank_percent': star.get('rankPercent', 0),
+                'total': star.get('total', 0)
+            })
+        
+        return result
+    
+    def _get_difficulty_rankings(self, name: str, server: str, region: str, metric: str, difficulty: int) -> dict:
+        """DEPRECATED - Use _get_all_boss_rankings instead"""
         return {}
     
     def _process_rankings_json(self, rankings_data) -> dict:
