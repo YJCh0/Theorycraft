@@ -1,389 +1,522 @@
-# 🎮 WoW Guild Dashboard - Enhanced Edition v2.0
+# 🎮 WoW Guild Dashboard - Complete Setup Guide
 
-## 📋 Implementation Guide
+## 🆕 What's New - Unified Dashboard!
 
-This guide will help you upgrade your WoW guild dashboard with all the new enhanced features.
+Your dashboard is now a **single file with 4 tabs**:
 
----
+### 📊 **Tab 1: Overview**
+- 📈 Guild progress trends over time
+- 🏆 Top improvers leaderboard (last 7 days)
 
-## 🆕 New Features
+### 📈 **Tab 2: Charts**  
+- Item level distribution
+- M+ score distribution
+- WCL performance
 
-### 1. **Enhanced WarcraftLogs Integration**
-- ✅ Detailed boss rankings (best, median, consistency)
-- ✅ Recent raid activity tracking (last 2 weeks)
-- ✅ Speed rankings and execution scores
-- ✅ All-star rankings per boss
-- ✅ Performance consistency analysis
+### 🏔️ **Tab 3: M+ Details**
+- Detailed view of best M+ runs
+- Party composition for each run
+- Affixes with emojis
+- Timing information
+- Direct links to Raider.IO
+- **Shows upgrade levels (+2, +3, etc.)**
+- **Full party roster with roles**
 
-### 2. **Guild Analytics Module**
-- ✅ Roster composition analysis
-- ✅ Utility coverage checking
-- ✅ Performance tier distribution
-- ✅ Raid readiness scoring
-- ✅ Actionable recommendations
-
-### 3. **Enhanced Dashboard (7 Tabs)**
-- 📊 Overview - Guild progress and top improvers
-- 📋 Roster - Full character list with readiness scores
-- 🎯 Analytics - Performance analysis and recommendations
-- 🏆 Raiding - Detailed raid performance with consistency
-- 🏔️ M+ - Mythic+ scores and breakdowns
-- 🛡️ Composition - Roster balance and suggested comps
-- 📈 Trends - Historical progress tracking
-
-### 4. **Raid Readiness System**
-- Calculates readiness score based on:
-  - Item level (40%)
-  - M+ experience (20%)
-  - Past raid performance (40%)
-- Ratings: Mythic Ready, Heroic Ready, Normal Ready, Needs Improvement
-
-### 5. **Performance Consistency Tracking**
-- Tracks consistency across bosses
-- Identifies reliable performers
-- Flags inconsistent players who need support
-- Shows best/worst bosses per character
+### 📋 **Tab 4: Roster**
+- Complete character list with clickable names
+- Spec icons
+- Performance badges
 
 ---
 
-## 📦 Installation Steps
+## 🚀 Quick Start
 
-### Step 1: Add New Files
-
-Save these new files in your project directory:
-
-```
-your_project/
-├── wcl_enhanced.py              # Enhanced WCL API module
-├── crawl_enhanced.py            # Enhanced crawler
-├── guild_analytics.py           # Guild analytics module
-├── generate_dashboard_enhanced.py   # Enhanced dashboard generator
-├── run_enhanced.py              # Master runner script
-├── (keep all your existing files)
-```
-
-### Step 2: Update Your .env File
-
-Make sure your `.env` file has all required credentials:
-
-```env
-# Blizzard API
-BLIZZARD_CLIENT_ID=your_client_id
-BLIZZARD_CLIENT_SECRET=your_client_secret
-
-# WarcraftLogs API
-WCL_ACCESS_TOKEN=your_wcl_token
-
-# Region Settings
-REGION=kr
-NAMESPACE=profile-kr
-
-# Optional: Discord Integration
-DISCORD_WEBHOOK_URL=your_webhook_url
-
-# Optional: Public Dashboard URL
-DASHBOARD_URL=https://your-dashboard-url.com
-```
-
-### Step 3: Install Dependencies (if needed)
+### Generate Complete Dashboard
 
 ```bash
-pip install requests python-dotenv rich
-```
-
----
-
-## 🚀 Usage
-
-### Method 1: Run Enhanced Pipeline (Recommended)
-
-Run everything with one command:
-
-```bash
-python run_enhanced.py
+python test_unified_dashboard.py
 ```
 
 This will:
-1. ✅ Crawl all character data with enhanced WCL
-2. ✅ Update historical tracking
-3. ✅ Fetch M+ details
-4. ✅ Run guild analytics
-5. ✅ Post to Discord (if configured)
-6. ✅ Generate enhanced dashboard
+1. ✅ Fetch enhanced M+ data (with party info)
+2. ✅ Generate unified dashboard with tabs
+3. ✅ Create single dashboard.html file
 
-### Method 2: Run Individual Modules
+Then open **dashboard.html** in your browser!
 
-Run specific modules as needed:
+---
+
+## 📂 File Structure
+
+```
+your_project/
+├── dashboard.html              # 🆕 Single unified dashboard!
+├── test_unified_dashboard.py   # 🆕 Easy test script
+├── mplus_enhanced.py           # 🆕 Enhanced M+ with party info
+├── history_tracker.py          # Track progress
+├── discord_integration.py      # Discord webhooks
+├── run_all.py                  # Master runner
+└── logs/
+    ├── Player_data.csv
+    ├── history.json
+    └── mplus_enhanced.json     # 🆕 Detailed M+ data
+```
+
+---
+
+## 🎯 M+ Details Tab Features
+
+### What You'll See:
+
+**For Each Character:**
+- Avatar/thumbnail from Raider.IO
+- Class, spec, ilvl
+- Total M+ score
+
+**For Each Best Run (Top 5):**
+
+```
+#1 Ara-Kara, City of Echoes        +12 +2
+✅ Timed | Score: 145.2
+
+🔮 Xal'atath's Bargain | 👑 Tyrannical | 💥 Bursting
+
+⏱️ Clear Time: 28:45
+🎯 Par Time: 32:00
+📊 Difference: -3:15
+
+Party Composition:
+🛡️ 전사잠탱이 - Protection Warrior
+💚 리쉽 - Restoration Druid
+⚔️ 냥꾼린츠 - Marksmanship Hunter
+⚔️ 만보먹고 - Frost Mage
+⚔️ 보라발굽 - Destruction Warlock
+
+📊 View on Raider.IO
+```
+
+### Key Improvements:
+- ✅ **Upgrade levels now visible** (+2, +3 for timed runs)
+- ✅ **Full party roster displayed** with names, specs, roles
+- ✅ **Role icons**: 🛡️ Tank, 💚 Healer, ⚔️ DPS
+- ✅ **Color-coded by difficulty**: 🟢 Low → 🟣 Medium → 🟠 High
+- ✅ **Timing details**: Shows if over/under time
+- ✅ **Affix emojis**: Easy to see at a glance
+
+---
+
+## 📢 Discord Integration with Dashboard Link
+
+Add to your `.env`:
+
+```env
+# Discord webhook (required for notifications)
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_URL
+
+# Dashboard public URL (optional - adds clickable link)
+DASHBOARD_URL=https://your-site.com/dashboard.html
+```
+
+Discord messages will now include a **clickable link** to your dashboard!
+
+---
+
+## 🔧 Usage
+
+### Daily/Weekly Update
 
 ```bash
-# Enhanced crawler only
-python crawl_enhanced.py
+# Option 1: Everything at once
+python test_unified_dashboard.py
 
-# Guild analytics only
-python guild_analytics.py
+# Option 2: Step by step
+python mplus_enhanced.py          # Fetch detailed M+ data
+python history_tracker.py         # Update trends
+python generate_html_dashboard.py # Generate dashboard
+```
 
-# Dashboard only
-python generate_dashboard_enhanced.py
+### Just Update M+ Details
+
+```bash
+python mplus_enhanced.py
+python generate_html_dashboard.py
 ```
 
 ---
 
-## 📊 Understanding the New Features
+## 🎨 Dashboard Navigation
 
-### Raid Readiness Score
+The dashboard has **4 tabs** at the top:
 
-Each character gets a readiness score (0-100):
+1. **📊 Overview** - Click to see trends and improvers
+2. **📈 Charts** - Click to see all distribution charts
+3. **🏔️ M+ Details** - Click to see detailed run information
+4. **📋 Roster** - Click to see full character list
 
-- **85-100**: Mythic Ready 🟢
-- **70-84**: Heroic Ready 🟡
-- **50-69**: Normal Ready 🟠
-- **0-49**: Needs Improvement 🔴
+**Tips:**
+- Tabs animate smoothly when switching
+- Each tab remembers scroll position
+- Click character names in Roster tab for detailed stats
+
+---
+
+## 🐛 Troubleshooting
+
+### "No party members showing"
+- **Fixed!** The enhanced version now properly extracts party roster
+- Make sure you run `python mplus_enhanced.py` to regenerate data
+
+### "Upgrade level not showing"
+- **Fixed!** Now displays "+2", "+3" for timed keys
+- Shows "❌" for depleted (no upgrade)
+
+### "Tabs not working"
+- Clear browser cache (Ctrl+F5 or Cmd+Shift+R)
+- Check browser console for JavaScript errors
+
+### "M+ tab is empty"
+- Run `python mplus_enhanced.py` first
+- Characters need to have done M+ keys this season
+- Check that `logs/mplus_enhanced.json` exists
+
+---
+
+## 🎯 What's Different from Before?
+
+### Old Setup:
+- ❌ Two separate HTML files
+- ❌ Had to open multiple pages
+- ❌ M+ didn't show party members
+- ❌ No upgrade levels visible
+
+### New Setup:
+- ✅ Single dashboard.html file
+- ✅ Everything in tabs
+- ✅ Full party roster with roles
+- ✅ Upgrade levels displayed
+- ✅ Better organized
+- ✅ Easier to navigate
+
+---
+
+## 📊 Example Output
+
+When you open **dashboard.html**, you'll see:
+
+```
+⚔️ Guild Performance Dashboard
+
+[📊 Overview] [📈 Charts] [🏔️ M+ Details] [📋 Roster]
+     ↑ Click to switch tabs
+
+Currently viewing: Overview
+- Guild trends chart
+- Top 5 improvers with medals 🥇🥈🥉
+```
+
+Switch to **M+ Details** tab:
+```
+Character: 전사잠탱이
+Protection Warrior | ilvl 720 | M+ Score: 2,850
+
+#1 Ara-Kara +12 +2 ✅
+   Party: Tank, Healer, 3 DPS (all names visible)
+   
+#2 Grim Batol +11 +1 ✅
+   Party: Tank, Healer, 3 DPS (all names visible)
+```
+
+---
+
+## 💡 Pro Tips
+
+1. **Bookmark the tabs**: Each tab has its own content
+2. **Share the M+ tab**: Perfect for showing off your best runs
+3. **Click Raider.IO links**: Goes directly to the run details
+4. **Check party comp**: See who you run keys with most
+5. **Use Discord link**: Share dashboard with guild via Discord
+
+---
+
+## 🎉 Summary
+
+You now have a **professional-looking unified dashboard** with:
+- ✅ Single file, multiple tabs
+- ✅ Full M+ details with party members
+- ✅ Upgrade levels visible
+- ✅ Beautiful UI with smooth transitions
+- ✅ Discord integration with dashboard link
+- ✅ All features in one place!
+
+**Happy raiding! 🎮⚔️**
+
+---
+
+## 🚀 Quick Start
+
+### Step 1: Update Your .env File
+
+Add Discord webhook URL to your `.env` file:
+
+```env
+# Existing credentials
+BLIZZARD_CLIENT_ID=your_client_id
+BLIZZARD_CLIENT_SECRET=your_client_secret
+WCL_ACCESS_TOKEN=your_wcl_token
+REGION=kr
+NAMESPACE=profile-kr
+
+# NEW: Discord Integration (optional)
+DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/YOUR_WEBHOOK_URL
+```
+
+**How to get Discord Webhook:**
+1. Go to your Discord server
+2. Server Settings → Integrations → Webhooks
+3. Click "New Webhook"
+4. Name it "WoW Guild Bot"
+5. Copy the Webhook URL
+
+### Step 2: Install New Dependencies
+
+```bash
+pip install requests python-dotenv
+```
+
+### Step 3: Run the Master Script
+
+Instead of running individual scripts, use the master runner:
+
+```bash
+python run_all.py
+```
+
+This will:
+- ✅ Crawl character data
+- ✅ Update historical tracking
+- ✅ Fetch M+ dungeon details
+- ✅ Post to Discord
+- ✅ Generate dashboard
+
+---
+
+## 📂 New File Structure
+
+```
+your_project/
+├── characters.csv              # Your character list
+├── .env                        # API credentials + Discord webhook
+├── wow_crawler.py             # Your existing crawler (renamed)
+├── dashboard_generator.py     # Your existing dashboard (renamed)
+├── history_tracker.py         # NEW: Track progress over time
+├── discord_integration.py     # NEW: Discord webhook posting
+├── mplus_breakdown.py         # NEW: Detailed M+ analysis
+├── run_all.py                 # NEW: Master script (run this!)
+├── logs/
+│   ├── Player_data.csv        # Current character data
+│   ├── history.json           # Historical snapshots (auto-created)
+│   ├── milestones.json        # Milestone tracking (auto-created)
+│   └── mplus_breakdown.json   # M+ dungeon data (auto-created)
+└── dashboard.html             # Your beautiful dashboard!
+```
+
+---
+
+## 🎯 Features Explained
+
+### 1. 📈 Weekly Trend Charts
+
+The dashboard now shows a line chart tracking:
+- Average guild ilvl over time
+- Average M+ score over time
+- Average WCL performance over time
+
+**How it works:**
+- Every time you run the crawler, a snapshot is saved
+- The dashboard displays all snapshots as a trend line
+- Keeps last 30 days of data
+
+**To see trends:**
+- Run the crawler daily/weekly
+- After 2+ runs, trends will appear
+
+### 2. 🏆 Top Improvers
+
+Shows who improved the most in the last 7 days:
+- ilvl gains
+- M+ score gains
+- WCL parse improvements
 
 **Formula:**
 ```
-Readiness = (ilvl_score × 0.4) + (mplus_score × 0.2) + (wcl_score × 0.4)
+Improvement Score = (ilvl gain × 2) + (M+ gain × 0.01) + (WCL gain × 0.5)
 ```
 
-### Consistency Analysis
+### 3. 📢 Discord Integration
 
-Measures how consistent a player performs:
+Automatically posts to Discord:
+- **Daily Summary** - Guild stats snapshot
+- **Top Improvers** - Weekly leaderboard
+- **Milestones** - Celebrates achievements
 
-- **Excellent (90%+)**: Player consistently performs well
-- **Good (75-89%)**: Generally reliable with occasional variance
-- **Average (60-74%)**: Noticeable variance between pulls
-- **Inconsistent (<60%)**: Needs coaching/support
+**Milestones tracked:**
+- ilvl 720, 725
+- M+ score 3000, 3500
+- WCL parse 99, 100
 
-**Formula:**
+**To test Discord:**
+```bash
+python discord_integration.py
 ```
-Consistency = (median_parse / best_parse) × 100
-```
 
-### Guild Analytics Recommendations
+### 4. 🏔️ M+ Dungeon Breakdown
 
-The system provides actionable recommendations:
+Shows each character's best key for every dungeon:
+- Key level (+10, +12, etc.)
+- Timed (✅) or depleted (❌)
+- Color-coded by difficulty
 
-- ⚠️ **Warnings**: Critical issues (missing tanks, healers, utilities)
-- ℹ️ **Info**: Important notices (inactive raiders, performance gaps)
-- 💡 **Tips**: Improvement suggestions (training opportunities)
-
----
-
-## 📁 Output Files
-
-### Generated Files
-
-| File | Description |
-|------|-------------|
-| `dashboard.html` | Main enhanced dashboard (7 tabs) |
-| `logs/Player_data.csv` | Character summary data |
-| `logs/characters_enhanced.json` | Full enhanced character data |
-| `logs/guild_analytics.json` | Guild analytics report |
-| `logs/mplus_enhanced.json` | Detailed M+ run data |
-| `logs/wcl_cache/*.json` | WCL API response cache |
-| `detailed/*.md` | Individual character reports |
-
-### Character Report Structure
-
-Each `detailed/{name}.md` now includes:
-
-```markdown
-# Character Name
-
-## 📊 Overview
-- Item Level, M+, WCL scores
-- **Raid Readiness**: Score and rating
-- **Consistency**: Rating and analysis
-
-## ⚔️ Equipment
-- All items with upgrade levels
-
-## 📅 Recent Activity
-- Last 2 weeks of raids
-- Kills, wipes, duration
-
-## 🏆 Mythic Performance
-- Boss rankings with consistency scores
-- Best/median/speed rankings
-
-## 🏆 Heroic Performance
-- Boss rankings
-
-## ⭐ All Stars Points
+**To fetch M+ data:**
+```bash
+python mplus_breakdown.py
 ```
 
 ---
 
-## 🔧 Customization
+## 🔧 Usage
 
-### Adjust Readiness Weights
+### Daily/Weekly Update
 
-Edit `wcl_enhanced.py`:
-
-```python
-def calculate_raid_readiness(ilvl, mplus_score, wcl_avg):
-    # Change these weights as desired
-    ilvl_weight = 0.4      # Item level importance
-    mplus_weight = 0.2     # M+ experience importance
-    wcl_weight = 0.4       # Past performance importance
-    
-    readiness = (ilvl_score * ilvl_weight) + 
-                (mplus_normalized * mplus_weight) + 
-                (wcl_score * wcl_weight)
+Just run one command:
+```bash
+python run_all.py
 ```
 
-### Change Current Raid Tier
+### Manual Steps (if needed)
 
-Edit `wcl_enhanced.py`:
+```bash
+# 1. Crawl character data
+python wow_crawler.py
 
-```python
-CURRENT_RAIDS = {
-    'tww-s1': {
-        'id': 38,  # Change this to new raid ID
-        'name': 'Nerub-ar Palace',
-        'encounters': [...]  # Update boss list
-    }
-}
+# 2. Add to history
+python -c "from history_tracker import add_current_snapshot; add_current_snapshot()"
+
+# 3. Fetch M+ data (optional, takes longer)
+python mplus_breakdown.py
+
+# 4. Post to Discord (optional)
+python discord_integration.py
+
+# 5. Generate dashboard
+python dashboard_generator.py
 ```
 
-### Add Custom Analytics
+---
 
-Edit `guild_analytics.py` and add your own analysis functions:
+## 📊 Dashboard Features
 
-```python
-def your_custom_analysis(self):
-    # Your custom logic here
-    pass
+Your dashboard now includes:
+
+### Top Section
+- 📊 Total Members
+- ⚔️ Average ilvl
+- 🏔️ Average M+ Score
+- 📈 Average WCL
+
+### Charts
+1. **Guild Progress Trends** - Multi-line chart showing progress over time
+2. **Top Improvers Table** - 🥇🥈🥉 rankings with gains
+3. **Item Level Distribution** - Bar chart by character
+4. **M+ Score Distribution** - Bar chart by character
+5. **WCL Performance** - Bar chart by character
+
+### Character Table
+- Click any character name for detailed stats
+- Spec icons displayed inline
+- Color-coded badges for scores
+
+---
+
+## 🤖 Automation (Optional)
+
+### Schedule Daily Updates
+
+**On Windows (Task Scheduler):**
+1. Open Task Scheduler
+2. Create Basic Task
+3. Trigger: Daily at 6 AM
+4. Action: Start a program
+5. Program: `python`
+6. Arguments: `C:\path\to\run_all.py`
+
+**On Linux/Mac (cron):**
+```bash
+# Edit crontab
+crontab -e
+
+# Add this line (runs daily at 6 AM)
+0 6 * * * cd /path/to/project && python run_all.py
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Issue: "No enhanced character data found"
+### "No historical data yet"
+- Run the crawler at least twice on different days
+- Check if `logs/history.json` exists
 
-**Solution:** Run `crawl_enhanced.py` first to generate the data:
-```bash
-python crawl_enhanced.py
-```
+### Discord not posting
+- Verify webhook URL in `.env`
+- Test with: `python discord_integration.py`
+- Check Discord server permissions
 
-### Issue: "WCL API rate limited"
+### M+ data missing
+- Raider.IO may not have data for all characters
+- Some characters may not have done M+ this season
+- This is normal and non-critical
 
-**Solution:** The system has built-in rate limiting and caching. Wait a few minutes and try again. Cache files in `logs/wcl_cache/` are valid for 1 hour.
-
-### Issue: "Some characters have no consistency data"
-
-**Reason:** Characters with no raid logs or only 1 boss kill don't have enough data for consistency analysis. This is expected.
-
-### Issue: Dashboard missing some features
-
-**Solution:** Make sure all required data files exist:
-- `logs/Player_data.csv`
-- `logs/characters_enhanced.json`
-- `logs/guild_analytics.json`
-
-Run the full pipeline: `python run_enhanced.py`
+### Trends not showing
+- You need at least 2 data points (2 different days)
+- Run the crawler again tomorrow
 
 ---
 
-## 📈 Best Practices
+## 💡 Tips
 
-### 1. **Run Daily**
-
-Set up a daily cron job or scheduled task:
-
-```bash
-# Linux/Mac cron
-0 9 * * * cd /path/to/project && python run_enhanced.py
-
-# Windows Task Scheduler
-# Create task to run run_enhanced.py daily at 9 AM
-```
-
-### 2. **Monitor API Limits**
-
-- Blizzard API: Very generous limits
-- WarcraftLogs: ~100 requests per hour for free tier
-- Raider.IO: No official limit, but be respectful
-
-### 3. **Review Analytics Weekly**
-
-Check `logs/guild_analytics.json` weekly for:
-- Roster balance issues
-- Performance trends
-- Missing utilities
-- Improvement opportunities
-
-### 4. **Share with Guild**
-
-Host the `dashboard.html` on:
-- GitHub Pages (free)
-- Netlify (free)
-- Your own web server
-
-Update `DASHBOARD_URL` in `.env` to share the link in Discord.
+1. **Run daily** for best trend tracking
+2. **Discord webhook** works best in a dedicated channel
+3. **M+ data fetch** is slowest part (skippable if needed)
+4. **History keeps 30 days** - older data auto-deleted
+5. **Milestones only fire once** - won't spam Discord
 
 ---
 
-## 🎯 Next Steps
+## 🎉 What's Next?
 
-### After Initial Setup:
+You now have:
+- ✅ Historical trend tracking
+- ✅ Top improvers leaderboard
+- ✅ Discord integration
+- ✅ M+ dungeon breakdown
 
-1. ✅ Run `python run_enhanced.py` for first data collection
-2. ✅ Review the analytics report in `logs/guild_analytics.json`
-3. ✅ Check the dashboard for any issues
-4. ✅ Share dashboard with officers for feedback
-5. ✅ Set up automated daily runs
-
-### Weekly Tasks:
-
-1. Review top improvers and celebrate progress
-2. Check recommendations and take action
-3. Monitor consistency scores for struggling players
-4. Update raid composition based on suggestions
-5. Track historical trends for long-term planning
+Possible future enhancements:
+- Email reports
+- Raid boss analysis
+- Attendance tracking
+- Character comparison tools
+- Mobile app
 
 ---
 
 ## 📞 Support
 
-If you encounter issues:
-
-1. Check the console output for error messages
+If you run into issues:
+1. Check the console output for errors
 2. Verify all API credentials in `.env`
-3. Check that `characters.csv` is properly formatted
-4. Review the troubleshooting section above
-5. Check log files in `logs/` directory
+3. Make sure files are in correct locations
+4. Test each script individually
 
 ---
 
-## 🎉 Congratulations!
-
-You now have a fully enhanced WoW guild dashboard with:
-
-- ✨ Comprehensive WarcraftLogs integration
-- ✨ Intelligent raid readiness scoring
-- ✨ Performance consistency tracking
-- ✨ Guild-wide analytics and recommendations
-- ✨ Beautiful 7-tab interactive dashboard
-- ✨ Historical trend tracking
-- ✨ Discord integration
-
-**Happy raiding! 🏆**
-
----
-
-## 📝 Version History
-
-### v2.0 - Enhanced Edition
-- Added enhanced WCL API integration
-- Added guild analytics module
-- Added raid readiness scoring
-- Added consistency tracking
-- Upgraded to 7-tab dashboard
-- Added roster composition analysis
-- Added actionable recommendations
-
-### v1.0 - Original
-- Basic character crawling
-- Simple dashboard with 5 tabs
-- M+ and WCL basic integration
+**Happy raiding! 🎮⚔️**
