@@ -27,7 +27,7 @@
       width= 500px
       height= 200px />
 
-- / [wcl](https://www.warcraftlogs.com/guild/id/779093) / [ProgStats](https://progstats.io/details/kr/azshara/779093-/all/44-manaforge-omega)
+- / [wcl](https://www.warcraftlogs.com/guild/id/779093) / [ProgStats](https://progstats.io/details/kr/azshara/779093-/all/46-voidspire-dreamrift-mqd)
 - Guild Progression Video Links
    - 잠탱이(RL): [잠탱이, Tanker](https://www.youtube.com/@Slumber957)
    - 두부킴(ex-RL): [두부킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
@@ -45,7 +45,7 @@
 내부전쟁 2시즌 언더마인 해방전선: 공격대장 잠탱이로 변경, 주 2일 8탐 파티로 진행  
 내부전쟁 3시즌 마나괴철로 종극점: 두부킴의 유기견들 길드 창설, 주 1일 4탐 파티로 진행
 
-한밤 1시즌: **TBD**
+한밤 1시즌: 꿈의 균열/ 공허 첨탑/ 쿠엘타나스 진격로/ 진균 나락: 주 2일 8탐 파티로 진행, 꿈의 균열 **명예의 전당** 입성
 
 ## Characters
 
@@ -86,9 +86,9 @@ Every other characters which is not written is "**hidden**" in this page.
 
 #### Ny'alotha (8.3)
 * 수도잠탱이 (12/12 M)
-**First Cutting Edge**
   * killed with 늑대단
 * 죽기싫은잠탱이 (12/12 M)
+  **First Cutting Edge**
   * killed with 와관학교
 
 ### **Shadowlands (9.0)**
@@ -129,28 +129,28 @@ Every other characters which is not written is "**hidden**" in this page.
   * killed with 부엉사제
   * **Raid Leader**
 * 기사잠탱이 (9/9 M)
-  * killed with 두부킴/Seeca
+  * killed with 두부킴/Seeca(두부집)
 
 #### Awakened Season (10.2.7)
-* 기사잠탱이 (9/9M, 8/8M, 8/8M)
-  * killed with 두부킴/Seeca
+* 기사잠탱이 (VoI: 9/9 M, ASC: 8/8 M, ADH: 8/8 M)
+  * killed with 두부킴/Seeca(두부집)
   * **Sub-Mic**
-* 악사잠탱이 (4/9M, 5/8M, 6/8M)
+* 악사잠탱이 (VoI: 4/9 M, ASC: 5/8 M, ADH: 6/8 M)
   * killed with 부엉사제
   * **Raid Leader** 
 
 ### **The War Within (11.0)**
 #### Nerub'ar Palace (11.0)
-* 기사잠탱이 (8/8M)
-  * killed with 두부집
+* 기사잠탱이 (8/8 M)
+  * killed with 두부킴/Seeca(두부집)
   * **Co Raid Leader**
     
 #### Liberation of Undermine (11.1)
-* 기사잠탱이 (8/8M)
-  * killed with 두부집
+* 기사잠탱이 (8/8 M)
+  * killed with 두부킴의 유기견들
   * **Raid Leader**
-* 수도잠탱이 (8/8M)
-  * killed with Rinz
+* 수도잠탱이 (8/8 M)
+  * killed with Rinz(와관학교)
   * **Co Raid Leader**
     
 #### Manaforge Omega (11.2)
@@ -159,10 +159,14 @@ Every other characters which is not written is "**hidden**" in this page.
   * **Raid Leader**
 
 * 죽기싫은잠탱이 (8/8M)
-  * killed with Rinz
+  * killed with Rinz(와관학교)
 
 ### **Midnight (12.0)**
-* **Progression in 두부킴의 유기견들**
+#### The DreamRift / VoidSpire / March of Quel'danas / SporeFall
+* 전사잠탱이 (DR: 1/1 M, VS: 7/7 M, MQD: 1/2 M, SF:0/1M)
+   * killed with 두부킴의 유기견들
+   * **Hall of Fame (Chimaerus, 200+th)**
+   *  **Raid Leader**
 
 ## Filmography
 - 가족공격대 시즌3: 한 여름밤의 캠프 (2024.7), 멘티 (팀 [RenieHouR](https://www.youtube.com/@RenieHouR))
