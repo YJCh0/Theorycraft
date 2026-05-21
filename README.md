@@ -30,9 +30,9 @@
 - / [wcl](https://www.warcraftlogs.com/guild/id/779093) / [ProgStats](https://progstats.io/details/kr/azshara/779093-/all/44-manaforge-omega)
 - Guild Progression Video Links
    - 잠탱이(RL): [잠탱이, Tanker](https://www.youtube.com/@Slumber957)
-   - 두부킴: [두무킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
+   - 두부킴(ex-RL): [두부킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
    - Keez: [만보먹고, RDps](https://www.youtube.com/@keez3625)
-   - 후제: [후제, Rdps](https://www.youtube.com/@rouget.)
+   - 후제(sub-RL): [후제, Rdps](https://www.youtube.com/@rouget.)
    - 보솜이: [보소밍, Rdps](https://www.youtube.com/@보솜이-c7c)
    - 특임: [특임, Rdps](https://www.youtube.com/@ShiyeolLee)
 
