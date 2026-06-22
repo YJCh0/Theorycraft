@@ -8,9 +8,9 @@
 ## About Me
 아즈샤라 서버에서 게임하는 잠탱이 입니다.
 
- <img src="./Character.png" 
+ <img src="./main/Documents/Images/README/Character.png" 
       alt= "character"
-      width= 300px
+      width= 800px
       height= 600px />
 
 제가 플레이 가능한 직업 및 전문화 입니다.
@@ -22,19 +22,34 @@
 ## Guild
 ### **두부킴의 유기견들**
 
- <img src="./Guild.png" 
+ <img src="./main/Documents/Images/README/Guild.png" 
       alt= "guild"
-      width= 500px
+      width= 200px
       height= 200px />
 
+<<<<<<< HEAD
 - / [wcl](https://www.warcraftlogs.com/guild/id/779093) / [ProgStats](https://progstats.io/details/kr/azshara/779093-/all/46-voidspire-dreamrift-mqd)
 - Guild Progression Video Links
    - 잠탱이(RL): [잠탱이, Tanker](https://www.youtube.com/@Slumber957)
    - 두부킴(ex-RL): [두부킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
    - Keez: [만보먹고, RDps](https://www.youtube.com/@keez3625)
    - 후제(sub-RL): [후제, Rdps](https://www.youtube.com/@rouget.)
+=======
+ <img src="./main/Documents/Images/README/Group_Photo.png" 
+      alt= "group"
+      width= 800px
+      height= 500px />
+
+- /[Homepage](https://abandoneddogs.netlify.app/introduction.html) / [wcl](https://www.warcraftlogs.com/guild/id/779093) / [ProgStats](https://progstats.io/details/kr/azshara/779093-/all/46-voidspire-dreamrift-mqd) / [Blizzard](https://worldofwarcraft.blizzard.com/ko-kr/guild/kr/azshara/두부킴의-유기견들/)
+- Guild Progression Video Links
+   - 잠탱이(RL): [잠탱이, Tanker](https://www.youtube.com/@Slumber957)
+   - 두부킴(ex-RL): [두부킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
+   - Keez (CEO): [만보먹고, RDps](https://www.youtube.com/@keez3625)
+   - 후제(sub-RL, *Craftmaster*): [후제, Rdps](https://www.youtube.com/@rouget.)
+>>>>>>> ea723a3 (README Update)
    - 보솜이: [보소밍, Rdps](https://www.youtube.com/@보솜이-c7c)
    - 특임: [특임, Rdps](https://www.youtube.com/@ShiyeolLee)
+   - 불타: [Cwp, Healer](https://www.youtube.com/@고정훈-f3p)
 
 ### Guild History
 용군단 2시즌 아베루스: 공격대장 두부킴을 필두로 공격대 창설, 주 1일 4탐 파티로 진행  
@@ -49,14 +64,14 @@
 
 ## Characters
 
-- 수도잠탱이 (Brewmaster Monk) / [wcl](https://www.warcraftlogs.com/character/id/71983202) / [raider](https://raider.io/characters/kr/azshara/%EC%88%98%EB%8F%84%EC%9E%A0%ED%83%B1%EC%9D%B4)
-- 죽기싫은잠탱이 (Blood Deathknight) / [wcl](https://www.warcraftlogs.com/character/id/72068316) / [raider](https://raider.io/characters/kr/azshara/%EC%A3%BD%EA%B8%B0%EC%8B%AB%EC%9D%80%EC%9E%A0%ED%83%B1%EC%9D%B4)
-- 기사잠탱이 (Protection Paladin) / [wcl](https://www.warcraftlogs.com/character/id/71689323) / [raider](https://raider.io/characters/kr/azshara/%EA%B8%B0%EC%82%AC%EC%9E%A0%ED%83%B1%EC%9D%B4)
-- 전사잠탱이 (Protection Warrior) / [wcl](https://www.warcraftlogs.com/character/id/71863854) / [raider](https://raider.io/characters/kr/azshara/%EC%A0%84%EC%82%AC%EC%9E%A0%ED%83%B1%EC%9D%B4)
-- 하리보잠탱이 (Guardian Druid) / [wcl](https://www.warcraftlogs.com/character/id/72384124) / [raider](https://raider.io/characters/kr/azshara/%ED%95%98%EB%A6%AC%EB%B3%B4%EC%9E%A0%ED%83%B1%EC%9D%B4)
-- 악사잠탱이 (Vengence Demonhunter) / [wcl](https://www.warcraftlogs.com/character/id/72384116) / [raider](https://raider.io/characters/kr/azshara/%EC%95%85%EC%82%AC%EC%9E%A0%ED%83%B1%EC%9D%B4)
-- 사제잠탱이 (Discipline/Holy Priest) / [wcl](https://www.warcraftlogs.com/character/id/71660977) / [raider](https://raider.io/characters/kr/azshara/%EC%82%AC%EC%A0%9C%EC%9E%A0%ED%83%B1%EC%9D%B4)
-- 도마뱀잠탱이 (Augmentation/Perservation Evoker) / [wcl](https://www.warcraftlogs.com/character/id/73728261) / [raider](https://raider.io/characters/kr/azshara/%EB%8F%84%EB%A7%88%EB%B1%80%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 수도잠탱이 (Brewmaster Monk) / [wcl](https://www.warcraftlogs.com/character/id/71983202) / [rio](https://raider.io/characters/kr/azshara/%EC%88%98%EB%8F%84%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 죽기싫은잠탱이 (Blood Deathknight) / [wcl](https://www.warcraftlogs.com/character/id/72068316) / [rio](https://raider.io/characters/kr/azshara/%EC%A3%BD%EA%B8%B0%EC%8B%AB%EC%9D%80%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 기사잠탱이 (Protection Paladin) / [wcl](https://www.warcraftlogs.com/character/id/71689323) / [rio](https://raider.io/characters/kr/azshara/%EA%B8%B0%EC%82%AC%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 전사잠탱이 (Protection Warrior) / [wcl](https://www.warcraftlogs.com/character/id/71863854) / [rio](https://raider.io/characters/kr/azshara/%EC%A0%84%EC%82%AC%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 하리보잠탱이 (Guardian Druid) / [wcl](https://www.warcraftlogs.com/character/id/72384124) / [rio](https://raider.io/characters/kr/azshara/%ED%95%98%EB%A6%AC%EB%B3%B4%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 악사잠탱이 (Vengence Demonhunter) / [wcl](https://www.warcraftlogs.com/character/id/72384116) / [rio](https://raider.io/characters/kr/azshara/%EC%95%85%EC%82%AC%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 사제잠탱이 (Discipline/Holy Priest) / [wcl](https://www.warcraftlogs.com/character/id/71660977) / [rio](https://raider.io/characters/kr/azshara/%EC%82%AC%EC%A0%9C%EC%9E%A0%ED%83%B1%EC%9D%B4)
+- 도마뱀잠탱이 (Augmentation/Perservation Evoker) / [wcl](https://www.warcraftlogs.com/character/id/73728261) / [rio](https://raider.io/characters/kr/azshara/%EB%8F%84%EB%A7%88%EB%B1%80%EC%9E%A0%ED%83%B1%EC%9D%B4)
 
 ## Raid History
 Note that this raid history only wrote "**notable**" records. 
@@ -163,7 +178,11 @@ Every other characters which is not written is "**hidden**" in this page.
 
 ### **Midnight (12.0)**
 #### The DreamRift / VoidSpire / March of Quel'danas / SporeFall
+<<<<<<< HEAD
 * 전사잠탱이 (DR: 1/1 M, VS: 7/7 M, MQD: 1/2 M, SF:0/1M)
+=======
+* 전사잠탱이 (DR: 1/1 M, VS: 7/7 M, MQD: 2/2 M, SF:1/1M)
+>>>>>>> ea723a3 (README Update)
    * killed with 두부킴의 유기견들
    * **Hall of Fame (Chimaerus, 200+th)**
    *  **Raid Leader**
@@ -173,4 +192,3 @@ Every other characters which is not written is "**hidden**" in this page.
   - [Episode 1](https://www.youtube.com/watch?v=OFYB9EQ4m1o)
   - [Episode 2](https://www.youtube.com/watch?v=HCI_8XR2lDY)
   - [Episode 3](https://www.youtube.com/watch?v=f0DiVhOOV9c)
-
