@@ -27,14 +27,6 @@
       width= 200px
       height= 200px />
 
-<<<<<<< HEAD
-- / [wcl](https://www.warcraftlogs.com/guild/id/779093) / [ProgStats](https://progstats.io/details/kr/azshara/779093-/all/46-voidspire-dreamrift-mqd)
-- Guild Progression Video Links
-   - 잠탱이(RL): [잠탱이, Tanker](https://www.youtube.com/@Slumber957)
-   - 두부킴(ex-RL): [두부킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
-   - Keez: [만보먹고, RDps](https://www.youtube.com/@keez3625)
-   - 후제(sub-RL): [후제, Rdps](https://www.youtube.com/@rouget.)
-=======
  <img src="./main/Documents/Images/README/Group_Photo.png" 
       alt= "group"
       width= 800px
@@ -46,7 +38,6 @@
    - 두부킴(ex-RL): [두부킴, Healer](https://chzzk.naver.com/56a68f749a286025b6cefd5d2cb3f53a)
    - Keez (CEO): [만보먹고, RDps](https://www.youtube.com/@keez3625)
    - 후제(sub-RL, *Craftmaster*): [후제, Rdps](https://www.youtube.com/@rouget.)
->>>>>>> ea723a3 (README Update)
    - 보솜이: [보소밍, Rdps](https://www.youtube.com/@보솜이-c7c)
    - 특임: [특임, Rdps](https://www.youtube.com/@ShiyeolLee)
    - 불타: [Cwp, Healer](https://www.youtube.com/@고정훈-f3p)
@@ -178,11 +169,7 @@ Every other characters which is not written is "**hidden**" in this page.
 
 ### **Midnight (12.0)**
 #### The DreamRift / VoidSpire / March of Quel'danas / SporeFall
-<<<<<<< HEAD
-* 전사잠탱이 (DR: 1/1 M, VS: 7/7 M, MQD: 1/2 M, SF:0/1M)
-=======
 * 전사잠탱이 (DR: 1/1 M, VS: 7/7 M, MQD: 2/2 M, SF:1/1M)
->>>>>>> ea723a3 (README Update)
    * killed with 두부킴의 유기견들
    * **Hall of Fame (Chimaerus, 200+th)**
    *  **Raid Leader**
