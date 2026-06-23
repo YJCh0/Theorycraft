@@ -5,47 +5,34 @@ import React, { useState, useEffect } from "react";
 //
 //   1) 이미지 파일을 src/assets/logos/ 폴더에 넣기
 //      예: src/assets/logos/d4.png
-//          src/assets/logos/poe1.png
-//          src/assets/logos/poe2.png
-//          src/assets/logos/wow.png
-//          src/assets/logos/hs.png
 //
 //   2) 아래 주석을 해제하고 경로를 맞춰주세요:
 //
-// import d4Logo   from "./assets/logos/d4.png";
-// import poe1Logo from "./assets/logos/poe1.png";
-// import poe2Logo from "./assets/logos/poe2.png";
-// import wowLogo  from "./assets/logos/wow.png";
-// import hsLogo   from "./assets/logos/hs.png";
-//
-//   3) 각 게임 데이터의 logo 필드에 변수를 넣어주세요:
-//      logo: d4Logo,   ← 이모지 대신 이미지 사용
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🎮 게임 데이터
-//   icon  : 카드 중앙 이모지 (로고 이미지 없을 때 표시)
-//   logo  : 게임 로고 이미지 (import 후 여기에 변수 넣기)
-//           null 이면 icon 이모지로 대체
-//   items[].icon : 로드맵 각 항목의 이모지
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 import d4Logo   from "./assets/logos/d4.png";
+import d2Logo   from "./assets/logos/d2.png";
 import poe1Logo from "./assets/logos/poe1.png";
 import poe2Logo from "./assets/logos/poe2.png";
 import wowLogo  from "./assets/logos/wow.png";
 import hsLogo   from "./assets/logos/hs.png";
+import sc2Logo  from "./assets/logos/sc2.png";
+import ow2Logo  from "./assets/logos/ow2.png";
+//
+//   3) 각 게임 데이터의 logo 필드에 변수를 넣어주세요:
+//      logo: d4Logo,
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const GAMES = [
+  // ── Diablo IV ───────────────────────────────────────
   {
     id: "d4",
     name: "Diablo IV",
     shortName: "D4",
     icon: "💀",
-    logo: d4Logo,             // ← import 후 d4Logo 로 교체
+    logo: d4Logo,             // ← d4Logo
     accentColor: "#c0392b",
     glowColor: "rgba(192,57,43,0.35)",
     bgColor: "#1a0a0a",
-    patch: null,
+    patch: "v3.0.4",
     label: "S13 · Season of Reckoning",
     startDate: new Date("2026-04-28T00:00:00Z"),
     endDate: new Date("2026-07-20T21:00:00Z"),
@@ -60,7 +47,7 @@ const GAMES = [
         startDate: new Date("2026-04-28T00:00:00Z"),
         endDate: new Date("2026-07-20T21:00:00Z"),
         endIsEstimate: true,
-        note: "시즌 13 — 현재 진행 중",
+        note: "Lord of Hatred 확장팩 · War Plans 시스템",
       },
       {
         id: "d4-s14",
@@ -74,12 +61,64 @@ const GAMES = [
       },
     ],
   },
+
+  // ── Diablo II Resurrected ────────────────────────────
+  {
+    id: "d2r",
+    name: "Diablo II: Resurrected",
+    shortName: "D2R",
+    icon: "💎",
+    logo: d2Logo,             // ← d2Logo
+    accentColor: "#8b0000",
+    glowColor: "rgba(139,0,0,0.4)",
+    bgColor: "#120000",
+    patch: "v3.2.0",
+    label: "Ladder Season 14",
+    startDate: new Date("2026-05-22T01:00:00Z"),
+    endDate: null,
+    endIsEstimate: false,
+    roadmapLabel: "래더 시즌 로드맵",
+    items: [
+      {
+        id: "d2r-s13",
+        name: "Ladder Season 13",
+        sub: "Reign of the Warlock",
+        icon: "🧙",
+        startDate: new Date("2026-02-20T01:00:00Z"),
+        endDate: new Date("2026-05-22T01:00:00Z"),
+        endIsEstimate: false,
+        note: "신규 Warlock 클래스 · 패치 v3.1",
+      },
+      {
+        id: "d2r-s14",
+        name: "Ladder Season 14",
+        sub: "현재 시즌",
+        icon: "💎",
+        startDate: new Date("2026-05-22T01:00:00Z"),
+        endDate: null,
+        endIsEstimate: false,
+        note: "패치 v3.2 · Terror Zone 개편 · Sunder Charm 조정",
+      },
+      {
+        id: "d2r-s15",
+        name: "Ladder Season 15",
+        sub: "다음 시즌",
+        icon: "❓",
+        startDate: null,
+        endDate: null,
+        endIsEstimate: false,
+        note: "날짜 미발표 · 3~4개월 주기 예상",
+      },
+    ],
+  },
+
+  // ── Path of Exile ────────────────────────────────────
   {
     id: "poe1",
     name: "Path of Exile",
     shortName: "PoE1",
     icon: "🔮",
-    logo: poe1Logo,             // ← import 후 poe1Logo 로 교체
+    logo: poe1Logo,             // ← poe1Logo
     accentColor: "#8e44ad",
     glowColor: "rgba(142,68,173,0.35)",
     bgColor: "#0e0813",
@@ -108,16 +147,18 @@ const GAMES = [
         startDate: new Date("2026-07-24T20:00:00Z"),
         endDate: null,
         endIsEstimate: false,
-        note: "7월 24일 출시 확정, 이름 미발표",
+        note: "7월 24일 출시 확정 · 이름 미발표",
       },
     ],
   },
+
+  // ── Path of Exile 2 ──────────────────────────────────
   {
     id: "poe2",
     name: "Path of Exile 2",
     shortName: "PoE2",
     icon: "⚗️",
-    logo: poe2Logo,             // ← import 후 poe2Logo 로 교체
+    logo: poe2Logo,             // ← poe2Logo
     accentColor: "#e67e22",
     glowColor: "rgba(230,126,34,0.35)",
     bgColor: "#110d05",
@@ -136,7 +177,7 @@ const GAMES = [
         startDate: new Date("2026-05-29T20:00:00Z"),
         endDate: null,
         endIsEstimate: false,
-        note: "Runes of Aldur, 2개 신규 직업",
+        note: "Runes of Aldur · 2개 신규 직업",
       },
       {
         id: "poe2-100",
@@ -146,21 +187,23 @@ const GAMES = [
         startDate: null,
         endDate: null,
         endIsEstimate: false,
-        note: "날짜 미발표 — 2026년 말 예상",
+        note: "날짜 미발표 · 2026년 말 예상",
       },
     ],
   },
+
+  // ── World of Warcraft ────────────────────────────────
   {
     id: "wow",
     name: "World of Warcraft",
     shortName: "WoW",
     icon: "⚔️",
-    logo: wowLogo,             // ← import 후 wowLogo 로 교체
+    logo: wowLogo,             // ← wowLogo
     accentColor: "#3498db",
     glowColor: "rgba(52,152,219,0.35)",
     bgColor: "#050e1a",
-    patch: null,
-    label: "Midnight S1 — The Voidspire",
+    patch: "v12.0.7",
+    label: "Midnight S1 — Revelations",
     startDate: new Date("2026-03-17T15:00:00Z"),
     endDate: null,
     endIsEstimate: false,
@@ -194,7 +237,7 @@ const GAMES = [
         startDate: new Date("2026-03-31T15:00:00Z"),
         endDate: null,
         endIsEstimate: false,
-        note: "Sunwell 수호",
+        note: "Sunwell 수호 · 12.0.7 Revelations",
       },
       {
         id: "wow-venomous",
@@ -204,20 +247,22 @@ const GAMES = [
         startDate: null,
         endDate: null,
         endIsEstimate: false,
-        note: "12.1 Curse of Ula'tek — 날짜 미확정",
+        note: "12.1 Curse of Ula'tek · 날짜 미확정",
       },
     ],
   },
+
+  // ── Hearthstone ──────────────────────────────────────
   {
     id: "hs",
     name: "Hearthstone",
     shortName: "HS",
     icon: "🃏",
-    logo: hsLogo,             // ← import 후 hsLogo 로 교체
+    logo: hsLogo,             // ← hsLogo
     accentColor: "#f1c40f",
     glowColor: "rgba(241,196,15,0.3)",
     bgColor: "#13100a",
-    patch: null,
+    patch: "v32.x",
     label: "Year of the Scarab",
     startDate: new Date("2026-03-17T00:00:00Z"),
     endDate: null,
@@ -232,7 +277,7 @@ const GAMES = [
         startDate: new Date("2026-03-17T00:00:00Z"),
         endDate: new Date("2026-07-07T17:00:00Z"),
         endIsEstimate: false,
-        note: "Herald · Shatter · Colossal",
+        note: "Herald · Shatter · Colossal · Deathwing",
       },
       {
         id: "hs-violet",
@@ -242,7 +287,7 @@ const GAMES = [
         startDate: new Date("2026-07-07T17:00:00Z"),
         endDate: null,
         endIsEstimate: false,
-        note: "Prepare · Rulebreaker",
+        note: "Prepare · Rulebreaker · Vanessa VanCleef",
       },
       {
         id: "hs-exp3",
@@ -253,6 +298,116 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "날짜·이름 미발표",
+      },
+    ],
+  },
+
+  // ── StarCraft II ─────────────────────────────────────
+  {
+    id: "sc2",
+    name: "StarCraft II",
+    shortName: "SC2",
+    icon: "🚀",
+    logo: sc2Logo,             // ← sc2Logo
+    accentColor: "#00aaff",
+    glowColor: "rgba(0,170,255,0.3)",
+    bgColor: "#020d1a",
+    patch: "v5.0.16",
+    label: "2026 Season 2 래더",
+    startDate: new Date("2026-06-22T00:00:00Z"),
+    endDate: null,
+    endIsEstimate: false,
+    roadmapLabel: "패치 로드맵",
+    items: [
+      {
+        id: "sc2-5015",
+        name: "Patch 5.0.15",
+        sub: "2026 Season 1 래더",
+        icon: "🛸",
+        startDate: new Date("2026-01-15T00:00:00Z"),
+        endDate: new Date("2026-06-22T00:00:00Z"),
+        endIsEstimate: false,
+        note: "GSL Season 1·2 진행 · Legacy of the Void",
+      },
+      {
+        id: "sc2-5016",
+        name: "Patch 5.0.16",
+        sub: "현재 패치 · 2026 Season 2",
+        icon: "🚀",
+        startDate: new Date("2026-06-22T00:00:00Z"),
+        endDate: null,
+        endIsEstimate: false,
+        note: "시작 일꾼 12→8 · Warpgate 개편 · 최대 밸런스 패치",
+      },
+      {
+        id: "sc2-next",
+        name: "다음 패치",
+        sub: "Season 3 예정",
+        icon: "❓",
+        startDate: null,
+        endDate: null,
+        endIsEstimate: false,
+        note: "날짜 미발표",
+      },
+    ],
+  },
+
+  // ── Overwatch 2 ──────────────────────────────────────
+  {
+    id: "ow2",
+    name: "Overwatch 2",
+    shortName: "OW2",
+    icon: "🎯",
+    logo: ow2Logo,             // ← ow2Logo
+    accentColor: "#f97316",
+    glowColor: "rgba(249,115,22,0.3)",
+    bgColor: "#0f0800",
+    patch: "v16.x",
+    label: "Reign of Talon S3 · Into the Tiger's Den",
+    startDate: new Date("2026-06-16T18:00:00Z"),
+    endDate: new Date("2026-08-10T18:00:00Z"),
+    endIsEstimate: false,
+    roadmapLabel: "시즌 로드맵",
+    items: [
+      {
+        id: "ow2-s1",
+        name: "S1: Conquest",
+        sub: "Reign of Talon 시즌 1",
+        icon: "⚡",
+        startDate: new Date("2026-02-10T18:00:00Z"),
+        endDate: new Date("2026-04-14T18:00:00Z"),
+        endIsEstimate: false,
+        note: "신규 히어로 5명 동시 출시 · 스토리 아크 시작",
+      },
+      {
+        id: "ow2-s2",
+        name: "S2: Summit",
+        sub: "Reign of Talon 시즌 2",
+        icon: "🏔️",
+        startDate: new Date("2026-04-14T18:00:00Z"),
+        endDate: new Date("2026-06-16T18:00:00Z"),
+        endIsEstimate: false,
+        note: "신규 히어로 Sierra · Operation Grand Mesa",
+      },
+      {
+        id: "ow2-s3",
+        name: "S3: Into the Tiger's Den",
+        sub: "Reign of Talon 시즌 3 · 현재",
+        icon: "🎯",
+        startDate: new Date("2026-06-16T18:00:00Z"),
+        endDate: new Date("2026-08-10T18:00:00Z"),
+        endIsEstimate: false,
+        note: "신규 히어로 Shion · Anima Strike 이벤트",
+      },
+      {
+        id: "ow2-s4",
+        name: "Season 4",
+        sub: "다음 시즌",
+        icon: "❓",
+        startDate: null,
+        endDate: null,
+        endIsEstimate: false,
+        note: "날짜 미발표 · 8월 예상",
       },
     ],
   },
@@ -290,41 +445,32 @@ function Ring({ pct, color, size = 72, strokeWidth = 4 }) {
   const offset = pct == null ? c : c - (pct / 100) * c;
   return (
     <svg width={size} height={size} style={{ transform: "rotate(-90deg)", flexShrink: 0 }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none"
-        stroke="rgba(255,255,255,0.1)" strokeWidth={strokeWidth} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={strokeWidth} />
       {pct != null && (
-        <circle cx={size/2} cy={size/2} r={r} fill="none"
-          stroke={color} strokeWidth={strokeWidth}
-          strokeDasharray={c} strokeDashoffset={offset}
-          strokeLinecap="round"
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={strokeWidth}
+          strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round"
           style={{ transition: "stroke-dashoffset 1s ease" }} />
       )}
     </svg>
   );
 }
 
-// ━━━ 링 중앙 아이콘 (이모지 or 이미지) ━━━━━━━━━━━━━━━━
+// ━━━ 링 중앙 (이모지 or 이미지) ━━━━━━━━━━━━━━━━━━━━━━━
 function RingCenter({ logo, icon, size }) {
   if (logo) {
-    return (
-      <img src={logo} alt="logo"
-        style={{ width: size * 0.55, height: size * 0.55, objectFit: "contain", borderRadius: 4 }} />
-    );
+    return <img src={logo} alt="" style={{ width: size * 0.52, height: size * 0.52, objectFit: "contain", borderRadius: 4 }} />;
   }
   return <span style={{ fontSize: size * 0.3 }}>{icon}</span>;
 }
 
-// ━━━ % 뱃지 (외곽선으로 가시성 확보) ━━━━━━━━━━━━━━━━━
+// ━━━ % 뱃지 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function PctBadge({ pct, color }) {
   return (
     <div style={{
       position: "absolute", bottom: -8, left: "50%", transform: "translateX(-50%)",
-      fontSize: 9, fontWeight: 800, fontFamily: "monospace", letterSpacing: 0.3,
-      color: "#fff",
-      background: color,
-      borderRadius: 4,
-      padding: "1px 4px",
-      whiteSpace: "nowrap",
+      fontSize: 9, fontWeight: 800, fontFamily: "monospace",
+      color: "#fff", background: color,
+      borderRadius: 4, padding: "1px 5px", whiteSpace: "nowrap",
     }}>
       {Math.round(pct)}%
     </div>
@@ -363,7 +509,6 @@ function ItemRow({ item, now, color }) {
       borderRadius: 10, padding: "10px 12px",
       display: "flex", alignItems: "center", gap: 10,
     }}>
-      {/* 미니 링 */}
       <div style={{ position: "relative", width: 44, height: 44, flexShrink: 0 }}>
         <Ring pct={done ? 100 : active ? pct : null} color={ringColor} size={44} strokeWidth={3} />
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15 }}>
@@ -383,7 +528,6 @@ function ItemRow({ item, now, color }) {
           {item.sub}
           {item.note && <span style={{ color: "rgba(255,255,255,0.18)" }}> · {item.note}</span>}
         </div>
-
         {unknown ? (
           <span style={{ fontSize: 10, color: "rgba(255,255,255,0.22)" }}>일정 미발표</span>
         ) : upcoming ? (
@@ -403,13 +547,8 @@ function ItemRow({ item, now, color }) {
         )}
       </div>
 
-      {/* 로드맵 행 % — 색상 배경으로 가시성 확보 */}
       {active && pct != null && (
-        <span style={{
-          fontSize: 10, fontWeight: 800, fontFamily: "monospace",
-          color: "#fff", background: color,
-          borderRadius: 4, padding: "2px 5px", flexShrink: 0,
-        }}>
+        <span style={{ fontSize: 10, fontWeight: 800, fontFamily: "monospace", color: "#fff", background: color, borderRadius: 4, padding: "2px 5px", flexShrink: 0 }}>
           {Math.round(pct)}%
         </span>
       )}
@@ -423,9 +562,9 @@ function GameCard({ game, now, open, onToggle }) {
     i => i.startDate && now >= i.startDate && (!i.endDate || now < i.endDate)
   );
 
-  const elapsed  = daysBetween(game.startDate, now);
-  const left     = game.endDate ? daysBetween(now, game.endDate) : null;
-  const dispPct  = current
+  const elapsed = daysBetween(game.startDate, now);
+  const left    = game.endDate ? daysBetween(now, game.endDate) : null;
+  const dispPct = current
     ? calcProgress(current.startDate, current.endDate, now)
     : calcProgress(game.startDate, game.endDate, now);
   const dispIcon = current ? current.icon : game.icon;
@@ -437,22 +576,16 @@ function GameCard({ game, now, open, onToggle }) {
       border: `1px solid ${open ? game.accentColor + "66" : "rgba(255,255,255,0.07)"}`,
       borderRadius: 16, padding: open ? "20px" : "16px",
       cursor: "pointer", transition: "all 0.3s ease",
-      boxShadow: open
-        ? `0 0 32px ${game.glowColor}, 0 4px 24px rgba(0,0,0,0.5)`
-        : "0 2px 12px rgba(0,0,0,0.4)",
+      boxShadow: open ? `0 0 32px ${game.glowColor}, 0 4px 24px rgba(0,0,0,0.5)` : "0 2px 12px rgba(0,0,0,0.4)",
       position: "relative", overflow: "hidden",
     }}>
-      {/* 상단 광선 */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, height: 2,
         background: `linear-gradient(90deg,transparent,${game.accentColor},transparent)`,
         opacity: open ? 1 : 0.4, transition: "opacity 0.3s",
       }} />
 
-      {/* 요약 행 */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-
-        {/* 링 + 아이콘 + % 뱃지 */}
         <div style={{ position: "relative", width: 72, height: 82, flexShrink: 0 }}>
           <Ring pct={dispPct} color={game.accentColor} size={72} strokeWidth={4} />
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -461,7 +594,6 @@ function GameCard({ game, now, open, onToggle }) {
           {dispPct != null && <PctBadge pct={dispPct} color={game.accentColor} />}
         </div>
 
-        {/* 텍스트 */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.5, color: game.accentColor, textTransform: "uppercase", fontFamily: "'Courier New',monospace" }}>
@@ -502,7 +634,6 @@ function GameCard({ game, now, open, onToggle }) {
         <div style={{ fontSize: 16, color: "rgba(255,255,255,0.25)", transition: "transform 0.3s", transform: open ? "rotate(180deg)" : "rotate(0deg)" }}>▼</div>
       </div>
 
-      {/* 로드맵 펼침 */}
       {open && (
         <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${game.accentColor}33` }}>
           <div style={{ fontSize: 10, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
@@ -532,8 +663,6 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0a", display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "32px 16px 48px", fontFamily: "'Inter','Segoe UI',system-ui,sans-serif" }}>
       <div style={{ width: "100%", maxWidth: 440 }}>
-
-        {/* 헤더 */}
         <div style={{ marginBottom: 28, textAlign: "center" }}>
           <div style={{ fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,0.3)", marginBottom: 6, fontFamily: "monospace" }}>
             SEASON TRACKER
@@ -544,11 +673,9 @@ export default function App() {
           </div>
         </div>
 
-        {/* 카드 */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {GAMES.map(game => (
-            <GameCard
-              key={game.id} game={game} now={now}
+            <GameCard key={game.id} game={game} now={now}
               open={open === game.id}
               onToggle={() => setOpen(p => p === game.id ? null : game.id)}
             />
