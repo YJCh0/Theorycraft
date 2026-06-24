@@ -168,11 +168,14 @@ Every other characters which is not written is "**hidden**" in this page.
   * killed with Rinz(와관학교)
 
 ### **Midnight (12.0)**
-#### The DreamRift / VoidSpire / March of Quel'danas / SporeFall
+#### The DreamRift / VoidSpire / March of Quel'danas (12.0) / SporeFall (12.0.7)
 * 전사잠탱이 (DR: 1/1 M, VS: 7/7 M, MQD: 2/2 M, SF:1/1M)
    * killed with 두부킴의 유기견들
    * **Hall of Fame (Chimaerus, 200+th)**
    *  **Raid Leader**
+
+#### Venomous Abyss (12.1) 
+* 두부킴의 유기견들 TBC
 
 ## Filmography
 - 가족공격대 시즌3: 한 여름밤의 캠프 (2024.7), 멘티 (팀 [RenieHouR](https://www.youtube.com/@RenieHouR))

@@ -35,7 +35,7 @@ const GAMES = [
     patch: "v3.0.4",
     label: "S13 · Season of Reckoning",
     startDate: new Date("2026-04-28T00:00:00Z"),
-    endDate: new Date("2026-07-20T21:00:00Z"),
+    endDate: new Date("2026-06-30T21:00:00Z"),
     endIsEstimate: true,
     roadmapLabel: "시즌 로드맵",
     items: [
@@ -45,19 +45,21 @@ const GAMES = [
         sub: "Season 13",
         icon: "💀",
         startDate: new Date("2026-04-28T00:00:00Z"),
-        endDate: new Date("2026-07-20T21:00:00Z"),
-        endIsEstimate: true,
+        endDate: new Date("2026-06-30T21:00:00Z"),
+        endIsEstimate: false,
         note: "Lord of Hatred 확장팩 · War Plans 시스템",
+        patchUrl: "https://news.blizzard.com/en-us/article/24271857/diablo-iv-patch-notes",
       },
       {
         id: "d4-s14",
-        name: "Season 14",
-        sub: "다음 시즌",
+        name: "Season of the Malignant",
+        sub: "Season 14",
         icon: "❓",
-        startDate: null,
+        startDate: new Date("2026-07-01T00:00:00Z"),
         endDate: null,
         endIsEstimate: false,
-        note: "이름·날짜 미발표",
+        note: "TBD",
+        patchUrl: null,
       },
     ],
   },
@@ -88,6 +90,7 @@ const GAMES = [
         endDate: new Date("2026-05-22T01:00:00Z"),
         endIsEstimate: false,
         note: "신규 Warlock 클래스 · 패치 v3.1",
+        patchUrl: "https://news.blizzard.com/en-us/article/24246296/diablo-ii-resurrected-ladder-season-13-coming-soon",
       },
       {
         id: "d2r-s14",
@@ -98,6 +101,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "패치 v3.2 · Terror Zone 개편 · Sunder Charm 조정",
+        patchUrl: "https://news.blizzard.com/en-us/diablo2/",
       },
       {
         id: "d2r-s15",
@@ -108,6 +112,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "날짜 미발표 · 3~4개월 주기 예상",
+        patchUrl: null,
       },
     ],
   },
@@ -138,6 +143,7 @@ const GAMES = [
         endDate: new Date("2026-07-20T20:00:00Z"),
         endIsEstimate: false,
         note: "Djinn·Wish 메커닉, Reliquarian",
+        patchUrl: "https://www.pathofexile.com/forum/view-forum/patch-notes",
       },
       {
         id: "poe1-329",
@@ -148,6 +154,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "7월 24일 출시 확정 · 이름 미발표",
+        patchUrl: null,
       },
     ],
   },
@@ -178,6 +185,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "Runes of Aldur · 2개 신규 직업",
+        patchUrl: "https://www.pathofexile.com/forum/view-forum/poe2-patch-notes",
       },
       {
         id: "poe2-100",
@@ -188,6 +196,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "날짜 미발표 · 2026년 말 예상",
+        patchUrl: null,
       },
     ],
   },
@@ -218,6 +227,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "Xal'atath 직접 대면",
+        patchUrl: "https://www.wowhead.com/guide/raids/the-voidspire/overview",
       },
       {
         id: "wow-dreamrift",
@@ -228,6 +238,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "Chimaerus, the Undreamt God",
+        patchUrl: "https://www.wowhead.com/guide/raids/the-dreamrift/overview",
       },
       {
         id: "wow-quel",
@@ -238,6 +249,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "Sunwell 수호 · 12.0.7 Revelations",
+        patchUrl: "https://www.wowhead.com/guide/raids/march-on-queldanas/overview",
       },
       {
         id: "wow-venomous",
@@ -248,6 +260,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "12.1 Curse of Ula'tek · 날짜 미확정",
+        patchUrl: null,
       },
     ],
   },
@@ -278,6 +291,7 @@ const GAMES = [
         endDate: new Date("2026-07-07T17:00:00Z"),
         endIsEstimate: false,
         note: "Herald · Shatter · Colossal · Deathwing",
+        patchUrl: "https://hearthstone.blizzard.com/en-us/news/patch-notes",
       },
       {
         id: "hs-violet",
@@ -288,6 +302,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "Prepare · Rulebreaker · Vanessa VanCleef",
+        patchUrl: "https://hearthstone.blizzard.com/en-us/news/patch-notes",
       },
       {
         id: "hs-exp3",
@@ -298,6 +313,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "날짜·이름 미발표",
+        patchUrl: null,
       },
     ],
   },
@@ -328,6 +344,7 @@ const GAMES = [
         endDate: new Date("2026-06-22T00:00:00Z"),
         endIsEstimate: false,
         note: "GSL Season 1·2 진행 · Legacy of the Void",
+        patchUrl: "https://news.blizzard.com/en-us/starcraft2",
       },
       {
         id: "sc2-5016",
@@ -338,6 +355,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "시작 일꾼 12→8 · Warpgate 개편 · 최대 밸런스 패치",
+        patchUrl: "https://news.blizzard.com/en-us/starcraft2",
       },
       {
         id: "sc2-next",
@@ -348,6 +366,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "날짜 미발표",
+        patchUrl: null,
       },
     ],
   },
@@ -378,6 +397,7 @@ const GAMES = [
         endDate: new Date("2026-04-14T18:00:00Z"),
         endIsEstimate: false,
         note: "신규 히어로 5명 동시 출시 · 스토리 아크 시작",
+        patchUrl: "https://overwatch.blizzard.com/en-us/news/patch-notes/",
       },
       {
         id: "ow2-s2",
@@ -388,6 +408,7 @@ const GAMES = [
         endDate: new Date("2026-06-16T18:00:00Z"),
         endIsEstimate: false,
         note: "신규 히어로 Sierra · Operation Grand Mesa",
+        patchUrl: "https://overwatch.blizzard.com/en-us/news/patch-notes/",
       },
       {
         id: "ow2-s3",
@@ -398,6 +419,7 @@ const GAMES = [
         endDate: new Date("2026-08-10T18:00:00Z"),
         endIsEstimate: false,
         note: "신규 히어로 Shion · Anima Strike 이벤트",
+        patchUrl: "https://overwatch.blizzard.com/en-us/news/patch-notes/",
       },
       {
         id: "ow2-s4",
@@ -408,6 +430,7 @@ const GAMES = [
         endDate: null,
         endIsEstimate: false,
         note: "날짜 미발표 · 8월 예상",
+        patchUrl: null,
       },
     ],
   },
@@ -547,11 +570,35 @@ function ItemRow({ item, now, color }) {
         )}
       </div>
 
-      {active && pct != null && (
-        <span style={{ fontSize: 10, fontWeight: 800, fontFamily: "monospace", color: "#fff", background: color, borderRadius: 4, padding: "2px 5px", flexShrink: 0 }}>
-          {Math.round(pct)}%
-        </span>
-      )}
+      {/* 오른쪽 — % 뱃지 + 패치노트 링크 */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 5, flexShrink: 0 }}>
+        {active && pct != null && (
+          <span style={{ fontSize: 10, fontWeight: 800, fontFamily: "monospace", color: "#fff", background: color, borderRadius: 4, padding: "2px 5px" }}>
+            {Math.round(pct)}%
+          </span>
+        )}
+        {item.patchUrl && (
+          <a
+            href={item.patchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            style={{
+              fontSize: 9, fontWeight: 700, letterSpacing: 0.5,
+              color: unknown ? "rgba(255,255,255,0.25)" : color,
+              background: unknown ? "rgba(255,255,255,0.04)" : color + "1a",
+              border: `1px solid ${unknown ? "rgba(255,255,255,0.08)" : color + "44"}`,
+              borderRadius: 4, padding: "2px 6px",
+              textDecoration: "none", whiteSpace: "nowrap",
+              transition: "opacity 0.2s",
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.7"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+          >
+            패치노트 ↗
+          </a>
+        )}
+      </div>
     </div>
   );
 }
